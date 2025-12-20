@@ -9,25 +9,24 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="py-20 px-6 border-t border-white/5 bg-black/50 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-primary rounded shadow-[0_0_10px_#00DC01]"></div>
-              <span className="font-poppins font-bold text-2xl">MitZay<span className="text-primary">.</span></span>
-            </div>
-            <p className="text-gray-500 text-sm leading-relaxed">
-              {FOOTER_CONTENT.microcopy}
-            </p>
-          </div>
+    <footer className="w-full glass p-14 md:p-16 rounded-[4rem] border border-white/5 shadow-3xl text-center relative overflow-hidden">
+      <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 blur-[100px] rounded-full"></div>
+      
+      <div className="flex flex-col items-center mb-16 relative z-10">
+        <div className="w-12 h-12 bg-primary rounded-2xl shadow-[0_0_20px_rgba(0,220,1,0.3)] mb-8 flex items-center justify-center text-black font-black text-lg">M</div>
+        <span className="font-poppins font-black text-3xl tracking-tighter">MitZay<span className="text-primary">.</span></span>
+        <p className="text-gray-500 text-sm md:text-base mt-6 max-w-sm mx-auto leading-relaxed font-medium">
+          {FOOTER_CONTENT.microcopy}
+        </p>
+      </div>
 
-          <div>
-            <h4 className="font-poppins font-bold mb-6 text-white uppercase tracking-widest text-xs">Agencia</h4>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16 max-w-4xl mx-auto relative z-10">
+          <div className="text-left">
+            <h4 className="font-black mb-6 text-white/30 uppercase tracking-[0.4em] text-[8px]">Agencia</h4>
             <ul className="space-y-4">
               {NAV_LINKS.map(link => (
                 <li key={link.page}>
-                  <button onClick={() => onNavigate(link.page)} className="text-gray-500 hover:text-primary transition-colors text-sm">
+                  <button onClick={() => onNavigate(link.page)} className="text-gray-400 hover:text-primary transition-colors font-bold text-sm tracking-tight">
                     {link.label}
                   </button>
                 </li>
@@ -35,48 +34,40 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-poppins font-bold mb-6 text-white uppercase tracking-widest text-xs">Contacto</h4>
-            <p className="text-gray-500 text-sm mb-4">{FOOTER_CONTENT.contact}</p>
-            <a href="mailto:info@mitzay.agency" className="text-primary text-sm font-bold hover:underline">
-              Escríbenos ahora →
+          <div className="text-left">
+            <h4 className="font-black mb-6 text-white/30 uppercase tracking-[0.4em] text-[8px]">Contacto</h4>
+            <p className="text-gray-400 font-bold mb-3 text-sm tracking-tight">{FOOTER_CONTENT.contact}</p>
+            <a href="mailto:info@mitzay.agency" className="text-primary font-black hover:underline uppercase tracking-widest text-[9px]">
+              Escríbenos →
             </a>
           </div>
 
-          <div>
-            <h4 className="font-poppins font-bold mb-6 text-white uppercase tracking-widest text-xs">Social</h4>
-            <div className="flex flex-wrap gap-4">
+          <div className="col-span-2 text-left">
+            <h4 className="font-black mb-6 text-white/30 uppercase tracking-[0.4em] text-[8px]">Social</h4>
+            <div className="flex flex-wrap gap-3">
               {FOOTER_CONTENT.socials.map((social) => (
                 <a 
                   key={social.name}
                   href={social.url} 
-                  className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-gray-400 hover:bg-primary hover:text-black transition-all"
+                  className="px-5 py-2.5 bg-white/5 rounded-xl text-gray-400 hover:bg-primary hover:text-black transition-all font-black text-[9px] tracking-widest uppercase border border-white/5"
                   aria-label={social.name}
                 >
-                  <span className="text-xs font-bold uppercase tracking-tighter">
-                    {social.name.substring(0, 2)}
-                  </span>
+                  {social.name}
                 </a>
               ))}
             </div>
           </div>
-        </div>
+      </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 gap-6">
-          <p className="text-xs text-gray-600">
-            {FOOTER_CONTENT.legal}
-          </p>
-          <div className="flex gap-8">
-            <a href="#" className="text-xs text-gray-600 hover:text-white transition-colors">{FOOTER_CONTENT.privacy}</a>
-            <a href="#" className="text-xs text-gray-600 hover:text-white transition-colors">{FOOTER_CONTENT.cookies}</a>
-          </div>
+      <div className="pt-12 border-t border-white/5 space-y-6 relative z-10">
+        <div className="flex justify-center gap-8 text-[8px] font-black uppercase tracking-[0.4em] text-gray-600">
+           <a href="#" className="hover:text-white transition-colors">Privacidad</a>
+           <a href="#" className="hover:text-white transition-colors">Cookies</a>
+           <a href="#" className="hover:text-white transition-colors">Aviso Legal</a>
         </div>
-        
-        <div className="mt-16 text-center">
-          <p className="text-[10px] text-gray-800 uppercase tracking-[0.8em] font-black">
-            ENGINEERING THE FUTURE
-          </p>
-        </div>
+        <p className="text-[8px] text-gray-700 font-black uppercase tracking-[0.8em]">
+           {FOOTER_CONTENT.legal}
+        </p>
       </div>
     </footer>
   );

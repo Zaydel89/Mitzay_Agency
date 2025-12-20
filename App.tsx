@@ -5,32 +5,19 @@ import Hero from './components/Hero';
 import AIAssistant from './components/AIAssistant';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
-import { Page, DetailedService } from './types';
+import { Page } from './types';
 import { 
   SEO_DATA, 
   SERVICES_PAGE_CONTENT, 
   COURSES_PAGE_CONTENT, 
   SERVICES_OVERVIEW, 
-  VIDEOBLOG_PLACEHOLDER, 
   CASE_STUDIES, 
   TESTIMONIALS, 
   CALENDLY_SECTION, 
   CALENDLY_URL 
 } from './constants';
-import AnimatedSection from './components/AnimatedSection';
 
 // --- Shared Components --- //
-const CTAButton: React.FC<{ text: string; className?: string }> = ({ text, className = '' }) => (
-    <a
-        href={CALENDLY_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`inline-block min-w-[200px] text-center font-poppins font-bold bg-primary text-black py-4 px-8 rounded-full text-base transition-all duration-300 ease-in-out transform shadow-[0_0_15px_rgba(0,220,1,0.2)] hover:scale-105 active:scale-95 ${className}`}
-    >
-        {text}
-    </a>
-);
-
 const CalendlyEmbed = () => {
     useEffect(() => {
         const head = document.querySelector('head');
@@ -41,9 +28,8 @@ const CalendlyEmbed = () => {
 
     return (
         <div 
-            className="calendly-inline-widget w-full rounded-3xl overflow-hidden border border-primary/10 bg-surface shadow-2xl"
+            className="calendly-inline-widget w-full h-full min-h-[500px] rounded-[3rem] overflow-hidden border border-white/10 bg-black shadow-2xl"
             data-url={CALENDLY_URL}
-            style={{ minWidth: '320px', height: '650px' }}
         >
         </div>
     );
@@ -53,220 +39,218 @@ const CalendlyEmbed = () => {
 
 const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }) => {
   const [currentCaseSlide, setCurrentCaseSlide] = useState(0);
+  const horizontalScrollRef = useRef<HTMLDivElement>(null);
 
   const nextCase = () => setCurrentCaseSlide((prev) => (prev + 1) % CASE_STUDIES.length);
   const prevCase = () => setCurrentCaseSlide((prev) => (prev - 1 + CASE_STUDIES.length) % CASE_STUDIES.length);
 
+  useEffect(() => {
+    const el = horizontalScrollRef.current;
+    if (el) {
+      const onWheel = (e: WheelEvent) => {
+        if (e.deltaY === 0) return;
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; 
+        e.preventDefault();
+        el.scrollBy({
+          left: e.deltaY * 1.5,
+          behavior: 'auto'
+        });
+      };
+      el.addEventListener('wheel', onWheel, { passive: false });
+      return () => el.removeEventListener('wheel', onWheel);
+    }
+  }, []);
+
   return (
-    <>
-      <Hero />
+    <div ref={horizontalScrollRef} className="flex h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar bg-black">
       
-      {/* 2. Qué Hacemos */}
-      <AnimatedSection className="bg-surface/30 py-16 md:py-24 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-20">
-            <h2 className="text-primary text-xs font-black tracking-[0.4em] uppercase mb-4">Especialidades</h2>
-            <h3 className="font-poppins text-3xl md:text-5xl lg:text-6xl font-extrabold">Qué Hacemos</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      {/* SECTION 1: HERO */}
+      <div className="horizontal-section flex items-center justify-center">
+        <div className="glow-overlay bg-primary opacity-30"></div>
+        <Hero />
+      </div>
+
+      {/* SECTION 2: QUÉ HACEMOS (Vibrant Blue/Indigo Accent) */}
+      <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a1a35] flex items-center px-12 md:px-24">
+        <div className="glow-overlay bg-blue-500 opacity-20"></div>
+        <div className="w-full max-w-6xl mx-auto relative z-10">
+          <header className="mb-20">
+            <h2 className="text-blue-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Capacidades</h2>
+            <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Nuestro Ecosistema</h3>
+          </header>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {SERVICES_OVERVIEW.map((service, index) => (
-              <div key={index} className="glass p-6 md:p-8 rounded-[2.5rem] border border-white/5 hover:border-primary/30 transition-all flex flex-col group">
-                <div className="overflow-hidden rounded-2xl mb-6 aspect-video">
-                  <img src={service.image} alt={service.alt} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div key={index} className="glass p-10 rounded-[3rem] border border-white/5 hover:border-blue-500/40 transition-all flex flex-col group min-h-[460px]">
+                <div className="overflow-hidden rounded-2xl mb-8 aspect-square relative border border-white/5">
+                  <div className="absolute inset-0 bg-blue-600/10 group-hover:bg-transparent transition-colors z-10"></div>
+                  <img src={service.image} alt={service.alt} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80 group-hover:opacity-100" />
                 </div>
-                <h3 className="font-poppins text-xl font-bold text-primary mb-3">{service.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed flex-grow">{service.description}</p>
-                <div className="mt-6 pt-6 border-t border-white/5 flex flex-wrap gap-2">
+                <h3 className="font-poppins text-lg font-bold text-blue-400 mb-4 tracking-tight group-hover:text-white transition-colors">{service.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">{service.description}</p>
+                <div className="pt-6 border-t border-white/5 flex flex-wrap gap-2">
                    {service.features.slice(0, 2).map((f, i) => (
-                     <span key={i} className="text-[10px] text-gray-500 border border-white/10 px-2 py-1 rounded-full">{f}</span>
+                     <span key={i} className="text-[8px] text-gray-500 border border-white/10 px-3 py-1.5 rounded-full uppercase tracking-widest font-black">{f}</span>
                    ))}
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </AnimatedSection>
+      </div>
 
-      {/* 3. Videoblog */}
-      <AnimatedSection className="py-16 md:py-24 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="font-poppins text-3xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4">{VIDEOBLOG_PLACEHOLDER.title}</h2>
-          <p className="text-center text-gray-400 max-w-2xl mx-auto mb-12 md:mb-16 text-sm md:text-base leading-relaxed px-4">
-            {VIDEOBLOG_PLACEHOLDER.description}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {VIDEOBLOG_PLACEHOLDER.posts.map((post, index) => (
-              <div key={index} className="glass rounded-3xl overflow-hidden border border-white/5 group flex flex-col hover:translate-y-[-8px] transition-all duration-300">
-                <div className="aspect-video overflow-hidden relative">
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black">▶</div>
-                  </div>
-                  <img src={post.image} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+      {/* SECTION 3: CASOS DE ÉXITO (Vibrant Emerald/Cyan Accent) */}
+      <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a251a] flex items-center px-12 md:px-24">
+        <div className="glow-overlay bg-emerald-400 opacity-20"></div>
+        <div className="w-full max-w-6xl mx-auto relative z-10">
+          <header className="mb-20">
+            <h2 className="text-emerald-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Pruebas de Valor</h2>
+            <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Impacto Real</h3>
+          </header>
+          <div className="glass p-12 lg:p-20 rounded-[4rem] border border-white/5 relative overflow-hidden flex flex-col justify-center min-h-[550px]">
+            {CASE_STUDIES.map((study, idx) => (
+              <div key={idx} className={`flex flex-col lg:flex-row gap-20 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
+                <div className="w-full lg:w-1/2 aspect-video rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-emerald-500/10">
+                  <img src={study.image} alt={study.alt} loading="lazy" className="w-full h-full object-cover" />
                 </div>
-                <div className="p-6">
-                  <h3 className="font-poppins font-bold text-base md:text-lg mb-3 leading-tight group-hover:text-primary transition-colors">{post.title}</h3>
-                  <p className="text-gray-500 text-xs leading-relaxed">{post.excerpt}</p>
+                <div className="w-full lg:w-1/2 space-y-10">
+                  <h3 className="text-3xl md:text-5xl font-poppins font-bold text-emerald-400 tracking-tight leading-[1.1]">{study.title}</h3>
+                  <p className="text-gray-400 text-lg leading-relaxed max-w-md">{study.description}</p>
+                  <div className="space-y-5">
+                    {study.kpis.map((kpi, kIdx) => (
+                      <div key={kIdx} className="flex items-center gap-5">
+                        <div className="w-7 h-7 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 text-[11px] font-black shadow-[0_0_15px_rgba(16,185,129,0.2)]">✓</div>
+                        <span className="text-xl font-bold text-white/90">{kpi}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
-          </div>
-          <div className="text-center mt-12 md:mt-16">
-            <button onClick={() => onNavigate('courses')} className="w-full sm:w-auto px-10 py-4 border-2 border-primary text-primary font-black rounded-full hover:bg-primary hover:text-black transition-all text-sm uppercase tracking-widest">
-              VER MÁS CONTENIDO
-            </button>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* 4. Casos de Éxito */}
-      <AnimatedSection className="bg-surface/50 py-16 md:py-24 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-primary text-xs font-black tracking-[0.4em] uppercase mb-4">Resultados Reales</h2>
-            <h3 className="font-poppins text-3xl md:text-5xl lg:text-6xl font-extrabold">Casos de Éxito</h3>
-          </div>
-          <div className="relative max-w-5xl mx-auto">
-            <div className="glass p-6 md:p-12 lg:p-16 rounded-[2.5rem] md:rounded-[4rem] border border-white/5 relative overflow-hidden min-h-[450px] md:min-h-[500px] flex flex-col justify-center">
-              {CASE_STUDIES.map((study, idx) => (
-                <div key={idx} className={`flex flex-col lg:flex-row gap-8 lg:gap-16 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 scale-100' : 'hidden opacity-0 scale-95'}`}>
-                  <div className="w-full lg:w-1/2 aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                    <img src={study.image} alt={study.alt} loading="lazy" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="w-full lg:w-1/2 space-y-6 text-left">
-                    <h3 className="text-2xl md:text-4xl font-poppins font-bold text-primary leading-tight">{study.title}</h3>
-                    <p className="text-gray-400 text-sm md:text-base leading-relaxed">{study.description}</p>
-                    <div className="grid grid-cols-1 gap-3 md:gap-4">
-                      {study.kpis.map((kpi, kIdx) => (
-                        <div key={kIdx} className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
-                          <span className="flex-shrink-0 w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary text-xs">✓</span>
-                          <span className="text-sm md:text-base font-bold text-white">{kpi}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              <div className="flex justify-center lg:justify-start gap-4 mt-12">
-                <button onClick={prevCase} className="p-4 glass rounded-full hover:bg-primary/20 text-primary transition-all active:scale-90" aria-label="Anterior">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <button onClick={nextCase} className="p-4 glass rounded-full hover:bg-primary/20 text-primary transition-all active:scale-90" aria-label="Siguiente">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
-                </button>
-              </div>
+            <div className="flex gap-4 mt-16">
+              <button onClick={prevCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Anterior">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button onClick={nextCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Siguiente">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+              </button>
             </div>
           </div>
         </div>
-      </AnimatedSection>
+      </div>
 
-      {/* 5. Testimonios */}
-      <AnimatedSection className="py-16 md:py-24 px-4 md:px-6 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="font-poppins text-3xl md:text-5xl font-extrabold text-center mb-16 md:mb-24 px-4 leading-tight">Lo que dicen nuestros clientes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+      {/* SECTION 4: TESTIMONIOS (Vibrant Purple/Pink Accent) */}
+      <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#200a25] flex items-center px-12 md:px-24">
+        <div className="glow-overlay bg-purple-500 opacity-20"></div>
+        <div className="w-full max-w-6xl mx-auto relative z-10">
+          <header className="mb-24">
+            <h2 className="text-purple-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Experiencias</h2>
+            <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Lo que dicen</h3>
+          </header>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
             {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="glass p-8 md:p-10 rounded-[2.5rem] border border-white/5 flex flex-col relative pt-16 mt-8 hover:border-primary/20 transition-all duration-500">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-black shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-10">
+              <div key={i} className="glass p-12 rounded-[3.5rem] border border-white/5 flex flex-col relative pt-28 mt-12 group hover:bg-white/[0.02]">
+                <div className="absolute top-0 left-12 -translate-y-1/2 w-24 h-24 rounded-[2rem] overflow-hidden border-4 border-black shadow-2xl z-10 transition-all group-hover:scale-105 group-hover:rotate-0 rotate-2 duration-500">
                   <img src={t.image} alt={t.name} loading="lazy" className="w-full h-full object-cover" />
                 </div>
-                <div className="absolute top-10 right-10 text-6xl text-primary/10 font-serif leading-none">“</div>
-                <p className="text-gray-300 italic mb-8 leading-relaxed text-center relative z-10 text-sm md:text-base">
-                  "{t.quote.split(t.highlight)[0]}<span className="text-primary not-italic font-bold bg-primary/5 px-1 rounded">{t.highlight}</span>{t.quote.split(t.highlight)[1]}"
+                <div className="absolute top-10 right-12 text-8xl text-purple-500/10 font-serif leading-none select-none">“</div>
+                <p className="text-gray-300 italic mb-10 leading-relaxed text-base md:text-lg">
+                  "{t.quote.split(t.highlight)[0]}<span className="text-purple-400 not-italic font-black border-b-2 border-purple-400/20 pb-0.5">{t.highlight}</span>{t.quote.split(t.highlight)[1]}"
                 </p>
-                <div className="text-center mt-auto border-t border-white/5 pt-6">
-                  <p className="font-bold text-white text-lg">{t.name}</p>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] mt-1 font-black">{t.title}</p>
+                <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-white text-xl tracking-tight">{t.name}</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-black">{t.title}</p>
+                  </div>
+                  <div className="flex gap-1.5">
+                    {[1,2,3,4,5].map(s => <span key={s} className="text-purple-400 text-xs">★</span>)}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </AnimatedSection>
+      </div>
 
-      {/* 6. Agenda */}
-      <AnimatedSection id="agenda" className="bg-surface py-16 md:py-24 px-4 md:px-6">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <div className="inline-block bg-primary text-black px-4 py-1 rounded-full text-[10px] font-black uppercase mb-6 tracking-widest">Cupos Limitados</div>
-          <h2 className="font-poppins text-3xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">{CALENDLY_SECTION.headline}</h2>
-          <p className="text-gray-400 text-base md:text-xl max-w-2xl mx-auto px-4">{CALENDLY_SECTION.copy}</p>
+      {/* SECTION 5: AGENDA (Vibrant Primary Green Accent) */}
+      <div id="agenda" className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a2005] flex items-center px-12 md:px-24">
+        <div className="glow-overlay bg-primary opacity-25"></div>
+        <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-24 items-center relative z-10">
+          <div className="w-full lg:w-2/5 space-y-12">
+            <div>
+                <div className="inline-block bg-primary/10 text-primary px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.4em] mb-8 border border-primary/30 shadow-[0_0_20px_rgba(0,220,1,0.15)]">Sesión Directa</div>
+                <h2 className="font-poppins text-4xl lg:text-6xl font-bold leading-[1.05] tracking-tight mb-8 text-white">{CALENDLY_SECTION.headline}</h2>
+                <p className="text-gray-400 text-xl leading-relaxed max-w-md">{CALENDLY_SECTION.copy}</p>
+            </div>
+            <div className="flex items-center gap-6 text-primary">
+               <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(0,220,1,0.1)]">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+               </div>
+               <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.4em]">Resultados en 30 minutos</span>
+            </div>
+          </div>
+          <div className="w-full lg:w-3/5 h-[550px] relative">
+            <div className="absolute -inset-10 bg-primary/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
+            <CalendlyEmbed />
+          </div>
         </div>
-        <div className="max-w-5xl mx-auto">
-          <CalendlyEmbed />
+      </div>
+      
+      {/* FINAL SECTION: FOOTER */}
+      <div className="horizontal-section flex items-center justify-center px-12 md:px-24 bg-black">
+        <div className="w-full max-w-5xl">
+            <Footer onNavigate={onNavigate} />
         </div>
-      </AnimatedSection>
-    </>
+      </div>
+
+    </div>
   );
 };
 
 const ServicesPage: React.FC = () => (
-  <main className="pt-24 md:pt-32 pb-16 md:pb-24">
-    <div className="max-w-5xl mx-auto px-4 md:px-6 text-center mb-16 md:mb-24">
-      <h1 className="text-4xl md:text-7xl font-poppins font-extrabold mb-6 tracking-tight leading-tight">
-        {SERVICES_PAGE_CONTENT.title}
-      </h1>
-      <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-3xl mx-auto">
-        {SERVICES_PAGE_CONTENT.intro}
-      </p>
-    </div>
-    
-    <div className="max-w-5xl mx-auto px-4 md:px-6 space-y-8 md:space-y-12">
-      {SERVICES_PAGE_CONTENT.detailedServices.map((service, index) => (
-        <AnimatedSection key={index} className="p-0">
-          <div className="glass p-6 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border border-white/5 hover:border-primary/20 transition-all group">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
-              <h2 className="text-2xl md:text-4xl font-poppins font-bold text-primary leading-tight group-hover:translate-x-2 transition-transform">{service.title}</h2>
-              <span className="bg-primary/10 border border-primary/20 px-5 py-2 rounded-full text-[10px] font-black uppercase text-primary tracking-widest whitespace-nowrap">
-                {service.time}
-              </span>
+    <div className="max-w-5xl mx-auto space-y-16">
+      <header className="text-center mb-32">
+        <h1 className="text-5xl lg:text-8xl font-poppins font-bold mb-10 tracking-tighter leading-none text-white">Nuestros Servicios</h1>
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">{SERVICES_PAGE_CONTENT.intro}</p>
+      </header>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {SERVICES_PAGE_CONTENT.detailedServices.map((service, index) => (
+          <div key={index} className="glass p-14 rounded-[4rem] border border-white/5 hover:border-primary/20 transition-all flex flex-col">
+            <div className="flex justify-between items-start mb-10">
+              <h2 className="text-3xl font-bold text-primary tracking-tight">{service.title}</h2>
+              <span className="bg-primary/5 border border-primary/20 px-5 py-2 rounded-full text-[9px] font-black uppercase text-primary tracking-widest">{service.time}</span>
             </div>
-            <p className="text-gray-300 mb-10 text-base md:text-lg leading-relaxed">{service.objective}</p>
+            <p className="text-gray-300 mb-10 text-lg leading-relaxed flex-grow">{service.objective}</p>
             <div className="space-y-6">
-              <h3 className="font-black text-xs uppercase tracking-widest text-white/40">Entregables Clave:</h3>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h3 className="font-black text-[10px] uppercase tracking-[0.4em] text-white/30">Entregables:</h3>
+              <ul className="space-y-4">
                 {service.deliverables.map((item, i) => (
-                  <li key={i} className="flex items-start gap-4 text-sm md:text-base text-gray-400 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div className="mt-1.5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_#00DC01] flex-shrink-0"></div>
+                  <li key={i} className="flex items-start gap-4 text-gray-400 text-base">
+                    <div className="mt-2.5 w-2 h-2 bg-primary/50 rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(0,220,1,0.5)]"></div>
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="mt-12">
-               <CTAButton text="RESUELVE TUS DUDAS" className="w-full sm:w-auto" />
-            </div>
           </div>
-        </AnimatedSection>
-      ))}
+        ))}
+      </div>
     </div>
-  </main>
 );
 
 const CoursesPage: React.FC = () => (
-  <main className="pt-32 pb-20 px-4 md:px-6 min-h-[80vh] flex items-center justify-center text-center">
-    <div className="max-w-2xl mx-auto">
-      <div className="text-7xl md:text-8xl mb-10 animate-pulse">🚀</div>
-      <h1 className="text-4xl md:text-6xl font-poppins font-extrabold mb-6 leading-tight">
-        {COURSES_PAGE_CONTENT.title}
-      </h1>
-      <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-md mx-auto">
-        {COURSES_PAGE_CONTENT.description}
-      </p>
-      <div className="glass p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-3xl">
-        <h4 className="font-bold text-xl mb-6">Apúntate a la lista de espera</h4>
-        <form className="flex flex-col sm:flex-row gap-4" onSubmit={(e) => e.preventDefault()}>
-          <input 
-            type="email" 
-            placeholder="Tu mejor email" 
-            className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-all text-sm"
-          />
-          <button className="bg-primary text-black font-black px-10 py-4 rounded-2xl hover:scale-105 transition-all text-sm uppercase tracking-widest shadow-xl">
-            NOTIFICARME
-          </button>
-        </form>
-      </div>
+    <div className="max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="text-9xl mb-12 opacity-40 grayscale animate-bounce">🎓</div>
+        <h1 className="text-6xl font-poppins font-bold mb-10 tracking-tighter text-white">Aprende con MitZay</h1>
+        <p className="text-xl text-gray-400 mb-16 leading-relaxed max-w-xl mx-auto">Nuestra academia gratuita está en construcción. Dominarás la IA y el Marketing Digital.</p>
+        <div className="glass p-16 rounded-[4rem] border border-white/5 w-full max-w-2xl shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-primary/5 -z-10"></div>
+            <h4 className="font-black text-[11px] uppercase tracking-[0.4em] mb-10 text-white/40">Early Access List</h4>
+            <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+              <input type="email" placeholder="Tu mejor correo electrónico" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-primary transition-all font-bold text-base" />
+              <button className="bg-primary text-black font-black px-12 py-5 rounded-2xl hover:scale-[1.02] transition-all text-[11px] uppercase tracking-[0.3em] shadow-xl">NOTIFICARME AL LANZAR</button>
+            </form>
+        </div>
     </div>
-  </main>
 );
 
 const App: React.FC = () => {
@@ -275,64 +259,54 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    const timer = setTimeout(() => setIsLoading(false), 1800);
     return () => clearTimeout(timer);
   }, []);
 
   const handleNavigate = useCallback((page: Page) => {
     setCurrentPage(page);
-    window.scrollTo(0, 0);
+    const container = document.querySelector('.snap-x');
+    if (container) container.scrollTo({ left: 0, behavior: 'smooth' });
+    
     const seo = SEO_DATA[page];
     document.title = seo.title;
     document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description);
   }, []);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  if (isLoading) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen bg-dark text-white font-sans selection:bg-primary selection:text-black overflow-x-hidden">
-      {/* Background Decor */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[160px] opacity-40"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[160px] opacity-40"></div>
-      </div>
+    <div className="h-screen w-screen bg-dark text-white font-sans selection:bg-primary selection:text-black overflow-hidden flex">
+      <Navbar 
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+        onToggleAssistant={() => setIsAssistantOpen(true)} 
+      />
+      
+      <main className="flex-1 md:ml-20 relative z-10 h-screen overflow-hidden transition-all duration-300">
+        {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
+        {currentPage !== 'home' && (
+           <div className="h-screen overflow-y-auto no-scrollbar py-28 px-16 lg:px-32 bg-black">
+              {currentPage === 'services' && <ServicesPage />}
+              {currentPage === 'courses' && <CoursesPage />}
+           </div>
+        )}
+      </main>
 
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <Navbar 
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onToggleAssistant={() => setIsAssistantOpen(true)} 
-        />
-        
-        <div className="flex-grow">
-          {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
-          {currentPage === 'services' && <ServicesPage />}
-          {currentPage === 'courses' && <CoursesPage />}
-        </div>
+      <AIAssistant isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
 
-        <Footer onNavigate={handleNavigate} />
-        
-        <AIAssistant 
-          isOpen={isAssistantOpen} 
-          onClose={() => setIsAssistantOpen(false)} 
-        />
-      </div>
-
+      {/* AI Floating Button with higher vibrancy */}
       {!isAssistantOpen && (
         <button
           onClick={() => setIsAssistantOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-black rounded-full shadow-3xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-50 animate-bounce group"
+          className="fixed bottom-12 right-12 w-16 h-16 bg-primary text-black rounded-full shadow-[0_15px_40px_rgba(0,220,1,0.4)] flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[90] animate-bounce group"
           aria-label="Hablar con IA"
         >
-          <div className="absolute -top-12 right-0 bg-white text-black text-[10px] font-black px-3 py-1 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
-             ¿CÓMO PUEDO AYUDARTE?
+          <div className="absolute -top-14 right-0 bg-white text-black text-[9px] font-black px-5 py-2.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl tracking-tighter">
+             HABLAR CON IA
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         </button>
       )}
