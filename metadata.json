@@ -1,0 +1,8 @@
+{
+  "name": "MitZay Agency - AI Marketing & Automation",
+  "description": "A high-performance digital marketing and AI automation agency platform featuring an interactive Gemini-powered assistant.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
