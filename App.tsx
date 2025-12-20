@@ -101,14 +101,12 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
         {/* SECTION 1: HERO */}
         <div className="horizontal-section flex items-center justify-center">
           <div className="glow-overlay bg-primary opacity-30"></div>
-          <div className="absolute top-12 left-12 text-[10px] font-black text-primary/30 tracking-[0.8em] hidden lg:block uppercase">01 / Inicio</div>
           <Hero />
         </div>
 
         {/* SECTION 2: QUÉ HACEMOS */}
         <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a1a35] flex items-center px-12 md:px-20">
           <div className="glow-overlay bg-blue-500 opacity-20"></div>
-          <div className="absolute top-12 left-12 text-[10px] font-black text-blue-500/30 tracking-[0.8em] hidden lg:block uppercase">02 / Ecosistema</div>
           <div className="w-full max-w-[1300px] mx-auto relative z-10">
             <header className="mb-12">
               <h2 className="text-blue-400 text-[8px] font-black tracking-[0.5em] uppercase mb-3 opacity-100">Capacidades</h2>
@@ -137,40 +135,51 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
         {/* SECTION 3: CASOS DE ÉXITO */}
         <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a251a] flex items-center px-12 md:px-24">
           <div className="glow-overlay bg-emerald-400 opacity-20"></div>
-          <div className="absolute top-12 left-12 text-[10px] font-black text-emerald-500/30 tracking-[0.8em] hidden lg:block uppercase">03 / Casos de éxito</div>
-          <div className="w-full max-w-6xl mx-auto relative z-10">
-            <header className="mb-20">
+          <div className="w-full max-w-5xl mx-auto relative z-10">
+            <header className="mb-16">
               <h2 className="text-emerald-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Pruebas de Valor</h2>
               <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Impacto Real</h3>
             </header>
-            <div className="glass p-12 lg:p-20 rounded-[4rem] border border-white/5 relative overflow-hidden flex flex-col justify-center min-h-[550px]">
+            <div className="glass p-8 lg:p-14 rounded-[3.5rem] border border-white/5 relative overflow-hidden flex flex-col justify-center min-h-[450px]">
               {CASE_STUDIES.map((study, idx) => (
-                <div key={idx} className={`flex flex-col lg:flex-row gap-20 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
-                  <div className="w-full lg:w-1/2 aspect-video rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-emerald-500/10">
-                    <img src={study.image} alt={study.alt} loading="lazy" className="w-full h-full object-cover" />
+                <div key={idx} className={`flex flex-col lg:flex-row gap-12 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
+                  {/* Container de Imagen con Controles */}
+                  <div className="w-full lg:w-1/2 relative group/image">
+                    <div className="aspect-video rounded-[2rem] overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.1)] border border-emerald-500/10">
+                      <img src={study.image} alt={study.alt} loading="lazy" className="w-full h-full object-cover" />
+                    </div>
+                    
+                    {/* Botones de navegación sobre la imagen */}
+                    <button 
+                      onClick={prevCase} 
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-4 glass rounded-full bg-black/40 hover:bg-emerald-500/20 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20 z-20 shadow-2xl backdrop-blur-md opacity-80 hover:opacity-100"
+                      aria-label="Anterior"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button 
+                      onClick={nextCase} 
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-4 glass rounded-full bg-black/40 hover:bg-emerald-500/20 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20 z-20 shadow-2xl backdrop-blur-md opacity-80 hover:opacity-100"
+                      aria-label="Siguiente"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+                    </button>
                   </div>
-                  <div className="w-full lg:w-1/2 space-y-10">
-                    <h3 className="text-3xl md:text-5xl font-poppins font-bold text-emerald-400 tracking-tight leading-[1.1]">{study.title}</h3>
-                    <p className="text-gray-400 text-lg leading-relaxed max-w-md">{study.description}</p>
-                    <div className="space-y-5">
+
+                  <div className="w-full lg:w-1/2 space-y-8">
+                    <h3 className="text-2xl md:text-4xl font-poppins font-bold text-emerald-400 tracking-tight leading-[1.1]">{study.title}</h3>
+                    <p className="text-gray-400 text-base leading-relaxed max-w-md">{study.description}</p>
+                    <div className="space-y-4">
                       {study.kpis.map((kpi, kIdx) => (
-                        <div key={kIdx} className="flex items-center gap-5">
-                          <div className="w-7 h-7 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 text-[11px] font-black shadow-[0_0_15px_rgba(16,185,129,0.2)]">✓</div>
-                          <span className="text-xl font-bold text-white/90">{kpi}</span>
+                        <div key={kIdx} className="flex items-center gap-4">
+                          <div className="w-6 h-6 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 text-[10px] font-black shadow-[0_0_12px_rgba(16,185,129,0.2)]">✓</div>
+                          <span className="text-lg font-bold text-white/90">{kpi}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
               ))}
-              <div className="flex gap-4 mt-16">
-                <button onClick={prevCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Anterior">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <button onClick={nextCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Siguiente">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -178,7 +187,6 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
         {/* SECTION 4: TESTIMONIOS */}
         <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#200a25] flex items-center px-12 md:px-24">
           <div className="glow-overlay bg-purple-500 opacity-20"></div>
-          <div className="absolute top-12 left-12 text-[10px] font-black text-purple-500/30 tracking-[0.8em] hidden lg:block uppercase">04 / Opiniones</div>
           <div className="w-full max-w-6xl mx-auto relative z-10">
             <header className="mb-24">
               <h2 className="text-purple-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Experiencias</h2>
@@ -212,7 +220,6 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
         {/* SECTION 5: AGENDA */}
         <div id="agenda" className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a2005] flex items-center px-12 md:px-24">
           <div className="glow-overlay bg-primary opacity-25"></div>
-          <div className="absolute top-12 left-12 text-[10px] font-black text-primary/30 tracking-[0.8em] hidden lg:block uppercase">05 / Agenda</div>
           <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-24 items-center relative z-10">
             <div className="w-full lg:w-2/5 space-y-12">
               <div>
@@ -236,7 +243,6 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
         
         {/* FINAL SECTION: FOOTER */}
         <div className="horizontal-section flex items-center justify-center px-12 md:px-24 bg-black">
-          <div className="absolute top-12 left-12 text-[10px] font-black text-gray-700 tracking-[0.8em] hidden lg:block uppercase">06 / Contacto</div>
           <div className="w-full max-w-5xl">
               <Footer onNavigate={onNavigate} />
           </div>
@@ -262,22 +268,6 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
             aria-label={`Ir a sección ${i + 1}`}
           />
         ))}
-      </div>
-
-      {/* ARROW NAVIGATION CLUES */}
-      <div className="fixed bottom-8 right-12 hidden xl:flex items-center gap-6 z-[100]">
-         <div className="flex flex-col items-end">
-            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Navegación</span>
-            <span className="text-[10px] font-black text-white/40 tracking-tighter">SCROLL HORIZONTAL</span>
-         </div>
-         <div className="flex gap-2">
-            <button onClick={() => scrollToSection(Math.max(0, activeSection - 1))} className="p-2 border border-white/10 rounded-lg hover:border-primary/40 transition-colors group">
-               <svg className="w-4 h-4 text-gray-500 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7"/></svg>
-            </button>
-            <button onClick={() => scrollToSection(Math.min(sectionsCount - 1, activeSection + 1))} className="p-2 border border-white/10 rounded-lg hover:border-primary/40 transition-colors group">
-               <svg className="w-4 h-4 text-gray-500 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
-            </button>
-         </div>
       </div>
     </div>
   );
