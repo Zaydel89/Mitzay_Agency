@@ -235,49 +235,49 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+    <div className="fixed inset-0 z-[200] flex justify-end">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
       
-      <div className="relative w-full max-w-md h-full glass border-l border-white/10 shadow-2xl flex flex-col animate-slide-in overflow-hidden">
+      <div className="relative w-full sm:max-w-md h-full glass border-l border-white/10 shadow-3xl flex flex-col animate-slide-in overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-white/10 flex items-center justify-between bg-surface z-10">
+        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-surface z-10">
           <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-black font-bold transition-all duration-500 ${isLiveMode ? 'bg-primary scale-110 shadow-[0_0_20px_#00DC01]' : 'bg-primary'}`}>
+            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-black font-bold transition-all duration-500 ${isLiveMode ? 'bg-primary scale-105 shadow-[0_0_20px_#00DC01]' : 'bg-primary'}`}>
               {isLiveMode ? (
                 <div className="flex gap-1">
-                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
-                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                  <span className="w-1 h-1 bg-black rounded-full animate-bounce"></span>
+                  <span className="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
                 </div>
               ) : 'MZ'}
             </div>
             <div>
-              <h3 className="font-poppins font-bold text-lg">Asistente MitZay</h3>
+              <h3 className="font-poppins font-bold text-base md:text-lg">Asistente MitZay</h3>
               <div className="flex items-center gap-2">
                 <span className={`w-2 h-2 rounded-full animate-pulse ${isMicActive ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-primary shadow-[0_0_8px_#00DC01]'}`}></span>
-                <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">
-                  {isLiveMode ? (isVisionEnabled ? 'Modo Voz y Visión' : 'Modo Voz Activo') : 'En Línea • Chat'}
+                <span className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                  {isLiveMode ? (isVisionEnabled ? 'Voz y Visión' : 'Voz Activo') : 'En Línea • Chat'}
                 </span>
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors" aria-label="Cerrar">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Messages / Video Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 relative">
+        {/* Messages Area */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 relative">
           {isLiveMode && isVisionEnabled && (
-            <div className="absolute top-0 left-0 w-full h-full bg-black z-0">
+            <div className="absolute inset-0 bg-black z-0">
               <video 
                 ref={videoRef} 
                 autoPlay 
                 muted 
                 playsInline 
-                className="w-full h-full object-cover opacity-60"
+                className="w-full h-full object-cover opacity-50"
               />
               <canvas ref={canvasRef} className="hidden" />
             </div>
@@ -286,34 +286,34 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
           {!isLiveMode ? (
             messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
-                <div className={`max-w-[85%] p-4 rounded-2xl ${
+                <div className={`max-w-[90%] md:max-w-[85%] p-4 rounded-2xl ${
                   msg.role === 'user' 
-                  ? 'bg-primary text-black font-medium rounded-tr-none shadow-lg' 
-                  : 'bg-white/5 border border-white/10 text-gray-200 rounded-tl-none backdrop-blur-md'
+                  ? 'bg-primary text-black font-semibold rounded-tr-none shadow-lg' 
+                  : 'bg-white/5 border border-white/10 text-gray-100 rounded-tl-none backdrop-blur-md'
                 }`}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                  <span className="text-[10px] opacity-40 mt-2 block">
+                  <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  <span className="text-[9px] opacity-40 mt-2 block">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center space-y-8 animate-pulse relative z-10">
+            <div className="h-full flex flex-col items-center justify-center text-center space-y-8 animate-pulse relative z-10 px-4">
               {!isVisionEnabled && (
-                <div className="w-32 h-32 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center relative">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center relative">
                   <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping"></div>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 md:h-12 md:w-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
                 </div>
               )}
-              <div>
-                <h4 className="text-xl font-poppins font-bold text-white shadow-sm">
-                  {isVisionEnabled ? 'Viendo a través de tu cámara...' : 'Estoy escuchando...'}
+              <div className="bg-black/40 backdrop-blur-md p-6 rounded-3xl border border-white/5">
+                <h4 className="text-lg md:text-xl font-poppins font-bold text-white">
+                  {isVisionEnabled ? 'Viendo tu cámara...' : 'Te escucho...'}
                 </h4>
-                <p className="text-gray-300 text-sm mt-2 drop-shadow-md">
-                  Habla con total libertad sobre tu negocio.
+                <p className="text-gray-300 text-xs md:text-sm mt-2">
+                  Habla naturalmente sobre tu proyecto.
                 </p>
               </div>
             </div>
@@ -321,26 +321,26 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
           
           {isTyping && !isLiveMode && (
             <div className="flex justify-start relative z-10">
-              <div className="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-tl-none">
+              <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none">
                 <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 bg-primary/50 rounded-full animate-bounce"></div>
-                  <div className="w-1.5 h-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                  <div className="w-1.5 h-1.5 bg-primary/50 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></div>
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></div>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Input */}
-        <div className="p-6 border-t border-white/10 bg-surface z-10">
+        {/* Input Area */}
+        <div className="p-4 md:p-6 border-t border-white/10 bg-surface z-10">
           {!isLiveMode ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setIsVisionEnabled(!isVisionEnabled)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all ${isVisionEnabled ? 'bg-primary text-black border-primary shadow-[0_0_10px_#00DC01]' : 'glass border-white/10 text-gray-400 hover:text-white'}`}
-                  title={isVisionEnabled ? "Cámara Activada" : "Cámara Desactivada"}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all ${isVisionEnabled ? 'bg-primary text-black border-primary' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                  aria-label="Cámara"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -348,29 +348,28 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                 </button>
                 <button 
                   onClick={startLiveMode}
-                  className="flex-1 h-12 bg-primary/10 border border-primary/30 text-primary rounded-full flex items-center justify-center gap-2 hover:bg-primary/20 transition-all font-bold text-sm tracking-wide"
-                  title="Modo Voz"
+                  className="flex-1 h-12 bg-primary/20 border border-primary/40 text-primary rounded-2xl flex items-center justify-center gap-2 hover:bg-primary/30 transition-all font-black text-xs uppercase tracking-widest"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
-                  HABLAR AHORA
+                  Hablar con MitZay
                 </button>
               </div>
 
-              <div className="relative">
+              <div className="relative group">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Escribe tu mensaje..."
-                  className="w-full bg-white/5 border border-white/10 rounded-full py-3.5 pl-6 pr-12 focus:outline-none focus:border-primary/50 transition-colors text-sm"
+                  placeholder="Escribe tu duda aquí..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-5 pr-14 focus:outline-none focus:border-primary/50 transition-colors text-sm"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || isTyping}
-                  className="absolute right-1.5 top-1.5 w-9 h-9 bg-primary text-black rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                  className="absolute right-2 top-2 w-10 h-10 bg-primary text-black rounded-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95 disabled:opacity-30"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
@@ -382,12 +381,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
             <div className="flex flex-col items-center gap-4">
               <button 
                 onClick={stopLiveMode}
-                className="w-full py-4 bg-red-500/10 border border-red-500/30 text-red-500 font-bold rounded-2xl hover:bg-red-500 hover:text-white transition-all group flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(239,68,68,0.1)]"
+                className="w-full py-5 bg-red-600/20 border border-red-600/40 text-red-500 font-black rounded-2xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-3 shadow-lg"
               >
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse group-hover:bg-white"></div>
-                TERMINAR CONVERSACIÓN
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                SALIR DEL MODO VOZ
               </button>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">MitZay Real-Time Experience</p>
+              <p className="text-[9px] text-gray-600 uppercase tracking-[0.3em] font-black">Powered by Gemini Real-Time</p>
             </div>
           )}
         </div>
@@ -399,7 +398,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
           to { transform: translateX(0); }
         }
         .animate-slide-in {
-          animation: slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
       `}</style>
     </div>

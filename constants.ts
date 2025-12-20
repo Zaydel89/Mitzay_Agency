@@ -25,9 +25,9 @@ export const SEO_DATA: Record<Page, { title: string; description: string }> = {
 };
 
 export const HERO_CONTENT = {
-  h1: "Transforma tu presencia digital con IA.",
-  h1_mobile: "Transforma tu digital con IA.",
-  subheadline: "En MitZay Agency combinamos diseño web, contenido con IA y automatización para que tu negocio crezca sin perseguir tareas diarias. Reserva una videollamada y recibe un plan claro y personalizado para convertir visitas en clientes.",
+  h1: "Convierte tu presencia digital en ingresos recurrentes con IA",
+  h1_mobile: "Potencia tu digital con IA.",
+  subheadline: "Diseño web + IA + automatización que potencia tus ventas. Agenda una videollamada y recibe un plan personalizado para convertir tráfico en clientes reales.",
   cta: "RESUELVE TUS DUDAS",
 };
 
@@ -44,7 +44,7 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "diseno-web",
     title: "Diseño Web",
     description: "Creamos sitios que convierten: estructuras claras, velocidad óptima y experiencia móvil impecable. Diseños minimalistas en fondo oscuro que resaltan tu propuesta de valor y facilitan la conversión.",
-    image: "https://res.cloudinary.com/doekgaljv/image/upload/v1760588109/laptop-6332544_640_iw7wx6.jpg",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800",
     alt: "Interfaz de un sitio web moderno y minimalista en una pantalla de laptop, con un esquema de color oscuro.",
     icon: "💻",
     features: ["Optimización SEO", "Diseño Adaptable", "Velocidad de Carga"]
@@ -53,7 +53,7 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "contenido-ia",
     title: "Contenido con IA para redes",
     description: "Generamos contenidos con IA: captions con intención, guiones para reels y creativos listos para publicar. Alineamos tono y formato para maximizar alcance y conversión.",
-    image: "https://res.cloudinary.com/doekgaljv/image/upload/v1760588108/ai-generated-7840717_640_di10dx.jpg",
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
     alt: "Visualización de datos y texto generados por inteligencia artificial en un HUD futurista.",
     icon: "🤖",
     features: ["Guiones Persuasivos", "Copys Optimizados", "Estrategia Visual"]
@@ -62,7 +62,7 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "redes-sociales",
     title: "Manejo de redes sociales",
     description: "Estrategia, calendario y ejecución: publicaciones, interacción y campañas que posicionan tu marca y generan resultados medibles con reportes claros.",
-    image: "https://res.cloudinary.com/doekgaljv/image/upload/v1760588109/mobile-phone-1917737_640_k5bt1b.jpg",
+    image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=800",
     alt: "Un dashboard de analíticas de redes sociales mostrando crecimiento y engagement en un tablet.",
     icon: "📱",
     features: ["Gestión de Comunidad", "Análisis de Datos", "Crecimiento Orgánico"]
@@ -71,7 +71,7 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "automatizacion-ia",
     title: "Automatización de flujos con IA",
     description: "Automatizamos onboarding, respuestas y seguimiento para que tu equipo enfoque tiempo en lo que importa: cerrar ventas y fidelizar clientes.",
-    image: "https://res.cloudinary.com/doekgaljv/image/upload/v1760588109/cyber-brain-7633488_640_jz1txg.jpg",
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800",
     alt: "Un diagrama de flujo complejo que ilustra un proceso de negocio automatizado con nodos brillantes.",
     icon: "⚙️",
     features: ["Onboarding Automático", "Lead Scoring", "Integraciones Smart"]
