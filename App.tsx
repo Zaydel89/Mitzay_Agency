@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import AIAssistant from './components/AIAssistant';
 import Footer from './components/Footer';
+import LoadingScreen from './components/LoadingScreen';
 import { Page, DetailedService } from './types';
 import { 
   SEO_DATA, 
@@ -252,6 +253,15 @@ const CoursesPage: React.FC = () => (
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simular carga inicial de assets e IA
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleNavigate = useCallback((page: Page) => {
     setCurrentPage(page);
@@ -260,6 +270,10 @@ const App: React.FC = () => {
     document.title = seo.title;
     document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description);
   }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-dark text-white font-sans selection:bg-primary selection:text-black">
