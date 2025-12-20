@@ -39,10 +39,34 @@ const CalendlyEmbed = () => {
 
 const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }) => {
   const [currentCaseSlide, setCurrentCaseSlide] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeSection, setActiveSection] = useState(0);
   const horizontalScrollRef = useRef<HTMLDivElement>(null);
 
   const nextCase = () => setCurrentCaseSlide((prev) => (prev + 1) % CASE_STUDIES.length);
   const prevCase = () => setCurrentCaseSlide((prev) => (prev - 1 + CASE_STUDIES.length) % CASE_STUDIES.length);
+
+  // Handle scroll progress and active section tracking
+  const handleScroll = useCallback(() => {
+    const el = horizontalScrollRef.current;
+    if (el) {
+      const progress = (el.scrollLeft / (el.scrollWidth - el.clientWidth)) * 100;
+      setScrollProgress(progress);
+      
+      const sectionIndex = Math.round(el.scrollLeft / el.clientWidth);
+      setActiveSection(sectionIndex);
+    }
+  }, []);
+
+  const scrollToSection = (index: number) => {
+    const el = horizontalScrollRef.current;
+    if (el) {
+      el.scrollTo({
+        left: el.clientWidth * index,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     const el = horizontalScrollRef.current;
@@ -57,151 +81,204 @@ const HomePage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }
         });
       };
       el.addEventListener('wheel', onWheel, { passive: false });
-      return () => el.removeEventListener('wheel', onWheel);
+      el.addEventListener('scroll', handleScroll);
+      return () => {
+        el.removeEventListener('wheel', onWheel);
+        el.removeEventListener('scroll', handleScroll);
+      };
     }
-  }, []);
+  }, [handleScroll]);
+
+  const sectionsCount = 6; // Hero, Ecosistema, Casos, Testimonios, Agenda, Footer
 
   return (
-    <div ref={horizontalScrollRef} className="flex h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar bg-black">
-      
-      {/* SECTION 1: HERO */}
-      <div className="horizontal-section flex items-center justify-center">
-        <div className="glow-overlay bg-primary opacity-30"></div>
-        <Hero />
-      </div>
-
-      {/* SECTION 2: QUÉ HACEMOS (Vibrant Blue/Indigo Accent) */}
-      <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a1a35] flex items-center px-12 md:px-24">
-        <div className="glow-overlay bg-blue-500 opacity-20"></div>
-        <div className="w-full max-w-6xl mx-auto relative z-10">
-          <header className="mb-20">
-            <h2 className="text-blue-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Capacidades</h2>
-            <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Nuestro Ecosistema</h3>
-          </header>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {SERVICES_OVERVIEW.map((service, index) => (
-              <div key={index} className="glass p-10 rounded-[3rem] border border-white/5 hover:border-blue-500/40 transition-all flex flex-col group min-h-[460px]">
-                <div className="overflow-hidden rounded-2xl mb-8 aspect-square relative border border-white/5">
-                  <div className="absolute inset-0 bg-blue-600/10 group-hover:bg-transparent transition-colors z-10"></div>
-                  <img src={service.image} alt={service.alt} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80 group-hover:opacity-100" />
-                </div>
-                <h3 className="font-poppins text-lg font-bold text-blue-400 mb-4 tracking-tight group-hover:text-white transition-colors">{service.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">{service.description}</p>
-                <div className="pt-6 border-t border-white/5 flex flex-wrap gap-2">
-                   {service.features.slice(0, 2).map((f, i) => (
-                     <span key={i} className="text-[8px] text-gray-500 border border-white/10 px-3 py-1.5 rounded-full uppercase tracking-widest font-black">{f}</span>
-                   ))}
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="relative h-screen w-full overflow-hidden bg-black">
+      <div 
+        ref={horizontalScrollRef} 
+        className="flex h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar bg-black"
+      >
+        
+        {/* SECTION 1: HERO */}
+        <div className="horizontal-section flex items-center justify-center">
+          <div className="glow-overlay bg-primary opacity-30"></div>
+          <div className="absolute top-12 left-12 text-[10px] font-black text-primary/30 tracking-[0.8em] hidden lg:block uppercase">01 / Inicio</div>
+          <Hero />
         </div>
-      </div>
 
-      {/* SECTION 3: CASOS DE ÉXITO (Vibrant Emerald/Cyan Accent) */}
-      <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a251a] flex items-center px-12 md:px-24">
-        <div className="glow-overlay bg-emerald-400 opacity-20"></div>
-        <div className="w-full max-w-6xl mx-auto relative z-10">
-          <header className="mb-20">
-            <h2 className="text-emerald-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Pruebas de Valor</h2>
-            <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Impacto Real</h3>
-          </header>
-          <div className="glass p-12 lg:p-20 rounded-[4rem] border border-white/5 relative overflow-hidden flex flex-col justify-center min-h-[550px]">
-            {CASE_STUDIES.map((study, idx) => (
-              <div key={idx} className={`flex flex-col lg:flex-row gap-20 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
-                <div className="w-full lg:w-1/2 aspect-video rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-emerald-500/10">
-                  <img src={study.image} alt={study.alt} loading="lazy" className="w-full h-full object-cover" />
-                </div>
-                <div className="w-full lg:w-1/2 space-y-10">
-                  <h3 className="text-3xl md:text-5xl font-poppins font-bold text-emerald-400 tracking-tight leading-[1.1]">{study.title}</h3>
-                  <p className="text-gray-400 text-lg leading-relaxed max-w-md">{study.description}</p>
-                  <div className="space-y-5">
-                    {study.kpis.map((kpi, kIdx) => (
-                      <div key={kIdx} className="flex items-center gap-5">
-                        <div className="w-7 h-7 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 text-[11px] font-black shadow-[0_0_15px_rgba(16,185,129,0.2)]">✓</div>
-                        <span className="text-xl font-bold text-white/90">{kpi}</span>
-                      </div>
-                    ))}
+        {/* SECTION 2: QUÉ HACEMOS */}
+        <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a1a35] flex items-center px-12 md:px-20">
+          <div className="glow-overlay bg-blue-500 opacity-20"></div>
+          <div className="absolute top-12 left-12 text-[10px] font-black text-blue-500/30 tracking-[0.8em] hidden lg:block uppercase">02 / Ecosistema</div>
+          <div className="w-full max-w-[1300px] mx-auto relative z-10">
+            <header className="mb-12">
+              <h2 className="text-blue-400 text-[8px] font-black tracking-[0.5em] uppercase mb-3 opacity-100">Capacidades</h2>
+              <h3 className="font-poppins text-3xl lg:text-4xl font-bold tracking-tight leading-none text-white">Nuestro Ecosistema</h3>
+            </header>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {SERVICES_OVERVIEW.map((service, index) => (
+                <div key={index} className="glass p-6 md:p-7 rounded-[2.5rem] border border-white/5 hover:border-blue-500/40 transition-all flex flex-col group min-h-[360px]">
+                  <div className="overflow-hidden rounded-xl mb-6 aspect-[16/9] relative border border-white/5 shadow-inner">
+                    <div className="absolute inset-0 bg-blue-600/5 group-hover:bg-transparent transition-colors z-10"></div>
+                    <img src={service.image} alt={service.alt} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80 group-hover:opacity-100" />
+                  </div>
+                  <h3 className="font-poppins text-lg font-bold text-blue-400 mb-3 tracking-tight group-hover:text-white transition-colors">{service.title}</h3>
+                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-5 flex-grow line-clamp-4">{service.description}</p>
+                  <div className="pt-5 border-t border-white/5 flex flex-wrap gap-1.5">
+                     {service.features.slice(0, 3).map((f, i) => (
+                       <span key={i} className="text-[7px] text-gray-500 border border-white/10 px-2 py-1 rounded-full uppercase tracking-widest font-black group-hover:border-blue-500/20 transition-colors">{f}</span>
+                     ))}
                   </div>
                 </div>
-              </div>
-            ))}
-            <div className="flex gap-4 mt-16">
-              <button onClick={prevCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Anterior">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
-              </button>
-              <button onClick={nextCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Siguiente">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
-              </button>
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* SECTION 4: TESTIMONIOS (Vibrant Purple/Pink Accent) */}
-      <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#200a25] flex items-center px-12 md:px-24">
-        <div className="glow-overlay bg-purple-500 opacity-20"></div>
-        <div className="w-full max-w-6xl mx-auto relative z-10">
-          <header className="mb-24">
-            <h2 className="text-purple-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Experiencias</h2>
-            <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Lo que dicen</h3>
-          </header>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="glass p-12 rounded-[3.5rem] border border-white/5 flex flex-col relative pt-28 mt-12 group hover:bg-white/[0.02]">
-                <div className="absolute top-0 left-12 -translate-y-1/2 w-24 h-24 rounded-[2rem] overflow-hidden border-4 border-black shadow-2xl z-10 transition-all group-hover:scale-105 group-hover:rotate-0 rotate-2 duration-500">
-                  <img src={t.image} alt={t.name} loading="lazy" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute top-10 right-12 text-8xl text-purple-500/10 font-serif leading-none select-none">“</div>
-                <p className="text-gray-300 italic mb-10 leading-relaxed text-base md:text-lg">
-                  "{t.quote.split(t.highlight)[0]}<span className="text-purple-400 not-italic font-black border-b-2 border-purple-400/20 pb-0.5">{t.highlight}</span>{t.quote.split(t.highlight)[1]}"
-                </p>
-                <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-white text-xl tracking-tight">{t.name}</p>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-black">{t.title}</p>
+        {/* SECTION 3: CASOS DE ÉXITO */}
+        <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a251a] flex items-center px-12 md:px-24">
+          <div className="glow-overlay bg-emerald-400 opacity-20"></div>
+          <div className="absolute top-12 left-12 text-[10px] font-black text-emerald-500/30 tracking-[0.8em] hidden lg:block uppercase">03 / Casos de éxito</div>
+          <div className="w-full max-w-6xl mx-auto relative z-10">
+            <header className="mb-20">
+              <h2 className="text-emerald-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Pruebas de Valor</h2>
+              <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Impacto Real</h3>
+            </header>
+            <div className="glass p-12 lg:p-20 rounded-[4rem] border border-white/5 relative overflow-hidden flex flex-col justify-center min-h-[550px]">
+              {CASE_STUDIES.map((study, idx) => (
+                <div key={idx} className={`flex flex-col lg:flex-row gap-20 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
+                  <div className="w-full lg:w-1/2 aspect-video rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-emerald-500/10">
+                    <img src={study.image} alt={study.alt} loading="lazy" className="w-full h-full object-cover" />
                   </div>
-                  <div className="flex gap-1.5">
-                    {[1,2,3,4,5].map(s => <span key={s} className="text-purple-400 text-xs">★</span>)}
+                  <div className="w-full lg:w-1/2 space-y-10">
+                    <h3 className="text-3xl md:text-5xl font-poppins font-bold text-emerald-400 tracking-tight leading-[1.1]">{study.title}</h3>
+                    <p className="text-gray-400 text-lg leading-relaxed max-w-md">{study.description}</p>
+                    <div className="space-y-5">
+                      {study.kpis.map((kpi, kIdx) => (
+                        <div key={kIdx} className="flex items-center gap-5">
+                          <div className="w-7 h-7 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 text-[11px] font-black shadow-[0_0_15px_rgba(16,185,129,0.2)]">✓</div>
+                          <span className="text-xl font-bold text-white/90">{kpi}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              ))}
+              <div className="flex gap-4 mt-16">
+                <button onClick={prevCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Anterior">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button onClick={nextCase} className="p-5 glass rounded-full hover:bg-emerald-500/10 text-emerald-400 transition-all active:scale-90 border border-emerald-500/20" aria-label="Siguiente">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+                </button>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 5: AGENDA (Vibrant Primary Green Accent) */}
-      <div id="agenda" className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a2005] flex items-center px-12 md:px-24">
-        <div className="glow-overlay bg-primary opacity-25"></div>
-        <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-24 items-center relative z-10">
-          <div className="w-full lg:w-2/5 space-y-12">
-            <div>
-                <div className="inline-block bg-primary/10 text-primary px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.4em] mb-8 border border-primary/30 shadow-[0_0_20px_rgba(0,220,1,0.15)]">Sesión Directa</div>
-                <h2 className="font-poppins text-4xl lg:text-6xl font-bold leading-[1.05] tracking-tight mb-8 text-white">{CALENDLY_SECTION.headline}</h2>
-                <p className="text-gray-400 text-xl leading-relaxed max-w-md">{CALENDLY_SECTION.copy}</p>
-            </div>
-            <div className="flex items-center gap-6 text-primary">
-               <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(0,220,1,0.1)]">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-               </div>
-               <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.4em]">Resultados en 30 minutos</span>
             </div>
           </div>
-          <div className="w-full lg:w-3/5 h-[550px] relative">
-            <div className="absolute -inset-10 bg-primary/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
-            <CalendlyEmbed />
+        </div>
+
+        {/* SECTION 4: TESTIMONIOS */}
+        <div className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#200a25] flex items-center px-12 md:px-24">
+          <div className="glow-overlay bg-purple-500 opacity-20"></div>
+          <div className="absolute top-12 left-12 text-[10px] font-black text-purple-500/30 tracking-[0.8em] hidden lg:block uppercase">04 / Opiniones</div>
+          <div className="w-full max-w-6xl mx-auto relative z-10">
+            <header className="mb-24">
+              <h2 className="text-purple-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4 opacity-100">Experiencias</h2>
+              <h3 className="font-poppins text-4xl lg:text-5xl font-bold tracking-tight leading-none text-white">Lo que dicen</h3>
+            </header>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-14">
+              {TESTIMONIALS.map((t, i) => (
+                <div key={i} className="glass p-12 rounded-[3.5rem] border border-white/5 flex flex-col relative pt-28 mt-12 group hover:bg-white/[0.02]">
+                  <div className="absolute top-0 left-12 -translate-y-1/2 w-24 h-24 rounded-[2rem] overflow-hidden border-4 border-black shadow-2xl z-10 transition-all group-hover:scale-105 group-hover:rotate-0 rotate-2 duration-500">
+                    <img src={t.image} alt={t.name} loading="lazy" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="absolute top-10 right-12 text-8xl text-purple-500/10 font-serif leading-none select-none">“</div>
+                  <p className="text-gray-300 italic mb-10 leading-relaxed text-base md:text-lg">
+                    "{t.quote.split(t.highlight)[0]}<span className="text-purple-400 not-italic font-black border-b-2 border-purple-400/20 pb-0.5">{t.highlight}</span>{t.quote.split(t.highlight)[1]}"
+                  </p>
+                  <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-white text-xl tracking-tight">{t.name}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-black">{t.title}</p>
+                    </div>
+                    <div className="flex gap-1.5">
+                      {[1,2,3,4,5].map(s => <span key={s} className="text-purple-400 text-xs">★</span>)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* FINAL SECTION: FOOTER */}
-      <div className="horizontal-section flex items-center justify-center px-12 md:px-24 bg-black">
-        <div className="w-full max-w-5xl">
-            <Footer onNavigate={onNavigate} />
+
+        {/* SECTION 5: AGENDA */}
+        <div id="agenda" className="horizontal-section bg-gradient-to-br from-black via-[#050505] to-[#0a2005] flex items-center px-12 md:px-24">
+          <div className="glow-overlay bg-primary opacity-25"></div>
+          <div className="absolute top-12 left-12 text-[10px] font-black text-primary/30 tracking-[0.8em] hidden lg:block uppercase">05 / Agenda</div>
+          <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-24 items-center relative z-10">
+            <div className="w-full lg:w-2/5 space-y-12">
+              <div>
+                  <div className="inline-block bg-primary/10 text-primary px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.4em] mb-8 border border-primary/30 shadow-[0_0_20px_rgba(0,220,1,0.15)]">Sesión Directa</div>
+                  <h2 className="font-poppins text-4xl lg:text-6xl font-bold leading-[1.05] tracking-tight mb-8 text-white">{CALENDLY_SECTION.headline}</h2>
+                  <p className="text-gray-400 text-xl leading-relaxed max-w-md">{CALENDLY_SECTION.copy}</p>
+              </div>
+              <div className="flex items-center gap-6 text-primary">
+                 <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(0,220,1,0.1)]">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                 </div>
+                 <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.4em]">Resultados en 30 minutos</span>
+              </div>
+            </div>
+            <div className="w-full lg:w-3/5 h-[550px] relative">
+              <div className="absolute -inset-10 bg-primary/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
+              <CalendlyEmbed />
+            </div>
+          </div>
         </div>
+        
+        {/* FINAL SECTION: FOOTER */}
+        <div className="horizontal-section flex items-center justify-center px-12 md:px-24 bg-black">
+          <div className="absolute top-12 left-12 text-[10px] font-black text-gray-700 tracking-[0.8em] hidden lg:block uppercase">06 / Contacto</div>
+          <div className="w-full max-w-5xl">
+              <Footer onNavigate={onNavigate} />
+          </div>
+        </div>
+
       </div>
 
+      {/* HORIZONTAL PROGRESS INDICATORS */}
+      <div className="fixed bottom-0 left-0 w-full h-1 bg-white/5 z-[100] md:left-20 md:w-[calc(100%-5rem)]">
+        <div 
+          className="h-full bg-primary shadow-[0_0_15px_#00DC01] transition-all duration-300 ease-out"
+          style={{ width: `${scrollProgress}%` }}
+        ></div>
+      </div>
+
+      {/* FLOATING DOT NAVIGATION */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 py-3 glass rounded-full border border-white/10 z-[100] scale-90 md:scale-100">
+        {Array.from({ length: sectionsCount }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToSection(i)}
+            className={`w-2 h-2 rounded-full transition-all duration-500 ${activeSection === i ? 'bg-primary w-8 shadow-[0_0_10px_#00DC01]' : 'bg-white/20 hover:bg-white/40'}`}
+            aria-label={`Ir a sección ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* ARROW NAVIGATION CLUES */}
+      <div className="fixed bottom-8 right-12 hidden xl:flex items-center gap-6 z-[100]">
+         <div className="flex flex-col items-end">
+            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Navegación</span>
+            <span className="text-[10px] font-black text-white/40 tracking-tighter">SCROLL HORIZONTAL</span>
+         </div>
+         <div className="flex gap-2">
+            <button onClick={() => scrollToSection(Math.max(0, activeSection - 1))} className="p-2 border border-white/10 rounded-lg hover:border-primary/40 transition-colors group">
+               <svg className="w-4 h-4 text-gray-500 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <button onClick={() => scrollToSection(Math.min(sectionsCount - 1, activeSection + 1))} className="p-2 border border-white/10 rounded-lg hover:border-primary/40 transition-colors group">
+               <svg className="w-4 h-4 text-gray-500 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
+            </button>
+         </div>
+      </div>
     </div>
   );
 };
@@ -265,8 +342,8 @@ const App: React.FC = () => {
 
   const handleNavigate = useCallback((page: Page) => {
     setCurrentPage(page);
-    const container = document.querySelector('.snap-x');
-    if (container) container.scrollTo({ left: 0, behavior: 'smooth' });
+    // When navigating internally to a page that isn't the horizontal scroll home,
+    // we don't need to scroll the snap container.
     
     const seo = SEO_DATA[page];
     document.title = seo.title;
