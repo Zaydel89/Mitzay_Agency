@@ -5,7 +5,6 @@ import Hero from './components/Hero';
 import AIAssistant from './components/AIAssistant';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
-import WhatsAppButton from './components/WhatsAppButton';
 import AnimatedSection from './components/AnimatedSection';
 import { Page } from './types';
 import { 
@@ -573,7 +572,6 @@ const App: React.FC = () => {
       </main>
 
       <AIAssistant isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
-      <WhatsAppButton />
 
       {!isAssistantOpen && (
         <button

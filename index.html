@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
   <head>
@@ -7,6 +8,11 @@
     <title>MitZay Agency | Marketing Digital y Automatización con IA</title>
     <meta name="description" content="Transforma tu negocio con MitZay Agency. Ofrecemos diseño web, contenido con IA y automatización para escalar tu presencia digital de forma recurrente." />
     
+    <!-- Polyfill para process.env (Evita el error 'process is not defined' en Netlify) -->
+    <script>
+      window.process = { env: { API_KEY: "" } };
+    </script>
+
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="MitZay Agency | Marketing Digital con IA" />
@@ -74,7 +80,6 @@
         font-family: 'Inter', sans-serif;
       }
 
-      /* FONDO OPTIMIZADO: Gradiente Animado con la paleta solicitada */
       .services-gradient-bg {
         background: linear-gradient(-45deg, #00ff00, #008a00, #010547, #050f9c, #e35300, #b50d88);
         background-size: 400% 400%;
@@ -88,7 +93,6 @@
         100% { background-position: 0% 50%; }
       }
 
-      /* ESTILOS ESPECÍFICOS PARA PÁGINA DE CURSOS (Header Animado) */
       .large-header {
         position: absolute;
         width: 100%;
@@ -110,7 +114,6 @@
         text-align: center;
         top: 50%;
         left: 50%;
-        /* Desplazamos un 5% adicional a la izquierda (-55% en lugar de -50%) */
         -webkit-transform: translate3d(-55%,-50%,0);
         transform: translate3d(-55%,-50%,0);
         z-index: 2;
@@ -131,7 +134,6 @@
       @media only screen and (max-width : 768px) {
         .demo-1 .main-title {
           font-size: 0.8rem;
-          /* En móvil, volvemos al 50% ya que no suele haber barra lateral */
           -webkit-transform: translate3d(-50%,-50%,0);
           transform: translate3d(-50%,-50%,0);
         }
@@ -157,7 +159,6 @@
         overflow: hidden;
       }
 
-      /* Fly-in Effect Styles */
       @keyframes switch {
         0% { opacity: 0; filter: blur(20px); transform: scale(4); }
         5% { opacity: 1; filter: blur(0); transform: scale(1); }
@@ -213,30 +214,6 @@
       #fly-in div:nth-child(4) { animation-delay: 9s; }
       #fly-in div:nth-child(5) { animation-delay: 12s; }
 
-      .sticky-button {
-        position: fixed;
-        bottom: 48px;
-        right: 128px;
-        z-index: 95;
-        width: 52px;
-        height: 52px;
-      }
-      
-      .sticky-chat {
-        position: fixed;
-        bottom: 124px;
-        right: 128px;
-        width: 320px;
-        z-index: 96;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: translateY(20px) scale(0.95);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
-      
-      .chat-menu:checked ~ .sticky-chat { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0) scale(1); }
-
       @media (max-width: 768px) {
         body { overflow-y: auto; overflow-x: hidden; height: auto; }
         .horizontal-section { min-width: 100vw; height: auto; padding-top: 4rem; padding-bottom: 4rem; }
@@ -255,5 +232,7 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Carga del módulo principal de la aplicación -->
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>
