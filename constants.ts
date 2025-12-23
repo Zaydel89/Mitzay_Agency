@@ -1,4 +1,3 @@
-
 import type { Page, NavLink, Service, Testimonial, CaseStudy, DetailedService } from './types';
 
 export const NAV_LINKS: NavLink[] = [
@@ -43,7 +42,7 @@ export const SERVICES_OVERVIEW: Service[] = [
   {
     id: "diseno-web",
     title: "Diseño Web",
-    description: "Creamos sitios que convierten: estructuras claras, velocidad óptima y experiencia móvil impecable. Diseños minimalistas en fondo oscuro que resaltan tu propuesta de valor y facilitan la conversión.",
+    description: "Creamos sitios que Convierten: Estructuras claras, Velocidad óptima y Experiencia móvil impecable.",
     image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800",
     alt: "Interfaz de un sitio web moderno y minimalista en una pantalla de laptop, con un esquema de color oscuro.",
     icon: "💻",
@@ -52,7 +51,7 @@ export const SERVICES_OVERVIEW: Service[] = [
   {
     id: "contenido-ia",
     title: "Contenido con IA para redes",
-    description: "Generamos contenidos con IA: captions con intención, guiones para reels y creativos listos para publicar. Alineamos tono y formato para maximizar alcance y conversión.",
+    description: "Generamos contenido con IA: Captions con Intención, Reels Impactantes y Creativos. Alineamos tono y formato para maximizar Alcance y Conversión.",
     image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
     alt: "Visualización de datos y texto generados por inteligencia artificial en un HUD futurista.",
     icon: "🤖",
@@ -61,7 +60,7 @@ export const SERVICES_OVERVIEW: Service[] = [
   {
     id: "redes-sociales",
     title: "Manejo de redes sociales",
-    description: "Estrategia, calendario y ejecución: publicaciones, interacción y campañas que posicionan tu marca y generan resultados medibles con reportes claros.",
+    description: "Estrategia, Calendario y Ejecución: Publicaciones, Interacción y Campañas que Posicionan tu marca y Generan resultados medibles con reportes claros.",
     image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=800",
     alt: "Un dashboard de analíticas de redes sociales mostrando crecimiento y engagement en un tablet.",
     icon: "📱",
@@ -70,7 +69,7 @@ export const SERVICES_OVERVIEW: Service[] = [
   {
     id: "automatizacion-ia",
     title: "Automatización de flujos con IA",
-    description: "Automatizamos onboarding, respuestas y seguimiento para que tu equipo enfoque tiempo en lo que importa: cerrar ventas y fidelizar clientes.",
+    description: "Automatizamos Onboarding, Respuestas y Seguimiento para que tu equipo enfoque su tiempo en lo que importa: Cerrar Ventas y Fidelizar Clientes.",
     image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800",
     alt: "Un diagrama de flujo complejo que ilustra un proceso de negocio automatizado con nodos brillantes.",
     icon: "⚙️",
@@ -91,18 +90,39 @@ export const VIDEOBLOG_PLACEHOLDER = {
 
 export const CASE_STUDIES: CaseStudy[] = [
     {
-        title: "E-commerce de Moda",
+        title: "E-commerce Moderno",
         description: "Automatización de atención al cliente y campañas de retargeting con IA, resultando en un aumento significativo de la tasa de conversión.",
         kpis: ["+45% en Ventas", "+30% Retención de Clientes", "-60% Tiempo de Respuesta"],
-        image: "https://picsum.photos/seed/case1/800/600",
-        alt: "Gráficos de crecimiento de ventas para un e-commerce de moda."
+        image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766460145/InShot_20251222_212113614_sje2id.mp4",
+        alt: "Visualización dinámica de crecimiento para un e-commerce moderno."
     },
     {
         title: "Startup SaaS",
         description: "Rediseño web enfocado en UX y creación de contenido de valor para blog, posicionando a la marca como líder en su nicho.",
-        kpis: ["+300% Tráfico Orgánico", "+70% Leads Calificados", "Top 3 en Google para Keywords Clave"],
-        image: "https://picsum.photos/seed/case2/800/600",
-        alt: "Interfaz de una aplicación SaaS mostrando un dashboard de análisis."
+        kpis: ["+300% Tráfico Orgánico", "+70% Leads Calificados", "Top 3 en Google"],
+        image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766461932/InShot_20251222_215114178_jykvrc.mp4",
+        alt: "Interfaz de una aplicación SaaS mostrando un dashboard de análisis dinámico."
+    },
+    {
+        title: "Landing Page",
+        description: "Arquitectura de persuasión y diseño de alta conversión para lanzamientos de productos digitales, maximizando el ROI en tiempo récord.",
+        kpis: ["+120% Conversión", "Carga en < 1.1s", "+40% en ROAS"],
+        image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766457136/InShot_20251222_201739624_mfwbrg.mp4",
+        alt: "Visualización dinámica de una landing page de alta conversión."
+    },
+    {
+        title: "Campañas Orgánicas en Redes Sociales",
+        description: "Estrategia viral basada en contenido generado por IA y tendencias algorítmicas, logrando un crecimiento explosivo sin pauta publicitaria.",
+        kpis: ["+500k Alcance", "+25k Seguidores", "12% Engagement Rate"],
+        image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766463452/InShot_20251222_221304574_hvpcco.mp4",
+        alt: "Impacto visual dinámico de crecimiento viral en redes sociales."
+    },
+    {
+        title: "Automatizaciones mediante agentes de IA",
+        description: "Implementación de agentes autónomos para la gestión de leads y agendamiento automático en tiempo real, integrados con CRMs avanzados.",
+        kpis: ["75% Tareas Automatizadas", "Disponibilidad 24/7", "-80% Costes de Soporte"],
+        image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766465264/InShot_20251222_224623578_x5xopg.mp4",
+        alt: "Visualización técnica de flujos de trabajo con agentes de IA autónomos operando en tiempo real."
     },
 ];
 
@@ -111,22 +131,25 @@ export const TESTIMONIALS: Testimonial[] = [
     quote: "El rediseño web y la estrategia de contenido transformaron nuestro alcance. Ahora, los clientes nos encuentran a nosotros.",
     highlight: "transformaron nuestro alcance",
     name: "Ana García",
-    title: "CEO, Tech Solutions",
-    image: "https://picsum.photos/seed/ana/200/200"
+    title: "Local Guide",
+    image: "https://res.cloudinary.com/dsiuc68hp/image/upload/v1766466551/pexels-olly-733872_wvbmvg.jpg",
+    date: "15/04/2021"
   },
   {
     quote: "La automatización de flujos nos ahorró incontables horas. El equipo de MitZay es profesional, rápido y entiende de verdad las necesidades del negocio.",
     highlight: "nos ahorró incontables horas",
     name: "Carlos Rodriguez",
-    title: "Director de Operaciones, Innovate Co.",
-    image: "https://picsum.photos/seed/carlos/200/200"
+    title: "Director de Operaciones",
+    image: "https://res.cloudinary.com/dsiuc68hp/image/upload/v1766466551/pexels-italo-melo-881954-2379004_c7hkph.jpg",
+    date: "22/09/2023"
   },
   {
     quote: "Pasamos de tener una presencia digital nula a generar leads de calidad cada semana. Su manejo de redes sociales es impecable.",
     highlight: "generar leads de calidad",
     name: "Laura Fernandez",
-    title: "Fundadora, Creative Studio",
-    image: "https://picsum.photos/seed/laura/200/200"
+    title: "Local Guide",
+    image: "https://res.cloudinary.com/dsiuc68hp/image/upload/v1766466635/pexels-olly-3781545_jfhh95.jpg",
+    date: "05/12/2024"
   }
 ];
 

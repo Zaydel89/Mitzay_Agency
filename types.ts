@@ -37,6 +37,7 @@ export interface Testimonial {
   quote: string;
   highlight: string;
   image: string;
+  date?: string;
 }
 
 export interface ChatMessage {
