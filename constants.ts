@@ -1,9 +1,18 @@
+
 import type { Page, NavLink, Service, Testimonial, CaseStudy, DetailedService } from './types';
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'HOME', page: 'home' },
   { label: 'SERVICIOS', page: 'services' },
   { label: 'CURSOS GRATIS', page: 'courses' },
+];
+
+export const HOME_SECTIONS = [
+  { label: 'Inicio', index: 0 },
+  { label: 'Ecosistema', index: 1 },
+  { label: 'Impacto Real', index: 2 },
+  { label: 'Experiencias', index: 3 },
+  { label: 'Agenda', index: 4 },
 ];
 
 export const CALENDLY_URL = "https://calendly.com/zaydel-mitzay/30min";
@@ -77,17 +86,6 @@ export const SERVICES_OVERVIEW: Service[] = [
   },
 ];
 
-export const VIDEOBLOG_PLACEHOLDER = {
-    title: "Videoblog: Marketing, IA y Casos de Éxito",
-    description: "Próximamente: videoblogs sobre marketing, IA aplicada y casos reales. Explora nuestro contenido educativo.",
-    posts: [
-        { title: "5 Prompts de IA para tus Redes", excerpt: "Descubre cómo la IA puede potenciar tu contenido...", image: "https://picsum.photos/seed/videoblog1/400/300" },
-        { title: "Automatiza tu Onboarding de Clientes", excerpt: "Ahorra horas y mejora la experiencia de tus nuevos clientes.", image: "https://picsum.photos/seed/videoblog2/400/300" },
-        { title: "Análisis de un Rediseño Web Exitoso", excerpt: "Estudio de caso: cómo aumentamos la conversión un 300%.", image: "https://picsum.photos/seed/videoblog3/400/300" },
-        { title: "El Futuro del Marketing es Ahora", excerpt: "Tendencias de IA que no puedes ignorar este año.", image: "https://picsum.photos/seed/videoblog4/400/300" },
-    ]
-};
-
 export const CASE_STUDIES: CaseStudy[] = [
     {
         title: "E-commerce Moderno",
@@ -159,7 +157,7 @@ export const CALENDLY_SECTION = {
 };
 
 export const FOOTER_CONTENT = {
-    microcopy: "MitZay Agency — Diseño web, contenido con IA y automatizaciones. Hacemos que la tecnología trabaje para tu crecimiento.",
+    microcopy: "Diseño web, contenido con IA y automatizaciones. Hacemos que la tecnología trabaje para tu crecimiento.",
     contact: "¿Preguntas? Escríbenos o reserva una videollamada.",
     legal: `© ${new Date().getFullYear()} MitZay Agency. Todos los derechos reservados.`,
     privacy: "Política de Privacidad",
@@ -168,7 +166,7 @@ export const FOOTER_CONTENT = {
         { name: 'Instagram', url: '#' },
         { name: 'LinkedIn', url: '#' },
         { name: 'YouTube', url: '#' },
-        { name: 'Mail', url: 'mailto:contacto@mitzay.agency' },
+        { name: 'TikTok', url: '#' },
     ]
 };
 

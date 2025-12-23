@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { Page } from '../types';
-import { FOOTER_CONTENT, NAV_LINKS } from '../constants';
+import { FOOTER_CONTENT, NAV_LINKS, HOME_SECTIONS } from '../constants';
 
 interface FooterProps {
   onNavigate: (page: Page) => void;
+  onScrollToSection?: (index: number) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+const Footer: React.FC<FooterProps> = ({ onNavigate, onScrollToSection }) => {
   return (
     <footer className="w-full glass p-14 md:p-16 rounded-[4rem] border border-primary/20 shadow-3xl text-center relative overflow-hidden group">
       {/* Dynamic Background Video with Green Tint */}
@@ -30,7 +31,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
       <div className="relative z-10">
         <div className="flex flex-col items-center mb-16">
           <div className="w-14 h-14 bg-primary rounded-2xl shadow-[0_0_30px_rgba(0,220,1,0.4)] mb-8 flex items-center justify-center text-black font-black text-xl hover:rotate-6 transition-transform cursor-pointer" onClick={() => onNavigate('home')}>M</div>
-          <span className="font-poppins font-black text-4xl tracking-tighter text-white">MitZay<span className="text-primary">.</span></span>
+          <span className="font-poppins font-bold text-4xl tracking-tighter text-white">MitZay<span className="text-primary">.</span></span>
           <p className="text-gray-300 text-sm md:text-base mt-6 max-w-sm mx-auto leading-relaxed font-medium">
             {FOOTER_CONTENT.microcopy}
           </p>
@@ -38,12 +39,18 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16 max-w-4xl mx-auto">
             <div className="text-left">
-              <h4 className="font-black mb-6 text-primary/40 uppercase tracking-[0.4em] text-[8px]">Agencia</h4>
+              <h4 className="font-black mb-6 text-primary/40 uppercase tracking-[0.4em] text-[8px]">Secciones Home</h4>
               <ul className="space-y-4">
-                {NAV_LINKS.map(link => (
-                  <li key={link.page}>
-                    <button onClick={() => onNavigate(link.page)} className="text-gray-400 hover:text-primary transition-colors font-bold text-sm tracking-tight">
-                      {link.label}
+                {HOME_SECTIONS.map(sec => (
+                  <li key={sec.index}>
+                    <button 
+                      onClick={() => {
+                        onNavigate('home');
+                        setTimeout(() => onScrollToSection?.(sec.index), 100);
+                      }} 
+                      className="text-gray-400 hover:text-primary transition-colors font-bold text-xs tracking-tight uppercase"
+                    >
+                      {sec.label}
                     </button>
                   </li>
                 ))}

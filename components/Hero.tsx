@@ -31,7 +31,7 @@ const Hero: React.FC = () => {
       </video>
 
       <div className="relative z-20 max-w-6xl mx-auto flex flex-col items-center">
-        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md animate-fade-in mb-10">
+        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md mb-10">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -39,7 +39,6 @@ const Hero: React.FC = () => {
           <span className="text-[9px] md:text-[10px] font-black tracking-[0.4em] uppercase text-primary">Transformación Digital IA</span>
         </div>
         
-        {/* Headline with text-shadow for better legibility over moving video */}
         <h1 className="font-poppins text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.15] mb-10 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
           <span className="block mb-3">Convierte tu presencia digital</span>
           <span className="block text-primary drop-shadow-[0_0_20px_rgba(0,220,1,0.2)]">en ingresos recurrentes con IA</span>
