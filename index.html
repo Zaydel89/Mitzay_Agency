@@ -34,6 +34,7 @@
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'glow': 'glow 2s ease-in-out infinite alternate',
               'fade-in': 'fadeIn 0.5s ease-out forwards',
+              'slide-up': 'slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             },
             keyframes: {
               glow: {
@@ -42,6 +43,10 @@
               },
               fadeIn: {
                 '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(60px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
               }
             }
@@ -81,6 +86,55 @@
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
+      }
+
+      /* ESTILOS ESPECÍFICOS PARA PÁGINA DE CURSOS (Header Animado) */
+      .large-header {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #111;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center center;
+        z-index: 1;
+      }
+      #large-header {
+        background-image: url('https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/img/demo-1-bg.jpg');
+      }
+      .main-title {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        color: #f9f1e9;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        /* Desplazamos un 5% adicional a la izquierda (-55% en lugar de -50%) */
+        -webkit-transform: translate3d(-55%,-50%,0);
+        transform: translate3d(-55%,-50%,0);
+        z-index: 2;
+        width: 100%;
+        max-width: 1000px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .demo-1 .main-title {
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .main-title .thin {
+        font-weight: 200;
+      }
+      @media only screen and (max-width : 768px) {
+        .demo-1 .main-title {
+          font-size: 0.8rem;
+          /* En móvil, volvemos al 50% ya que no suele haber barra lateral */
+          -webkit-transform: translate3d(-50%,-50%,0);
+          transform: translate3d(-50%,-50%,0);
+        }
       }
 
       .glass {
@@ -164,8 +218,8 @@
         bottom: 48px;
         right: 128px;
         z-index: 95;
-        width: 64px;
-        height: 64px;
+        width: 52px;
+        height: 52px;
       }
       
       .sticky-chat {

@@ -345,28 +345,180 @@ const ServicesPage: React.FC = () => (
     </div>
 );
 
-const CoursesPage: React.FC = () => (
-    <div className="max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh]">
-        <AnimatedSection delay={0.1}>
-          <div className="text-9xl mb-12 opacity-40 grayscale animate-bounce">🎓</div>
+const CoursesPage: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    // Animación de fondo (Marco Guglielmelli - Spider Points logic)
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let points: any[] = [];
+    let target = { x: width / 2, y: height / 2 };
+    let animateHeader = true;
+
+    const initHeader = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      target = { x: width / 2, y: height / 2 };
+      canvas.width = width;
+      canvas.height = height;
+
+      points = [];
+      for (let x = 0; x < width; x = x + width / 20) {
+        for (let y = 0; y < height; y = y + height / 20) {
+          let px = x + Math.random() * width / 20;
+          let py = y + Math.random() * height / 20;
+          let p = { x: px, originX: px, y: py, originY: py };
+          points.push(p);
+        }
+      }
+
+      for (let i = 0; i < points.length; i++) {
+        let closest = [];
+        let p1 = points[i];
+        for (let j = 0; j < points.length; j++) {
+          let p2 = points[j];
+          if (!(p1 === p2)) {
+            let placed = false;
+            for (let k = 0; k < 5; k++) {
+              if (!placed) {
+                if (closest[k] === undefined) {
+                  closest[k] = p2;
+                  placed = true;
+                }
+              }
+            }
+            for (let k = 0; k < 5; k++) {
+              if (!placed) {
+                if (getDistance(p1, p2) < getDistance(p1, closest[k])) {
+                  closest[k] = p2;
+                  placed = true;
+                }
+              }
+            }
+          }
+        }
+        p1.closest = closest;
+      }
+
+      for (let i in points) {
+        let c = new Circle(points[i], 2 + Math.random() * 2, 'rgba(255,255,255,0.3)');
+        points[i].circle = c;
+      }
+    };
+
+    const addListeners = () => {
+      window.addEventListener('mousemove', mouseMove);
+      window.addEventListener('resize', initHeader);
+    };
+
+    const mouseMove = (e: MouseEvent) => {
+      let posx = e.pageX || e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+      let posy = e.pageY || e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      target.x = posx;
+      target.y = posy;
+    };
+
+    const animate = () => {
+      if (animateHeader) {
+        ctx.clearRect(0, 0, width, height);
+        for (let i in points) {
+          if (Math.abs(getDistance(target, points[i])) < 4000) {
+            points[i].active = 0.3;
+            points[i].circle.active = 0.6;
+          } else if (Math.abs(getDistance(target, points[i])) < 20000) {
+            points[i].active = 0.1;
+            points[i].circle.active = 0.3;
+          } else if (Math.abs(getDistance(target, points[i])) < 40000) {
+            points[i].active = 0.02;
+            points[i].circle.active = 0.1;
+          } else {
+            points[i].active = 0;
+            points[i].circle.active = 0;
+          }
+
+          drawLines(points[i]);
+          points[i].circle.draw();
+        }
+      }
+      requestAnimationFrame(animate);
+    };
+
+    const drawLines = (p: any) => {
+      if (!p.active) return;
+      for (let i in p.closest) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.closest[i].x, p.closest[i].y);
+        ctx.strokeStyle = 'rgba(156,217,249,' + p.active + ')';
+        ctx.stroke();
+      }
+    };
+
+    function Circle(pos: any, rad: any, color: any) {
+      const _this: any = this;
+      _this.pos = pos || null;
+      _this.radius = rad || null;
+      _this.color = color || null;
+
+      _this.draw = function () {
+        if (!_this.active) return;
+        ctx.beginPath();
+        ctx.arc(_this.pos.x, _this.pos.y, _this.radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'rgba(156,217,249,' + _this.active + ')';
+        ctx.fill();
+      };
+    }
+
+    const getDistance = (p1: any, p2: any) => {
+      return Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
+    };
+
+    initHeader();
+    addListeners();
+    animate();
+
+    return () => {
+      animateHeader = false;
+      window.removeEventListener('mousemove', mouseMove);
+      window.removeEventListener('resize', initHeader);
+    };
+  }, []);
+
+  return (
+    <div id="large-header" className="large-header demo-1">
+      <canvas ref={canvasRef} id="demo-canvas" className="absolute inset-0 pointer-events-none"></canvas>
+      <div className="main-title text-center">
+        <AnimatedSection delay={0.4} className="animate-slide-up">
+          <h1 className="text-5xl md:text-8xl font-poppins font-bold mb-10 tracking-tighter text-white">
+            <span className="thin">Aprende con</span> MitZay
+          </h1>
         </AnimatedSection>
-        <AnimatedSection delay={0.6}>
-          <h1 className="text-6xl font-poppins font-bold mb-10 tracking-tighter text-white">Aprende con MitZay</h1>
+        <AnimatedSection delay={0.8} className="flex flex-col items-center">
+          <p className="text-xl md:text-2xl text-gray-200 mb-16 leading-[1.6] max-w-4xl mx-auto font-medium px-4 text-center">
+            Nuestra academia gratuita está en construcción.<br />
+            Dominarás la IA y el Marketing Digital<br />
+            para escalar tu negocio al siguiente nivel.
+          </p>
         </AnimatedSection>
-        <AnimatedSection delay={1.1}>
-          <p className="text-xl text-gray-400 mb-16 leading-relaxed max-w-xl mx-auto">Nuestra academia gratuita está en construcción. Dominarás la IA y el Marketing Digital.</p>
-        </AnimatedSection>
-        <AnimatedSection delay={1.6}>
-          <div className="glass p-16 rounded-[4rem] border border-primary/10 w-full max-w-2xl shadow-2xl relative overflow-hidden">
-              <h4 className="font-black text-[11px] uppercase tracking-[0.4em] mb-10 text-white/40">Early Access List</h4>
-              <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-                <input type="email" placeholder="Tu mejor correo electrónico" className="w-full bg-white/5 border border-primary/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-primary transition-all font-bold text-base" />
-                <button className="bg-primary text-black font-black px-12 py-5 rounded-2xl hover:scale-[1.02] transition-all text-[11px] uppercase tracking-[0.3em] shadow-xl">NOTIFICARME AL LANZAR</button>
+        <AnimatedSection delay={1.2} className="w-full flex justify-center">
+          <div className="glass p-10 md:p-16 rounded-[4rem] border border-primary/20 w-full max-w-2xl mx-auto shadow-2xl relative overflow-hidden backdrop-blur-xl flex flex-col items-center">
+              <h4 className="font-black text-[11px] uppercase tracking-[0.4em] mb-10 text-primary/60 text-center">Early Access List</h4>
+              <form className="flex flex-col gap-5 w-full" onSubmit={(e) => e.preventDefault()}>
+                <input type="email" placeholder="Tu mejor correo electrónico" className="w-full bg-white/5 border border-primary/20 rounded-2xl px-8 py-5 focus:outline-none focus:border-primary transition-all font-bold text-base text-white placeholder:text-gray-500 text-center" />
+                <button className="bg-primary text-black font-black px-12 py-5 rounded-2xl hover:scale-[1.02] transition-all text-[11px] uppercase tracking-[0.3em] shadow-xl shadow-primary/20 w-full">NOTIFICARME AL LANZAR</button>
               </form>
           </div>
         </AnimatedSection>
+      </div>
     </div>
-);
+  );
+};
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -407,12 +559,15 @@ const App: React.FC = () => {
           <HomePage onNavigate={handleNavigate} scrollRef={horizontalScrollRef} activeSection={activeSection} setActiveSection={setActiveSection} scrollProgress={scrollProgress} setScrollProgress={setScrollProgress} onScrollToSection={handleScrollToSection} />
         )}
         {currentPage !== 'home' && (
-           <div className={`h-screen overflow-y-auto no-scrollbar py-10 px-4 md:px-16 lg:px-32 relative ${currentPage === 'services' ? 'services-gradient-bg' : 'bg-black'}`}>
+           <div className={`h-screen overflow-y-auto no-scrollbar py-10 px-4 md:px-16 lg:px-32 relative ${currentPage === 'services' ? 'services-gradient-bg' : (currentPage === 'courses' ? '' : 'bg-black')}`}>
               {currentPage === 'services' && <ServicesPage />}
               {currentPage === 'courses' && <CoursesPage />}
-              <div className="mt-32 max-w-5xl mx-auto pb-20 relative z-10">
+              {/* Footer logic remains same, but adjusted for courses background if needed */}
+              <div className={`mt-32 max-w-5xl mx-auto pb-20 relative z-10 ${currentPage === 'courses' ? 'hidden' : ''}`}>
                 <Footer onNavigate={handleNavigate} onScrollToSection={handleScrollToSection} />
               </div>
+              {/* Specialized footer for courses with position absolute inside its own context if desired, 
+                  but following "no modificar estructura" for simplicity we keep it standard outside absolute container or hide it */}
            </div>
         )}
       </main>
@@ -423,10 +578,10 @@ const App: React.FC = () => {
       {!isAssistantOpen && (
         <button
           onClick={() => setIsAssistantOpen(true)}
-          className="fixed bottom-12 right-12 w-16 h-16 bg-primary text-black rounded-full shadow-[0_15px_40px_rgba(0,220,1,0.4)] flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[90] animate-bounce group"
+          className="fixed bottom-12 right-12 w-[52px] h-[52px] bg-primary text-black rounded-full shadow-[0_15px_40px_rgba(0,220,1,0.4)] flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[90] animate-bounce group"
         >
           <div className="absolute -top-14 right-0 bg-white text-black text-[9px] font-black px-5 py-2.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl tracking-tighter">HABLAR CON IA</div>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         </button>
