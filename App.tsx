@@ -6,6 +6,7 @@ import AIAssistant from './components/AIAssistant';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
 import AnimatedSection from './components/AnimatedSection';
+import NeuralNexusSection from './components/NeuralNexusSection';
 import { Page } from './types';
 import { 
   SEO_DATA, 
@@ -112,8 +113,21 @@ const HomePage: React.FC<HomePageProps> = ({
               {SERVICES_OVERVIEW.map((service, index) => (
                 <AnimatedSection key={index} delay={1.1 + (index * 0.5)} triggerOnSectionActive isActive={activeSection === 1} className="h-full">
                   <div className="glass p-6 md:p-7 rounded-[2.5rem] border border-primary/10 hover:border-primary/60 transition-all flex flex-col group min-h-[360px]">
-                    <div className="overflow-hidden rounded-xl mb-6 aspect-[16/9] relative border border-primary/10 shadow-inner">
-                      <img src={service.image} alt={service.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80" />
+                    <div className="overflow-hidden rounded-xl mb-6 aspect-[16/9] relative border border-primary/10 shadow-inner bg-black/40">
+                      <video 
+                        loop 
+                        playsInline 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80"
+                        onMouseEnter={(e) => {
+                          e.currentTarget.muted = false;
+                          e.currentTarget.play().catch(err => console.debug("Reproducción con sonido bloqueada por navegador:", err));
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.pause();
+                        }}
+                      >
+                        <source src={service.image} type="video/mp4" />
+                      </video>
                     </div>
                     <h3 className="font-poppins text-lg font-bold text-primary mb-3 group-hover:text-white transition-colors">{service.title}</h3>
                     <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-5 flex-grow line-clamp-4">{service.description}</p>
@@ -252,6 +266,8 @@ const HomePage: React.FC<HomePageProps> = ({
               <Footer onNavigate={onNavigate} onScrollToSection={onScrollToSection} />
           </AnimatedSection>
         </div>
+
+        <NeuralNexusSection />
       </div>
 
       <div className="fixed bottom-0 left-0 w-full h-1 bg-white/5 z-[100] md:left-20 md:w-[calc(100%-5rem)]">
@@ -259,7 +275,7 @@ const HomePage: React.FC<HomePageProps> = ({
       </div>
 
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 py-3 glass rounded-full border border-primary/20 z-[100] scale-90 md:scale-100">
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 7 }).map((_, i) => (
           <button
             key={i}
             onClick={() => onScrollToSection(i)}
@@ -417,10 +433,10 @@ const CoursesPage: React.FC = () => {
     };
 
     const mouseMove = (e: MouseEvent) => {
-      let posx = e.pageX || e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-      let posy = e.pageY || e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-      target.x = posx;
-      target.y = posy;
+      let fontx = e.pageX || e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+      let fonty = e.pageY || e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      target.x = fontx;
+      target.y = fonty;
     };
 
     const animate = () => {
@@ -561,12 +577,9 @@ const App: React.FC = () => {
            <div className={`h-screen overflow-y-auto no-scrollbar py-10 px-4 md:px-16 lg:px-32 relative ${currentPage === 'services' ? 'services-gradient-bg' : (currentPage === 'courses' ? '' : 'bg-black')}`}>
               {currentPage === 'services' && <ServicesPage />}
               {currentPage === 'courses' && <CoursesPage />}
-              {/* Footer logic remains same, but adjusted for courses background if needed */}
               <div className={`mt-32 max-w-5xl mx-auto pb-20 relative z-10 ${currentPage === 'courses' ? 'hidden' : ''}`}>
                 <Footer onNavigate={handleNavigate} onScrollToSection={handleScrollToSection} />
               </div>
-              {/* Specialized footer for courses with position absolute inside its own context if desired, 
-                  but following "no modificar estructura" for simplicity we keep it standard outside absolute container or hide it */}
            </div>
         )}
       </main>

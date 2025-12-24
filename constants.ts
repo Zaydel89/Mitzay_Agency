@@ -52,8 +52,8 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "diseno-web",
     title: "Diseño Web",
     description: "Creamos sitios que Convierten: Estructuras claras, Velocidad óptima y Experiencia móvil impecable.",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800",
-    alt: "Interfaz de un sitio web moderno y minimalista en una pantalla de laptop, con un esquema de color oscuro.",
+    image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766540086/web_orc84m.mp4",
+    alt: "Diseño Web Profesional MitZay",
     icon: "💻",
     features: ["Optimización SEO", "Diseño Adaptable", "Velocidad de Carga"]
   },
@@ -61,8 +61,8 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "contenido-ia",
     title: "Contenido con IA para redes",
     description: "Generamos contenido con IA: Captions con Intención, Reels Impactantes y Creativos. Alineamos tono y formato para maximizar Alcance y Conversión.",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
-    alt: "Visualización de datos y texto generados por inteligencia artificial en un HUD futurista.",
+    image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766540087/contenido_hlolyj.mp4",
+    alt: "Contenido con IA MitZay",
     icon: "🤖",
     features: ["Guiones Persuasivos", "Copys Optimizados", "Estrategia Visual"]
   },
@@ -70,8 +70,8 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "redes-sociales",
     title: "Manejo de redes sociales",
     description: "Estrategia, Calendario y Ejecución: Publicaciones, Interacción y Campañas que Posicionan tu marca y Generan resultados medibles con reportes claros.",
-    image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=800",
-    alt: "Un dashboard de analíticas de redes sociales mostrando crecimiento y engagement en un tablet.",
+    image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766540087/redes_oaivhb.mp4",
+    alt: "Manejo de Redes MitZay",
     icon: "📱",
     features: ["Gestión de Comunidad", "Análisis de Datos", "Crecimiento Orgánico"]
   },
@@ -79,8 +79,8 @@ export const SERVICES_OVERVIEW: Service[] = [
     id: "automatizacion-ia",
     title: "Automatización de flujos con IA",
     description: "Automatizamos Onboarding, Respuestas y Seguimiento para que tu equipo enfoque su tiempo en lo que importa: Cerrar Ventas y Fidelizar Clientes.",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800",
-    alt: "Un diagrama de flujo complejo que ilustra un proceso de negocio automatizado con nodos brillantes.",
+    image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766540087/automatizacion_xra2z3.mp4",
+    alt: "Automatización IA MitZay",
     icon: "⚙️",
     features: ["Onboarding Automático", "Lead Scoring", "Integraciones Smart"]
   },
