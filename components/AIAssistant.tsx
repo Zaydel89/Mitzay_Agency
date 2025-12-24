@@ -42,7 +42,7 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
 
 const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: '¡Hola! Soy el asistente inteligente de MitZay. ¿Quieres hablar por voz o prefieres escribirme? Estoy aquí para ayudarte a escalar tu negocio.', timestamp: Date.now() }
+    { role: 'assistant', content: '¡Bienvenido al núcleo de MitZay Agency! Mi cerebro ahora está conectado a nuestra base de datos central vía n8n. ¿En qué puedo ayudarte hoy?', timestamp: Date.now() }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -61,7 +61,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [messages, isTyping]);
 
@@ -98,13 +101,11 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
           },
-          systemInstruction: 'Eres el asistente de voz y visión de MitZay Agency. Responde de forma natural, breve y en español. Si el usuario activa su cámara, comenta lo que ves para ayudarle con su marketing o presencia digital.',
+          systemInstruction: 'Eres el asistente de voz de MitZay. Estás conectado a una base de datos dinámica. Responde en español, sé directo y amable.',
         },
         callbacks: {
           onopen: () => {
             setIsMicActive(true);
-            
-            // Audio input handling
             const source = inputCtx.createMediaStreamSource(stream);
             const processor = inputCtx.createScriptProcessor(4096, 1, 1);
             
@@ -125,7 +126,6 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
             source.connect(processor);
             processor.connect(inputCtx.destination);
 
-            // Vision input handling (if enabled)
             if (isVisionEnabled && canvasRef.current && videoRef.current) {
               const canvas = canvasRef.current;
               const video = videoRef.current;
@@ -152,7 +152,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                     }
                   }, 'image/jpeg', 0.6);
                 }
-              }, 1000); // 1 frame per second
+              }, 1000);
             }
           },
           onmessage: async (msg: LiveServerMessage) => {
@@ -169,7 +169,6 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
               audioSourcesRef.current.add(source);
               source.onended = () => audioSourcesRef.current.delete(source);
             }
-            
             if (msg.serverContent?.interrupted) {
               stopAllAudio();
             }
@@ -183,7 +182,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
       setIsLiveMode(true);
     } catch (err) {
       console.error("Failed to start live mode:", err);
-      alert("No se pudo acceder al micrófono o cámara. Por favor, revisa los permisos.");
+      alert("Error de acceso a periféricos.");
     }
   };
 
@@ -249,14 +248,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                   <span className="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
                   <span className="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
                 </div>
-              ) : 'MZ'}
+              ) : 'DB'}
             </div>
             <div>
-              <h3 className="font-poppins font-bold text-base md:text-lg">Asistente MitZay</h3>
+              <h3 className="font-poppins font-bold text-base md:text-lg">Smart Assistant</h3>
               <div className="flex items-center gap-2">
                 <span className={`w-2 h-2 rounded-full animate-pulse ${isMicActive ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-primary shadow-[0_0_8px_#00DC01]'}`}></span>
                 <span className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                  {isLiveMode ? (isVisionEnabled ? 'Voz y Visión' : 'Voz Activo') : 'En Línea • Chat'}
+                  Conectado a n8n Cloud
                 </span>
               </div>
             </div>
@@ -269,16 +268,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Messages Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 relative">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 relative no-scrollbar">
           {isLiveMode && isVisionEnabled && (
             <div className="absolute inset-0 bg-black z-0">
-              <video 
-                ref={videoRef} 
-                autoPlay 
-                muted 
-                playsInline 
-                className="w-full h-full object-cover opacity-50"
-              />
+              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover opacity-50" />
               <canvas ref={canvasRef} className="hidden" />
             </div>
           )}
@@ -310,10 +303,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
               )}
               <div className="bg-black/40 backdrop-blur-md p-6 rounded-3xl border border-white/5">
                 <h4 className="text-lg md:text-xl font-poppins font-bold text-white">
-                  {isVisionEnabled ? 'Viendo tu cámara...' : 'Te escucho...'}
+                  {isVisionEnabled ? 'Modo Visión Activo' : 'Voz Real-Time'}
                 </h4>
                 <p className="text-gray-300 text-xs md:text-sm mt-2">
-                  Habla naturalmente sobre tu proyecto.
+                  La IA de MitZay te escucha...
                 </p>
               </div>
             </div>
@@ -353,7 +346,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
-                  Hablar con MitZay
+                  Hablar
                 </button>
               </div>
 
@@ -363,7 +356,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Escribe tu duda aquí..."
+                  placeholder="Escribe aquí (consultas a DB)..."
                   className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-5 pr-14 focus:outline-none focus:border-primary/50 transition-colors text-sm"
                 />
                 <button
@@ -384,9 +377,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                 className="w-full py-5 bg-red-600/20 border border-red-600/40 text-red-500 font-black rounded-2xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-3 shadow-lg"
               >
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                SALIR DEL MODO VOZ
+                TERMINAR SESIÓN
               </button>
-              <p className="text-[9px] text-gray-600 uppercase tracking-[0.3em] font-black">Powered by Gemini Real-Time</p>
+              <p className="text-[9px] text-gray-600 uppercase tracking-[0.3em] font-black">n8n Hybrid Intelligence</p>
             </div>
           )}
         </div>
@@ -400,6 +393,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
         .animate-slide-in {
           animation: slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );

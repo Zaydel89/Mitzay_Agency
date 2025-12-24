@@ -4,13 +4,8 @@ import { CALENDLY_SECTION, CALENDLY_URL } from '../constants';
 import AnimatedSection from './AnimatedSection';
 
 const Contact: React.FC = () => {
-  const openCalendly = () => {
-    // Assuming Calendly is already in index.html, we use the widget
-    if ((window as any).Calendly) {
-      (window as any).Calendly.initPopupWidget({ url: CALENDLY_URL });
-    } else {
-      window.open(CALENDLY_URL, '_blank');
-    }
+  const openBooking = () => {
+    window.open(CALENDLY_URL, '_blank');
   };
 
   return (
@@ -50,10 +45,10 @@ const Contact: React.FC = () => {
               </div>
               <h4 className="text-3xl font-poppins font-bold mb-4">Hablemos hoy</h4>
               <p className="text-gray-400 mb-10 max-w-sm mx-auto">
-                Selecciona tu zona horaria y elige un hueco de 15 minutos en el calendario de MitZay.
+                Selecciona tu zona horaria y elige un hueco disponible en el Google Calendar de MitZay.
               </p>
               <button 
-                onClick={openCalendly}
+                onClick={openBooking}
                 className="px-12 py-5 bg-primary text-black font-extrabold rounded-full hover:scale-105 transition-all shadow-[0_0_40px_rgba(0,220,1,0.2)] hover:shadow-primary/40 text-lg"
               >
                 Reservar Sesión

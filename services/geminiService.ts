@@ -1,48 +1,38 @@
 
-import { GoogleGenAI } from "@google/genai";
-
-const SYSTEM_INSTRUCTION = `
-Eres el Asistente de IA oficial de MitZay Agency. 
-Tu tono es profesional, innovador y experto en marketing digital.
-Ayudas a los visitantes a entender los servicios de MitZay:
-1. Diseño Web: Sitios rápidos, minimalistas y orientados a la conversión.
-2. Contenido con IA: Estrategia y generación automatizada para redes sociales y blogs.
-3. Automatización de Procesos: Flujos de trabajo eficientes con herramientas de IA (Make, Zapier, etc.).
-4. Manejo de Redes: Gestión profesional y crecimiento de comunidad.
-
-Debes animar a los usuarios a 'Agendar una videollamada' de 30 minutos para un plan personalizado.
-MitZay Agency sirve globalmente desde Madrid.
-Responde siempre en español. Sé conciso y utiliza una estructura clara.
-Utiliza Google Search para validar tendencias actuales si el usuario lo solicita.
-`;
+/**
+ * Servicio para conectar el frontend con un flujo de n8n.
+ * Esto permite usar bases de datos externas y lógica compleja de backend.
+ */
 
 export const getGeminiResponse = async (userMessage: string, history: {role: 'user'|'assistant', content: string}[]) => {
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    
-    const contents = history.map(h => ({
-      role: h.role === 'user' ? 'user' : 'model',
-      parts: [{ text: h.content }]
-    }));
-    
-    contents.push({ role: 'user', parts: [{ text: userMessage }] });
+    // Asumimos que la URL del Webhook de n8n está en una variable de entorno o es fija
+    // Reemplaza esta URL con la URL de "Production Webhook" de tu nodo Webhook en n8n
+    const N8N_WEBHOOK_URL = "https://tu-instancia-n8n.com/webhook/chat-mitzay";
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: contents,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.7,
-        topP: 0.95,
-        maxOutputTokens: 1000,
-        thinkingConfig: { thinkingBudget: 0 },
-        tools: [{ googleSearch: {} }]
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        message: userMessage,
+        history: history,
+        timestamp: new Date().toISOString()
+      }),
     });
 
-    return response.text || "Lo siento, no pude procesar tu solicitud. ¿Podrías intentar de nuevo?";
+    if (!response.ok) {
+      throw new Error('Error en la comunicación con n8n');
+    }
+
+    const data = await response.json();
+    
+    // n8n debe devolver un objeto que contenga la respuesta en una propiedad (ej: data.text o data.output)
+    return data.text || data.output || data.response || "Lo siento, mi conexión con la base de datos de MitZay ha fallado.";
+    
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "Error de conexión con el núcleo de IA de MitZay. Por favor, intenta de nuevo más tarde.";
+    console.error("n8n Connection Error:", error);
+    return "Error de enlace con el núcleo de datos. Por favor, asegúrate de que el flujo de n8n esté activo.";
   }
 };

@@ -15,7 +15,9 @@ export const HOME_SECTIONS = [
   { label: 'Agenda', index: 4 },
 ];
 
-export const CALENDLY_URL = "https://calendly.com/zaydel-mitzay/30min";
+export const GOOGLE_CALENDAR_URL = "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FMexico_City&showPrint=0&showTitle=0&mode=WEEK&src=ZmQ1MzIzMjdkZDcwOGM4YzY5ZDg4NGE3NzY4N2M3N2I4NTZhYjAwMjVlNjNiMjg0NjgzYjljOWYxY2YyODY4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%2333b679";
+// Mantenemos el nombre de la constante antigua por compatibilidad de importación o la renombramos si es necesario
+export const CALENDLY_URL = GOOGLE_CALENDAR_URL;
 
 export const SEO_DATA: Record<Page, { title: string; description: string }> = {
   home: {
@@ -153,7 +155,7 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const CALENDLY_SECTION = {
     headline: "Agenda una videollamada de 30 minutos",
-    copy: "Reserva un espacio directo: resolveremos tus dudas, propondré un plan inicial y te mostraré cómo automatizar procesos para ganar tiempo y ventas. Selecciona tu horario."
+    copy: "Reserva un espacio directo en mi Google Calendar: resolveremos tus dudas, propondré un plan inicial y te mostraré cómo automatizar procesos para ganar tiempo y ventas."
 };
 
 export const FOOTER_CONTENT = {
