@@ -411,12 +411,14 @@ const NeuralNexusSection: React.FC = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
+      if (renderer && containerRef.current && renderer.domElement.parentNode === containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
   return (
-    <div className="horizontal-section bg-black flex items-center justify-center relative overflow-hidden font-orbitron text-primary snap-start">
+    <div className="horizontal-section bg-black flex items-center justify-center relative overflow-hidden font-orbitron text-primary snap-start h-screen w-screen">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&display=swap');
         :root {
@@ -467,7 +469,7 @@ const NeuralNexusSection: React.FC = () => {
         #status-indicator { width: 6px; height: 6px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 0 8px var(--primary-color); animation: statusPulse 1.8s ease-in-out infinite; }
         @keyframes statusPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
         
-        #control-panel { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; z-index: 100; }
+        #control-panel { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; z-index: 100; }
         .control-section { display: flex; align-items: center; gap: 15px; background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border: 1px solid rgba(var(--primary-rgb), 0.2); border-radius: 15px; backdrop-filter: blur(20px); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 0 15px rgba(var(--primary-rgb), 0.1); }
         .cyber-switch { position: relative; width: 40px; height: 20px; background: #001133; border: 1px solid var(--primary-color); cursor: pointer; border-radius: 10px; transition: all 0.3s; }
         .cyber-switch::before { content: ''; position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; background: var(--primary-color); border-radius: 50%; transition: 0.3s; }
@@ -510,8 +512,8 @@ const NeuralNexusSection: React.FC = () => {
           transform: translate(-50%, -50%);
           pointer-events: none;
           z-index: 20;
-          width: clamp(180px, 40vw, 350px);
-          filter: drop-shadow(0 0 15px var(--primary-color)) drop-shadow(0 0 30px rgba(var(--primary-rgb), 0.4));
+          width: clamp(45px, 10vw, 88px);
+          filter: drop-shadow(0 0 5px var(--primary-color)) drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.4));
           animation: impactFlicker 4s infinite alternate;
         }
 

@@ -73,11 +73,27 @@ const HomePage: React.FC<HomePageProps> = ({
     const el = scrollRef.current;
     if (el) {
       const onWheel = (e: WheelEvent) => {
+        // Si estamos en la última sección, desactivamos el scroll vertical del mouse hacia adelante
+        // para permitir el uso de OrbitControls de Three.js. 
+        // El usuario saldrá usando la barra de navegación o puntos.
+        const isAtEnd = el.scrollLeft >= (el.scrollWidth - el.clientWidth - 10);
+        if (isAtEnd && e.deltaY > 0) return; // Evita scroll más allá del final
+        
         if (e.deltaY === 0) return;
         if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; 
+        
+        // Solo bloqueamos el scroll si no estamos en el Nexus o si el usuario quiere retroceder
+        if (isAtEnd && e.deltaY < 0) {
+            // Permitir retroceder si el usuario hace scroll hacia arriba agresivamente? 
+            // Según el prompt, el usuario quiere "fijarla" y regresar con la barra.
+            // Así que bloqueamos el scroll vertical del mouse completamente en la última sección.
+            return;
+        }
+
         e.preventDefault();
         el.scrollBy({ left: e.deltaY * 1.5, behavior: 'auto' });
       };
+      
       el.addEventListener('wheel', onWheel, { passive: false });
       el.addEventListener('scroll', handleScroll);
       return () => {
@@ -85,7 +101,7 @@ const HomePage: React.FC<HomePageProps> = ({
         el.removeEventListener('scroll', handleScroll);
       };
     }
-  }, [scrollRef, handleScroll]);
+  }, [scrollRef, handleScroll, activeSection]);
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
@@ -275,6 +291,7 @@ const HomePage: React.FC<HomePageProps> = ({
       </div>
 
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 py-3 glass rounded-full border border-primary/20 z-[100] scale-90 md:scale-100">
+        {/* Actualizado a 7 puntos para incluir Neural Nexus */}
         {Array.from({ length: 7 }).map((_, i) => (
           <button
             key={i}
