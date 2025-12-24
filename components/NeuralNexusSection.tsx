@@ -503,6 +503,18 @@ const NeuralNexusSection: React.FC = () => {
           line-height: 1.2;
         }
 
+        .impact-logo {
+          position: absolute;
+          top: 55%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          z-index: 20;
+          width: clamp(180px, 40vw, 350px);
+          filter: drop-shadow(0 0 15px var(--primary-color)) drop-shadow(0 0 30px rgba(var(--primary-rgb), 0.4));
+          animation: impactFlicker 4s infinite alternate;
+        }
+
         @keyframes impactFlicker {
           0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; filter: drop-shadow(0 0 15px var(--primary-color)); }
           20%, 24%, 55% { opacity: 0.4; filter: none; }
@@ -528,6 +540,13 @@ const NeuralNexusSection: React.FC = () => {
       <h2 className="impact-text">
         Habla con nuestra Inteligencia Artificial
       </h2>
+
+      {/* Impact Logo */}
+      <img 
+        src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" 
+        alt="MitZay Impact Logo" 
+        className="impact-logo"
+      />
 
       <div ref={hudRef} id="hud">
         <div className="hud-line">

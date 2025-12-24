@@ -19,8 +19,12 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onToggleAssist
           onClick={() => onNavigate('home')} 
           className="flex items-center gap-4 group mb-12 px-2"
         >
-          <div className="flex-shrink-0 w-10 h-10 bg-primary rounded-xl shadow-[0_0_15px_#00DC01] group-hover:rotate-12 transition-transform duration-500 flex items-center justify-center text-black font-black">
-            M
+          <div className="flex-shrink-0 w-10 h-10 transition-transform duration-500 group-hover:rotate-12">
+            <img 
+              src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" 
+              alt="MitZay Logo" 
+              className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,220,1,0.5)]" 
+            />
           </div>
           <span className="font-poppins font-black text-2xl tracking-tighter opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-300 whitespace-nowrap">
             MitZay<span className="text-primary">.</span>

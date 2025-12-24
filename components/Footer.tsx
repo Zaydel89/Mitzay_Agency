@@ -30,7 +30,13 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onScrollToSection }) => {
       {/* Content Area */}
       <div className="relative z-10">
         <div className="flex flex-col items-center mb-16">
-          <div className="w-14 h-14 bg-primary rounded-2xl shadow-[0_0_30px_rgba(0,220,1,0.4)] mb-8 flex items-center justify-center text-black font-black text-xl hover:rotate-6 transition-transform cursor-pointer" onClick={() => onNavigate('home')}>M</div>
+          <div className="w-20 h-20 mb-8 flex items-center justify-center hover:rotate-6 transition-transform cursor-pointer" onClick={() => onNavigate('home')}>
+             <img 
+               src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" 
+               alt="Logo MitZay" 
+               className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(0,220,1,0.6)]"
+             />
+          </div>
           <span className="font-poppins font-bold text-4xl tracking-tighter text-white">MitZay<span className="text-primary">.</span></span>
           <p className="text-gray-300 text-sm md:text-base mt-6 max-w-sm mx-auto leading-relaxed font-medium">
             {FOOTER_CONTENT.microcopy}
