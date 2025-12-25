@@ -234,8 +234,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex justify-end">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
+    <div className="fixed inset-0 z-[300] flex justify-end">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md md:backdrop-blur-sm transition-opacity" onClick={onClose}></div>
       
       <div className="relative w-full sm:max-w-md h-full glass border-l border-white/10 shadow-3xl flex flex-col animate-slide-in overflow-hidden">
         {/* Header */}
@@ -251,11 +251,11 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
               ) : 'DB'}
             </div>
             <div>
-              <h3 className="font-poppins font-bold text-base md:text-lg">Smart Assistant</h3>
+              <h3 className="font-poppins font-bold text-sm md:text-lg">Smart Assistant</h3>
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full animate-pulse ${isMicActive ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-primary shadow-[0_0_8px_#00DC01]'}`}></span>
-                <span className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                  Conectado a n8n Cloud
+                <span className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full animate-pulse ${isMicActive ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-primary shadow-[0_0_8px_#00DC01]'}`}></span>
+                <span className="text-[8px] md:text-[10px] text-gray-500 font-black uppercase tracking-widest">
+                  n8n Hybrid Cloud
                 </span>
               </div>
             </div>
@@ -268,7 +268,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Messages Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 relative no-scrollbar">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 relative no-scrollbar bg-black/20">
           {isLiveMode && isVisionEnabled && (
             <div className="absolute inset-0 bg-black z-0">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover opacity-50" />
@@ -278,14 +278,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
 
           {!isLiveMode ? (
             messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
+              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10 animate-fade-in`}>
                 <div className={`max-w-[90%] md:max-w-[85%] p-4 rounded-2xl ${
                   msg.role === 'user' 
-                  ? 'bg-primary text-black font-semibold rounded-tr-none shadow-lg' 
+                  ? 'bg-primary text-black font-bold rounded-tr-none shadow-lg' 
                   : 'bg-white/5 border border-white/10 text-gray-100 rounded-tl-none backdrop-blur-md'
                 }`}>
-                  <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                  <span className="text-[9px] opacity-40 mt-2 block">
+                  <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
+                  <span className="text-[8px] opacity-40 mt-2 block font-black uppercase tracking-widest">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -301,12 +301,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                   </svg>
                 </div>
               )}
-              <div className="bg-black/40 backdrop-blur-md p-6 rounded-3xl border border-white/5">
-                <h4 className="text-lg md:text-xl font-poppins font-bold text-white">
-                  {isVisionEnabled ? 'Modo Visión Activo' : 'Voz Real-Time'}
+              <div className="bg-black/60 backdrop-blur-xl p-6 rounded-3xl border border-white/10">
+                <h4 className="text-lg md:text-xl font-poppins font-bold text-white uppercase tracking-tight">
+                  {isVisionEnabled ? 'Visión Activa' : 'Voz Real-Time'}
                 </h4>
-                <p className="text-gray-300 text-xs md:text-sm mt-2">
-                  La IA de MitZay te escucha...
+                <p className="text-gray-400 text-[10px] md:text-xs mt-2 font-black uppercase tracking-widest">
+                  Analizando...
                 </p>
               </div>
             </div>
@@ -315,10 +315,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
           {isTyping && !isLiveMode && (
             <div className="flex justify-start relative z-10">
               <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none">
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></div>
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                <div className="flex gap-1.5">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></div>
                 </div>
               </div>
             </div>
@@ -326,9 +326,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 md:p-6 border-t border-white/10 bg-surface z-10">
+        <div className="p-4 md:p-6 border-t border-white/10 bg-surface z-10 mb-safe">
           {!isLiveMode ? (
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setIsVisionEnabled(!isVisionEnabled)}
@@ -341,7 +341,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                 </button>
                 <button 
                   onClick={startLiveMode}
-                  className="flex-1 h-12 bg-primary/20 border border-primary/40 text-primary rounded-2xl flex items-center justify-center gap-2 hover:bg-primary/30 transition-all font-black text-xs uppercase tracking-widest"
+                  className="flex-1 h-12 bg-primary text-black rounded-2xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all font-black text-[10px] md:text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
@@ -356,8 +356,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Escribe aquí (consultas a DB)..."
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-5 pr-14 focus:outline-none focus:border-primary/50 transition-colors text-sm"
+                  placeholder="Escribe aquí..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-5 pr-14 focus:outline-none focus:border-primary/50 transition-colors text-[13px] md:text-sm"
                 />
                 <button
                   onClick={handleSend}
@@ -371,15 +371,15 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-3">
               <button 
                 onClick={stopLiveMode}
-                className="w-full py-5 bg-red-600/20 border border-red-600/40 text-red-500 font-black rounded-2xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-3 shadow-lg"
+                className="w-full py-4 md:py-5 bg-red-600/20 border border-red-600/40 text-red-500 font-black rounded-2xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-3 shadow-lg"
               >
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 TERMINAR SESIÓN
               </button>
-              <p className="text-[9px] text-gray-600 uppercase tracking-[0.3em] font-black">n8n Hybrid Intelligence</p>
+              <p className="text-[8px] text-gray-500 uppercase tracking-[0.3em] font-black">MitZay Neural Link</p>
             </div>
           )}
         </div>
@@ -391,7 +391,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose }) => {
           to { transform: translateX(0); }
         }
         .animate-slide-in {
-          animation: slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: slide-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mb-safe {
+          padding-bottom: env(safe-area-inset-bottom, 0px);
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
