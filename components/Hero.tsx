@@ -55,14 +55,14 @@ const Hero: React.FC<HeroProps> = ({ onScrollToAgenda }) => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-10 w-full px-6 md:px-0">
           <button
             onClick={onScrollToAgenda}
-            className="w-full sm:w-auto inline-block px-10 py-4 md:px-14 md:py-5 bg-primary text-black font-black rounded-2xl text-xs md:text-sm shadow-[0_15px_30px_rgba(0,220,1,0.25)] hover:shadow-primary/40 transition-all hover:scale-[1.03] active:scale-95 uppercase tracking-[0.2em]"
+            className="h-14 md:h-16 px-10 bg-primary text-black font-black rounded-2xl text-xs md:text-sm shadow-[0_15px_30px_rgba(0,220,1,0.25)] hover:shadow-primary/40 transition-all hover:scale-[1.03] active:scale-95 uppercase tracking-[0.2em] w-full max-w-[280px] md:max-w-[320px] flex items-center justify-center"
           >
             {CTA_VARIATIONS[ctaIndex]}
           </button>
         </div>
       </div>
       
-      {/* Scroll indicator - Hidden on very small screens to avoid clutter */}
+      {/* Scroll indicator */}
       <div className="absolute bottom-20 md:bottom-12 right-6 md:right-12 hidden sm:flex flex-col items-center gap-4 opacity-70 cursor-pointer" onClick={onScrollToAgenda}>
          <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.6em] -rotate-90 origin-right translate-x-full text-primary">Explorar</span>
          <div className="w-8 h-8 md:w-10 md:h-10 border border-primary/30 rounded-full flex items-center justify-center animate-bounce shadow-[0_0_15px_rgba(0,220,1,0.2)]">

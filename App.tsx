@@ -33,11 +33,11 @@ const CommunityCTA: React.FC<{
   };
 
   const labels = {
-    primary: '¡ACCESO VIP GRATIS AHORA!',
-    pink: '¡ÚNETE AL CÍRCULO ÉLITE!',
-    blue: '¡DOMINA LA IA HOY!',
-    orange: '¡NO TE QUEDES FUERA!',
-    green: '¡AGENDA TU SESIÓN GRATIS!',
+    primary: 'ACCESO VIP GRATIS',
+    pink: 'ÚNETE AL CÍRCULO',
+    blue: 'DOMINA LA IA HOY',
+    orange: 'NO TE QUEDES FUERA',
+    green: 'AGENDA TU SESIÓN',
   };
 
   const Component = inactive ? 'div' : 'a';
@@ -48,20 +48,20 @@ const CommunityCTA: React.FC<{
   };
 
   return (
-    <div className={`mt-8 md:mt-12 flex flex-col items-center w-full ${className}`}>
+    <div className={`mt-8 md:mt-10 flex flex-col items-center w-full ${className}`}>
       {!hideOfferLabel && (
-        <p className={`text-[9px] md:text-[10px] font-black mb-4 uppercase tracking-[0.4em] animate-pulse text-center ${variant === 'primary' || variant === 'green' ? 'text-primary' : (variant === 'pink' ? 'text-pink-400' : (variant === 'blue' ? 'text-blue-400' : 'text-orange-400'))}`}>
-          OFERTA LIMITADA: 14 CUPOS
+        <p className={`text-[8px] md:text-[9px] font-black mb-3 uppercase tracking-[0.4em] animate-pulse text-center ${variant === 'primary' || variant === 'green' ? 'text-primary' : (variant === 'pink' ? 'text-pink-400' : (variant === 'blue' ? 'text-blue-400' : 'text-orange-400'))}`}>
+          OFERTA POR TIEMPO LIMITADO
         </p>
       )}
       <Component 
         {...extraProps}
-        className={`group relative px-6 md:px-10 py-4 md:py-5 font-black rounded-2xl text-[10px] md:text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 overflow-hidden text-center w-full max-w-xs md:max-w-none ${colors[variant === 'green' ? 'primary' : variant]} ${inactive ? 'cursor-default' : 'hover:scale-[1.05]'}`}
+        className={`group relative h-10 md:h-12 px-5 font-black rounded-xl text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 overflow-hidden flex items-center justify-center w-full max-w-[210px] md:max-w-[240px] ${colors[variant === 'green' ? 'primary' : variant]} ${inactive ? 'cursor-default' : 'hover:scale-[1.05]'}`}
       >
         <span className="relative z-10 flex items-center justify-center gap-2">
           {labels[variant]}
           {!inactive && (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           )}
@@ -69,8 +69,8 @@ const CommunityCTA: React.FC<{
         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-[-20deg]"></div>
       </Component>
       {!hideOfferLabel && (
-        <p className="text-[8px] md:text-[9px] text-gray-400 mt-4 font-bold uppercase tracking-widest text-center max-w-xs px-4">
-          🎁 Masterclass de Diseño Web con IA Incluida
+        <p className="text-[7px] md:text-[8px] text-gray-400 mt-3 font-bold uppercase tracking-widest text-center max-w-xs px-4">
+          🎁 Regalo de Bienvenida - Masterclass de Diseño Web Incluida
         </p>
       )}
     </div>
@@ -221,8 +221,18 @@ const HomePage: React.FC<HomePageProps> = ({
               {SERVICES_OVERVIEW.map((service, index) => (
                 <AnimatedSection key={index} delay={0.4 + (index * 0.15)} triggerOnSectionActive isActive={activeSection === 1}>
                   <div className="glass p-5 md:p-7 rounded-[1.5rem] md:rounded-[2.5rem] border border-primary/10 hover:border-primary/60 transition-all flex flex-col group min-h-[300px] md:min-h-[360px]">
-                    <div className="overflow-hidden rounded-xl mb-4 md:mb-6 aspect-[16/9] relative border border-primary/10 bg-black/40">
-                      <video loop playsInline className="w-full h-full object-cover opacity-80">
+                    <div 
+                      className="overflow-hidden rounded-xl mb-4 md:mb-6 aspect-[16/9] relative border border-primary/10 bg-black/40"
+                      onMouseEnter={(e) => {
+                        const video = e.currentTarget.querySelector('video');
+                        if (video) video.play();
+                      }}
+                      onMouseLeave={(e) => {
+                        const video = e.currentTarget.querySelector('video');
+                        if (video) video.pause();
+                      }}
+                    >
+                      <video loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
                         <source src={service.image} type="video/mp4" />
                       </video>
                     </div>
@@ -259,17 +269,17 @@ const HomePage: React.FC<HomePageProps> = ({
               </AnimatedSection>
             </header>
             <AnimatedSection delay={0.5} triggerOnSectionActive isActive={activeSection === 2}>
-              <div className="glass p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] border border-pink-500/20 relative overflow-hidden flex flex-col justify-center min-h-[400px]">
+              <div className="glass p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] border border-pink-500/20 relative overflow-hidden flex flex-col justify-center min-h-[400px] transition-all duration-700 hover:border-pink-500/50 hover:shadow-[0_0_80px_-20px_rgba(236,72,153,0.4)] group/impact-card">
                 {CASE_STUDIES.map((study, idx) => (
                   <div key={idx} className={`flex flex-col lg:flex-row gap-8 md:gap-12 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
                     <div className="w-full lg:w-1/2 relative">
-                      <div className="aspect-video rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-white/10">
+                      <div className="aspect-video rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-white/10 group-hover/impact-card:border-pink-500/30 transition-colors">
                         <video autoPlay loop muted playsInline className="w-full h-full object-cover grayscale md:hover:grayscale-0 transition-all">
                           <source src={study.image} type="video/mp4" />
                         </video>
                       </div>
-                      <button onClick={prevCase} className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20"><svg className="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-                      <button onClick={nextCase} className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20"><svg className="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
+                      <button onClick={prevCase} className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20 hover:scale-110 active:scale-90 transition-transform"><svg className="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
+                      <button onClick={nextCase} className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20 hover:scale-110 active:scale-90 transition-transform"><svg className="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
                     </div>
                     <div className="w-full lg:w-1/2 space-y-6">
                       <h3 className="text-xl md:text-4xl font-poppins font-bold text-white tracking-tight">{study.title}</h3>
@@ -288,7 +298,7 @@ const HomePage: React.FC<HomePageProps> = ({
               </div>
             </AnimatedSection>
             <AnimatedSection delay={1.0} triggerOnSectionActive isActive={activeSection === 2}>
-              <CommunityCTA variant="pink" className="scale-90" />
+              <CommunityCTA variant="pink" />
             </AnimatedSection>
           </div>
         </div>
@@ -311,13 +321,13 @@ const HomePage: React.FC<HomePageProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {TESTIMONIALS.map((t, i) => (
                 <AnimatedSection key={i} delay={0.4 + (i * 0.15)} triggerOnSectionActive isActive={activeSection === 3}>
-                  <div className="glass p-6 md:p-8 rounded-[2rem] border border-blue-500/20 flex flex-col relative group transition-all h-full">
+                  <div className="glass p-6 md:p-8 rounded-[2rem] border border-blue-500/20 flex flex-col relative group transition-all duration-500 h-full hover:border-blue-500/50 hover:-translate-y-2 hover:shadow-[0_0_80px_-20px_rgba(59,130,246,0.4)]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border border-white/10">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border border-white/10 group-hover:border-blue-500/30 transition-colors">
                         <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
                       </div>
                       <div>
-                        <p className="font-bold text-white text-sm md:text-base">{t.name}</p>
+                        <p className="font-bold text-white text-sm md:text-base group-hover:text-blue-200 transition-colors">{t.name}</p>
                         <p className="text-[8px] text-gray-500 uppercase tracking-widest">{t.date || 'Hace poco'}</p>
                       </div>
                     </div>
@@ -335,7 +345,7 @@ const HomePage: React.FC<HomePageProps> = ({
               ))}
             </div>
             <AnimatedSection delay={1.0} triggerOnSectionActive isActive={activeSection === 3}>
-              <CommunityCTA variant="blue" className="scale-90" />
+              <CommunityCTA variant="blue" />
             </AnimatedSection>
           </div>
         </div>
@@ -356,7 +366,7 @@ const HomePage: React.FC<HomePageProps> = ({
                   </AnimatedSection>
                   <AnimatedSection delay={0.5} triggerOnSectionActive isActive={activeSection === 4}>
                     <p className="text-gray-300 text-base md:text-lg mb-6 max-w-md mx-auto lg:mx-0">{CALENDLY_SECTION.copy}</p>
-                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-center lg:items-start scale-95 md:origin-left" />
+                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-center lg:items-start" />
                   </AnimatedSection>
             </div>
             <AnimatedSection delay={0.8} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/5">
@@ -467,7 +477,12 @@ const App: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <button onClick={() => setCurrentPage('home')} className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold uppercase tracking-widest hover:bg-white/10 transition-all text-xs">Volver al Ecosistema</button>
+              <button 
+                onClick={() => setCurrentPage('home')} 
+                className="h-10 md:h-12 px-8 bg-white/5 border border-white/10 rounded-xl text-white font-bold uppercase tracking-widest hover:bg-white/10 transition-all text-[9px] md:text-[10px] w-full max-w-[210px] md:max-w-[240px] mx-auto flex items-center justify-center"
+              >
+                Volver al Ecosistema
+              </button>
             </div>
           </div>
         )}
@@ -481,10 +496,15 @@ const App: React.FC = () => {
                 <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-6">Notificarme el lanzamiento</p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <input type="email" placeholder="tu@email.com" className="flex-1 bg-black/40 border border-white/10 px-5 py-3 rounded-xl focus:border-primary outline-none text-sm" />
-                  <button className="bg-primary text-black font-black px-6 py-3 rounded-xl uppercase tracking-widest text-[10px]">Unirme</button>
+                  <button className="bg-primary text-black font-black px-6 py-3 rounded-xl uppercase tracking-widest text-[10px] min-w-[120px]">Unirme</button>
                 </div>
               </div>
-              <button onClick={() => setCurrentPage('home')} className="px-8 py-3 text-gray-500 hover:text-white transition-all uppercase tracking-widest font-bold text-[10px]">Regresar</button>
+              <button 
+                onClick={() => setCurrentPage('home')} 
+                className="h-10 md:h-12 px-8 text-gray-500 hover:text-white transition-all uppercase tracking-widest font-bold text-[9px] w-full max-w-[210px] md:max-w-[240px] mx-auto border border-white/5 rounded-xl flex items-center justify-center"
+              >
+                Regresar al Inicio
+              </button>
              </div>
           </div>
         )}
