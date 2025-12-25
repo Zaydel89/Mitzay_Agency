@@ -16,13 +16,15 @@ export const HOME_SECTIONS = [
 ];
 
 /** 
- * IMPORTANTE: Para que los usuarios agenden, debes usar el link de "Página de citas" 
- * de Google Calendar (Appointment Schedule), no un calendario público normal.
+ * Enlace oficial de tu página de citas de Google Calendar.
  */
-export const GOOGLE_BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3oG_vG0_8Q1Pz-0_X7r0G0_8Q1Pz-0_X7r0G0_8Q1Pz-0_X7r0G0"; 
+export const GOOGLE_BOOKING_URL = "https://calendar.app.google/cHUQDW3hy5a3BzcQ6"; 
 
-// Si prefieres seguir usando el embed que tenías, asegúrate de que sea la versión de citas:
-export const CALENDLY_URL = "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FMexico_City&showPrint=0&showTitle=0&mode=WEEK&src=ZmQ1MzIzMjdkZDcwOGM4YzY5ZDg4NGE3NzY4N2M3N2I4NTZhYjAwMjVlNjNiMjg0NjgzYjljOWYxY2YyODY4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%2333b679";
+/**
+ * URL utilizada para el Iframe de la web. 
+ * Usamos el mismo link para asegurar que la sincronización sea total.
+ */
+export const CALENDLY_URL = "https://calendar.app.google/cHUQDW3hy5a3BzcQ6";
 
 export const SEO_DATA: Record<Page, { title: string; description: string }> = {
   home: {
@@ -159,8 +161,8 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const CALENDLY_SECTION = {
-    headline: "Agenda una videollamada de 30 minutos",
-    copy: "Reserva un espacio directo en mi Google Calendar: resolveremos tus dudas, propondré un plan inicial y te mostraré cómo automatizar procesos para ganar tiempo y ventas."
+    headline: "Sesión Estratégica: IA y Crecimiento Digital",
+    copy: "En esta videollamada de 30 minutos, analizaremos los cuellos de botella de tu negocio y trazaremos una hoja de ruta personalizada para escalar tus ventas."
 };
 
 export const FOOTER_CONTENT = {

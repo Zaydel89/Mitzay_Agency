@@ -79,31 +79,40 @@ const CommunityCTA: React.FC<{
   );
 };
 
-const GoogleCalendarEmbed = () => {
+const GoogleCalendarEmbed: React.FC<{ onHover?: (isHovering: boolean) => void }> = ({ onHover }) => {
     return (
-        <div className="w-full h-full min-h-[500px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_80px_-20px_rgba(0,220,1,0.4)] transition-all duration-500 relative group">
-            {/* Overlay para suavizar el blanco del calendario si es necesario */}
-            <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            
+        <div 
+          onMouseEnter={() => onHover?.(true)}
+          onMouseLeave={() => onHover?.(false)}
+          className="w-full h-full min-h-[500px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_80px_-20px_rgba(0,220,1,0.4)] transition-all duration-500 relative group"
+        >
             <iframe 
                 src={CALENDLY_URL} 
                 style={{ 
                   border: 0, 
                   filter: 'invert(92%) hue-rotate(145deg) brightness(1.1) contrast(1.1) saturate(1.2)' 
                 }} 
-                className="w-full h-full opacity-90 grayscale-[0.2] hover:grayscale-0 transition-all duration-500"
+                className="w-full h-full opacity-90 grayscale-[0.2] hover:grayscale-0 transition-all duration-500 relative z-10"
                 frameBorder="0" 
                 scrolling="yes"
                 title="Agenda MitZay"
             ></iframe>
             
-            {/* Decorative ring */}
-            <div className="absolute inset-0 pointer-events-none ring-1 ring-white/10 rounded-[3rem] inset-shadow-sm"></div>
-            
-            {/* Ayuda visual de interacción */}
-            <div className="absolute bottom-4 right-8 text-[8px] font-black text-primary uppercase tracking-widest opacity-40">
-              Interface Sincronizada 24/7
+            {/* Overlay sutil para indicar interactividad */}
+            <div className="absolute top-6 right-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+               <a 
+                 href={CALENDLY_URL} 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="flex items-center gap-2 px-4 py-2 bg-primary text-black font-black text-[9px] uppercase tracking-widest rounded-full shadow-xl hover:scale-105 transition-transform"
+               >
+                 Abrir en pestaña nueva
+                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+               </a>
             </div>
+            
+            {/* Decorative ring - pointer events none to not block iframe */}
+            <div className="absolute inset-0 pointer-events-none ring-1 ring-white/10 rounded-[3rem] inset-shadow-sm z-30"></div>
         </div>
     );
 };
@@ -128,6 +137,8 @@ const HomePage: React.FC<HomePageProps> = ({
   onScrollToSection 
 }) => {
   const [currentCaseSlide, setCurrentCaseSlide] = useState(0);
+  const [isHoveringCalendar, setIsHoveringCalendar] = useState(false);
+  
   const nextCase = () => setCurrentCaseSlide((prev) => (prev + 1) % CASE_STUDIES.length);
   const prevCase = () => setCurrentCaseSlide((prev) => (prev - 1 + CASE_STUDIES.length) % CASE_STUDIES.length);
 
@@ -145,14 +156,19 @@ const HomePage: React.FC<HomePageProps> = ({
     const el = scrollRef.current;
     if (el) {
       const onWheel = (e: WheelEvent) => {
+        // SI EL USUARIO ESTÁ SOBRE EL CALENDARIO, NO INTERVENIMOS
+        if (isHoveringCalendar) return;
+
         const isAtEnd = el.scrollLeft >= (el.scrollWidth - el.clientWidth - 10);
         if (isAtEnd && e.deltaY > 0) return;
         if (e.deltaY === 0) return;
         if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; 
         if (isAtEnd && e.deltaY < 0) return;
+        
         e.preventDefault();
         el.scrollBy({ left: e.deltaY * 1.5, behavior: 'auto' });
       };
+      
       el.addEventListener('wheel', onWheel, { passive: false });
       el.addEventListener('scroll', handleScroll);
       return () => {
@@ -160,16 +176,18 @@ const HomePage: React.FC<HomePageProps> = ({
         el.removeEventListener('scroll', handleScroll);
       };
     }
-  }, [scrollRef, handleScroll, activeSection]);
+  }, [scrollRef, handleScroll, activeSection, isHoveringCalendar]);
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       <div ref={scrollRef} className="flex h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar bg-black">
+        {/* Sección 0: Hero */}
         <div className="horizontal-section flex items-center justify-center">
           <div className="glow-overlay bg-primary opacity-30"></div>
           <Hero onScrollToAgenda={() => onScrollToSection(4)} />
         </div>
 
+        {/* Sección 1: Servicios */}
         <div className="horizontal-section bg-black flex items-center px-12 md:px-20 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-luminosity">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
@@ -212,6 +230,7 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
+        {/* Sección 2: Impacto Real */}
         <div className="horizontal-section bg-black flex items-center px-12 md:px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766445635/3129595-hd_1920_1080_30fps_ntfqag.mp4" type="video/mp4" />
@@ -261,6 +280,7 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
+        {/* Sección 3: Experiencias */}
         <div className="horizontal-section bg-black flex items-center px-12 md:px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-30 mix-blend-luminosity">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
@@ -309,6 +329,7 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
+        {/* Sección 4: Agenda */}
         <div id="agenda" className="horizontal-section bg-black flex items-center px-12 md:px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
@@ -331,12 +352,13 @@ const HomePage: React.FC<HomePageProps> = ({
             </div>
             <AnimatedSection delay={1.6} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/5 h-[550px]">
               <div className="w-full h-full relative">
-                <GoogleCalendarEmbed />
+                <GoogleCalendarEmbed onHover={setIsHoveringCalendar} />
               </div>
             </AnimatedSection>
           </div>
         </div>
         
+        {/* Sección 5: Footer */}
         <div className="horizontal-section flex items-center justify-center px-12 md:px-24 bg-black">
           <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 5} className="w-full max-w-5xl">
               <Footer onNavigate={onNavigate} onScrollToSection={onScrollToSection} />
