@@ -3,24 +3,16 @@
 <html lang="es" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#000000" />
     <title>MitZay Agency | Marketing Digital y Automatización con IA</title>
     <meta name="description" content="Transforma tu negocio con MitZay Agency. Ofrecemos diseño web, contenido con IA y automatización para escalar tu presencia digital de forma recurrente." />
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" />
     
-    <!-- Polyfill para process.env (Evita el error 'process is not defined' en Netlify) -->
     <script>
       window.process = { env: { API_KEY: "" } };
     </script>
 
-    <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="MitZay Agency | Marketing Digital con IA" />
-    <meta property="og:description" content="Diseño web, contenido y automatización con IA para escalar tu negocio." />
-    <meta property="og:image" content="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" />
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -41,7 +33,6 @@
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'glow': 'glow 2s ease-in-out infinite alternate',
               'fade-in': 'fadeIn 0.5s ease-out forwards',
-              'slide-up': 'slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             },
             keyframes: {
               glow: {
@@ -51,10 +42,6 @@
               fadeIn: {
                 '0%': { opacity: '0', transform: 'translateY(10px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              slideUp: {
-                '0%': { opacity: '0', transform: 'translateY(60px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
               }
             }
           }
@@ -62,40 +49,28 @@
       }
     </script>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800;900&family=Montserrat:wght@900&display=swap" rel="stylesheet">
     
     <style>
-      :root { 
-        color-scheme: dark;
-      }
+      :root { color-scheme: dark; }
       body {
         background-color: #000000;
         color: #F5F6F7;
-        overflow-x: hidden;
-        width: 100vw;
-        height: 100vh;
-        position: relative;
         font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Control de Scroll Dinámico */
+      html, body {
+        overflow-x: hidden;
+        width: 100%;
       }
 
       @media (min-width: 768px) {
-        body { overflow: hidden; }
-      }
-
-      .services-gradient-bg {
-        background: linear-gradient(-45deg, #00ff00, #008a00, #010547, #050f9c, #e35300, #b50d88);
-        background-size: 400% 400%;
-        animation: services-gradient-animation 15s ease infinite;
-        min-height: 100vh;
-      }
-
-      @keyframes services-gradient-animation {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        body { height: 100vh; overflow: hidden; }
       }
 
       .glass {
@@ -103,85 +78,33 @@
         backdrop-filter: blur(20px) saturate(160%);
         -webkit-backdrop-filter: blur(20px) saturate(160%);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
       }
       
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
       .horizontal-section {
-        min-width: 100vw;
-        height: 100vh;
-        scroll-snap-align: start;
-        flex-shrink: 0;
+        width: 100%;
+        min-height: 100vh;
         position: relative;
-        overflow: hidden;
+        flex-shrink: 0;
       }
 
       @media (min-width: 768px) {
         .horizontal-section {
           min-width: calc(100vw - 5rem);
+          height: 100vh;
+          scroll-snap-align: start;
         }
       }
 
-      @keyframes switch {
-        0% { opacity: 0; filter: blur(20px); transform: scale(4); }
-        5% { opacity: 1; filter: blur(0); transform: scale(1); }
-        15% { opacity: 1; filter: blur(0); transform: scale(0.98); }
-        20% { opacity: 0; filter: blur(10px); transform: scale(0.9); }
-        100% { opacity: 0; }
-      }
-
-      #fly-in {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 900;
-        text-transform: uppercase;
-        color: #ffffff;
-        text-align: center;
-        width: 100%;
-        height: 35vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        z-index: 50;
-      }
-
-      #fly-in div {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        animation: switch 15s linear infinite;
-        font-size: 2.5rem;
-        padding: 0 1rem;
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-        pointer-events: none;
-      }
-
-      @media (min-width: 768px) {
-        #fly-in div { font-size: 5rem; }
-      }
-
-      #fly-in span {
-        display: block;
-        font-size: 0.3em;
-        opacity: 0.9;
-        letter-spacing: 0.5em;
-        margin-bottom: 0.5rem;
-        color: #00DC01;
-        font-weight: 800;
-      }
-
-      #fly-in div:nth-child(1) { animation-delay: 0s; }
-      #fly-in div:nth-child(2) { animation-delay: 3s; }
-      #fly-in div:nth-child(3) { animation-delay: 6s; }
-      #fly-in div:nth-child(4) { animation-delay: 9s; }
-      #fly-in div:nth-child(5) { animation-delay: 12s; }
-
-      @media (max-width: 768px) {
-        body { height: auto; overflow-y: auto; }
-        .horizontal-section { height: auto; min-height: 100vh; padding-top: 5rem; padding-bottom: 5rem; scroll-snap-align: none; }
+      @media (max-width: 767px) {
+        .horizontal-section {
+          height: auto;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
       }
     </style>
     <script type="importmap">
@@ -200,7 +123,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Carga del módulo principal de la aplicación -->
     <script type="module" src="index.tsx"></script>
   </body>
 </html>
