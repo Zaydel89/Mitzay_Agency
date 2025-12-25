@@ -148,10 +148,10 @@ const HomePage: React.FC<HomePageProps> = ({
       
       const sections = [0, 1, 2, 3, 4, 5, 6];
       for (const i of sections) {
-        const sec = document.getElementById(`section-${i}`);
+        const sec = document.getElementById(`section-${i}-mobile`);
         if (sec) {
           const rect = sec.getBoundingClientRect();
-          if (rect.top <= 200 && rect.bottom >= 200) {
+          if (rect.top <= 250 && rect.bottom >= 250) {
             setActiveSection(i);
             break;
           }
@@ -194,53 +194,47 @@ const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="relative md:h-screen w-full md:overflow-hidden bg-black">
-      <div ref={scrollRef} className="flex flex-col md:flex-row md:h-screen md:overflow-x-auto md:overflow-y-hidden md:snap-x md:snap-mandatory no-scrollbar bg-black">
-        
-        {/* SECCIÓN 0: HERO */}
-        <div id="section-0" className="horizontal-section flex items-center justify-center min-h-screen md:min-h-0">
+      
+      {/* --- DESKTOP VIEW (ONLY MONITORS) --- */}
+      <div 
+        ref={scrollRef} 
+        className="hidden md:flex md:flex-row md:h-screen md:overflow-x-auto md:overflow-y-hidden md:snap-x md:snap-mandatory no-scrollbar bg-black"
+      >
+        {/* SECCIÓN 0: HERO DESKTOP */}
+        <div id="section-0-desktop" className="horizontal-section flex items-center justify-center">
           <div className="glow-overlay bg-primary opacity-30"></div>
           <Hero onScrollToAgenda={() => onScrollToSection(4)} />
         </div>
 
-        {/* SECCIÓN 1: ECOSISTEMA */}
-        <div id="section-1" className="horizontal-section bg-black flex items-center px-6 md:px-20 overflow-hidden relative min-h-screen md:min-h-0 py-20 md:py-0">
+        {/* SECCIÓN 1: ECOSISTEMA DESKTOP */}
+        <div id="section-1-desktop" className="horizontal-section bg-black flex items-center px-20 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-luminosity">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-primary/5 to-black/90 z-[1]"></div>
           <div className="w-full max-w-[1300px] mx-auto relative z-10">
-            <header className="mb-8 md:mb-12 text-center md:text-left">
+            <header className="mb-12 text-left">
               <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 1}>
-                <h2 className="text-primary text-[8px] md:text-[9px] font-black tracking-[0.5em] uppercase mb-3">Capacidades</h2>
+                <h2 className="text-primary text-[9px] font-black tracking-[0.5em] uppercase mb-3">Capacidades</h2>
               </AnimatedSection>
               <AnimatedSection delay={0.3} triggerOnSectionActive isActive={activeSection === 1}>
-                <h3 className="font-poppins text-2xl md:text-4xl font-bold text-white">Nuestro Ecosistema</h3>
+                <h3 className="font-poppins text-4xl font-bold text-white">Nuestro Ecosistema</h3>
               </AnimatedSection>
             </header>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-4 gap-6">
               {SERVICES_OVERVIEW.map((service, index) => (
                 <AnimatedSection key={index} delay={0.4 + (index * 0.15)} triggerOnSectionActive isActive={activeSection === 1}>
-                  <div className="glass p-5 md:p-7 rounded-[1.5rem] md:rounded-[2.5rem] border border-primary/10 hover:border-primary/60 transition-all flex flex-col group min-h-[300px] md:min-h-[360px]">
-                    <div 
-                      className="overflow-hidden rounded-xl mb-4 md:mb-6 aspect-[16/9] relative border border-primary/10 bg-black/40"
-                      onMouseEnter={(e) => {
-                        const video = e.currentTarget.querySelector('video');
-                        if (video) video.play();
-                      }}
-                      onMouseLeave={(e) => {
-                        const video = e.currentTarget.querySelector('video');
-                        if (video) video.pause();
-                      }}
-                    >
+                  <div className="glass p-7 rounded-[2.5rem] border border-primary/10 hover:border-primary/60 transition-all flex flex-col group min-h-[360px]">
+                    <div className="overflow-hidden rounded-xl mb-6 aspect-[16/9] relative border border-primary/10 bg-black/40">
                       <video loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
                         <source src={service.image} type="video/mp4" />
                       </video>
                     </div>
-                    <h3 className="font-poppins text-base md:text-lg font-bold text-primary mb-2 md:mb-3">{service.title}</h3>
-                    <p className="text-gray-400 text-[10px] md:text-sm leading-relaxed mb-4 flex-grow line-clamp-4">{service.description}</p>
+                    <h3 className="font-poppins text-lg font-bold text-primary mb-3">{service.title}</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed mb-4 flex-grow line-clamp-4">{service.description}</p>
                     <div className="pt-4 border-t border-primary/10 flex flex-wrap gap-1.5">
                        {service.features.slice(0, 3).map((f, i) => (
-                         <span key={i} className="text-[6px] md:text-[7px] text-gray-500 border border-primary/10 px-2 py-0.5 md:py-1 rounded-full uppercase tracking-widest font-black">{f}</span>
+                         <span key={i} className="text-[7px] text-gray-500 border border-primary/10 px-2 py-1 rounded-full uppercase tracking-widest font-black">{f}</span>
                        ))}
                     </div>
                   </div>
@@ -253,42 +247,42 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
-        {/* SECCIÓN 2: IMPACTO REAL */}
-        <div id="section-2" className="horizontal-section bg-black flex items-center px-6 md:px-24 overflow-hidden relative min-h-screen md:min-h-0 py-20 md:py-0">
+        {/* SECCIÓN 2: IMPACTO REAL DESKTOP */}
+        <div id="section-2-desktop" className="horizontal-section bg-black flex items-center px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766445635/3129595-hd_1920_1080_30fps_ntfqag.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-pink-500/10 to-black/90 z-[1]"></div>
           <div className="w-full max-w-5xl mx-auto relative z-10">
-            <header className="mb-8 md:mb-12 text-center md:text-left">
+            <header className="mb-12 text-left">
               <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 2}>
                 <h2 className="text-pink-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4">Pruebas de Valor</h2>
               </AnimatedSection>
               <AnimatedSection delay={0.3} triggerOnSectionActive isActive={activeSection === 2}>
-                <h3 className="font-poppins text-3xl md:text-5xl font-bold text-white">Impacto Real</h3>
+                <h3 className="font-poppins text-5xl font-bold text-white">Impacto Real</h3>
               </AnimatedSection>
             </header>
             <AnimatedSection delay={0.5} triggerOnSectionActive isActive={activeSection === 2}>
-              <div className="glass p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] border border-pink-500/20 relative overflow-hidden flex flex-col justify-center min-h-[400px] transition-all duration-700 hover:border-pink-500/50 hover:shadow-[0_0_80px_-20px_rgba(236,72,153,0.4)] group/impact-card">
+              <div className="glass p-14 rounded-[3.5rem] border border-pink-500/20 relative overflow-hidden flex flex-col justify-center min-h-[400px] transition-all duration-700 hover:border-pink-500/50 hover:shadow-[0_0_80px_-20px_rgba(236,72,153,0.4)] group/impact-card">
                 {CASE_STUDIES.map((study, idx) => (
-                  <div key={idx} className={`flex flex-col lg:flex-row gap-8 md:gap-12 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
-                    <div className="w-full lg:w-1/2 relative">
-                      <div className="aspect-video rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-white/10 group-hover/impact-card:border-pink-500/30 transition-colors">
-                        <video autoPlay loop muted playsInline className="w-full h-full object-cover grayscale md:hover:grayscale-0 transition-all">
+                  <div key={idx} className={`flex flex-row gap-12 items-center transition-all duration-700 ${idx === currentCaseSlide ? 'opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-8'}`}>
+                    <div className="w-1/2 relative">
+                      <div className="aspect-video rounded-[2rem] overflow-hidden border border-white/10 group-hover/impact-card:border-pink-500/30 transition-colors">
+                        <video autoPlay loop muted playsInline className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all">
                           <source src={study.image} type="video/mp4" />
                         </video>
                       </div>
-                      <button onClick={prevCase} className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20 hover:scale-110 active:scale-90 transition-transform"><svg className="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-                      <button onClick={nextCase} className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20 hover:scale-110 active:scale-90 transition-transform"><svg className="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
+                      <button onClick={prevCase} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20 hover:scale-110 active:scale-90 transition-transform"><svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
+                      <button onClick={nextCase} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 glass rounded-full text-pink-400 z-20 hover:scale-110 active:scale-90 transition-transform"><svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" /></svg></button>
                     </div>
-                    <div className="w-full lg:w-1/2 space-y-6">
-                      <h3 className="text-xl md:text-4xl font-poppins font-bold text-white tracking-tight">{study.title}</h3>
-                      <p className="text-gray-400 text-sm md:text-base leading-relaxed">{study.description}</p>
+                    <div className="w-1/2 space-y-6">
+                      <h3 className="text-4xl font-poppins font-bold text-white tracking-tight">{study.title}</h3>
+                      <p className="text-gray-400 text-base leading-relaxed">{study.description}</p>
                       <div className="space-y-3">
                         {study.kpis.map((kpi, kIdx) => (
                           <div key={kIdx} className="flex items-center gap-3">
                             <div className="w-5 h-5 bg-pink-500/10 rounded-full flex items-center justify-center text-pink-400 text-[8px] font-black">✓</div>
-                            <span className="text-base md:text-lg font-bold text-white/90">{kpi}</span>
+                            <span className="text-lg font-bold text-white/90">{kpi}</span>
                           </div>
                         ))}
                       </div>
@@ -303,38 +297,38 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
-        {/* SECCIÓN 3: EXPERIENCIAS */}
-        <div id="section-3" className="horizontal-section bg-black flex items-center px-6 md:px-24 overflow-hidden relative min-h-screen md:min-h-0 py-20 md:py-0">
+        {/* SECCIÓN 3: EXPERIENCIAS DESKTOP */}
+        <div id="section-3-desktop" className="horizontal-section bg-black flex items-center px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-30 mix-blend-luminosity">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-transparent to-black z-[1]"></div>
           <div className="w-full max-w-6xl mx-auto relative z-10">
-            <header className="mb-10 md:mb-16 text-center md:text-left">
+            <header className="mb-16 text-left">
               <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 3}>
                 <h2 className="text-blue-400 text-[9px] font-black tracking-[0.5em] uppercase mb-4">Experiencias</h2>
               </AnimatedSection>
               <AnimatedSection delay={0.3} triggerOnSectionActive isActive={activeSection === 3}>
-                <h3 className="font-poppins text-3xl md:text-5xl font-bold text-white">Lo que dicen</h3>
+                <h3 className="font-poppins text-5xl font-bold text-white">Lo que dicen</h3>
               </AnimatedSection>
             </header>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-3 gap-8">
               {TESTIMONIALS.map((t, i) => (
                 <AnimatedSection key={i} delay={0.4 + (i * 0.15)} triggerOnSectionActive isActive={activeSection === 3}>
-                  <div className="glass p-6 md:p-8 rounded-[2rem] border border-blue-500/20 flex flex-col relative group transition-all duration-500 h-full hover:border-blue-500/50 hover:-translate-y-2 hover:shadow-[0_0_80px_-20px_rgba(59,130,246,0.4)]">
+                  <div className="glass p-8 rounded-[2rem] border border-blue-500/20 flex flex-col relative group transition-all duration-500 h-full hover:border-blue-500/50 hover:-translate-y-2 hover:shadow-[0_0_80px_-20px_rgba(59,130,246,0.4)]">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                      <div className="w-12 md:h-12 rounded-full overflow-hidden border border-white/10 group-hover:border-blue-500/30 transition-colors">
                         <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
                       </div>
                       <div>
-                        <p className="font-bold text-white text-sm md:text-base group-hover:text-blue-200 transition-colors">{t.name}</p>
+                        <p className="font-bold text-white text-base group-hover:text-blue-200 transition-colors">{t.name}</p>
                         <p className="text-[8px] text-gray-500 uppercase tracking-widest">{t.date || 'Hace poco'}</p>
                       </div>
                     </div>
                     <div className="flex gap-1 mb-4">
                       {[1,2,3,4,5].map(s => (<span key={s} className="text-blue-400 text-xs">★</span>))}
                     </div>
-                    <p className="text-gray-300 text-xs md:text-base leading-relaxed flex-grow italic">
+                    <p className="text-gray-300 text-base leading-relaxed flex-grow italic">
                       "{t.quote.split(t.highlight)[0]}<span className="text-blue-400 font-bold not-italic">{t.highlight}</span>{t.quote.split(t.highlight)[1]}"
                     </p>
                     <div className="mt-5 pt-4 border-t border-white/5">
@@ -350,44 +344,167 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
-        {/* SECCIÓN 4: AGENDA */}
-        <div id="section-4" className="horizontal-section bg-black flex items-center px-6 md:px-24 overflow-hidden relative min-h-screen md:min-h-0 py-20 md:py-0">
+        {/* SECCIÓN 4: AGENDA DESKTOP */}
+        <div id="section-4-desktop" className="horizontal-section bg-black flex items-center px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-green-950/60 via-black/80 to-black z-[1]"></div>
-          <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 md:gap-12 items-center relative z-10">
-            <div className="w-full lg:w-2/5 text-center lg:text-left">
+          <div className="w-full max-w-6xl mx-auto flex flex-row gap-12 items-center relative z-10">
+            <div className="w-2/5 text-left">
                   <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 4}>
                     <div className="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-[0.3em] mb-4 border border-primary/30">Agendamiento</div>
                   </AnimatedSection>
                   <AnimatedSection delay={0.3} triggerOnSectionActive isActive={activeSection === 4}>
-                    <h2 className="font-poppins text-3xl md:text-5xl font-medium leading-tight mb-4 text-white">{CALENDLY_SECTION.headline}</h2>
+                    <h2 className="font-poppins text-5xl font-medium leading-tight mb-4 text-white">{CALENDLY_SECTION.headline}</h2>
                   </AnimatedSection>
                   <AnimatedSection delay={0.5} triggerOnSectionActive isActive={activeSection === 4}>
-                    <p className="text-gray-300 text-base md:text-lg mb-6 max-w-md mx-auto lg:mx-0">{CALENDLY_SECTION.copy}</p>
-                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-center lg:items-start" />
+                    <p className="text-gray-300 text-lg mb-6 max-w-md mx-0">{CALENDLY_SECTION.copy}</p>
+                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-start" />
                   </AnimatedSection>
             </div>
-            <AnimatedSection delay={0.8} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/5">
-              <div className="w-full h-[450px] md:h-[690px] relative">
+            <AnimatedSection delay={0.8} triggerOnSectionActive isActive={activeSection === 4} className="w-3/5">
+              <div className="w-full h-[690px] relative">
                 <GoogleCalendarEmbed onHover={setIsHoveringCalendar} />
               </div>
             </AnimatedSection>
           </div>
         </div>
         
-        {/* SECCIÓN 5: FOOTER */}
-        <div id="section-5" className="horizontal-section flex items-center justify-center px-6 md:px-24 bg-black min-h-screen md:min-h-0 py-20 md:py-0">
+        {/* SECCIÓN 5: FOOTER DESKTOP */}
+        <div id="section-5-desktop" className="horizontal-section flex items-center justify-center px-24 bg-black">
           <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 5} className="w-full max-w-4xl">
               <Footer onNavigate={onNavigate} onScrollToSection={onScrollToSection} />
           </AnimatedSection>
         </div>
 
-        {/* SECCIÓN 6: NEXUS (VISIBLE EN TODOS LOS DISPOSITIVOS) */}
-        <div id="section-6" className="horizontal-section bg-black flex items-center justify-center min-h-screen md:min-h-0">
+        {/* SECCIÓN 6: NEXUS DESKTOP */}
+        <div id="section-6-desktop" className="horizontal-section bg-black flex items-center justify-center">
            <NeuralNexusSection />
         </div>
+      </div>
+
+
+      {/* --- MOBILE VIEW (CLONES ADAPTADOS) --- */}
+      <div className="flex md:hidden flex-col w-full bg-black">
+        
+        {/* SECCIÓN 0: HERO CLONE */}
+        <div id="section-0-mobile" className="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden">
+           <Hero onScrollToAgenda={() => onScrollToSection(4)} />
+        </div>
+
+        {/* SECCIÓN 1: ECOSISTEMA CLONE */}
+        <div id="section-1-mobile" className="min-h-screen bg-black flex items-center py-20 px-6 relative">
+          <div className="absolute inset-0 bg-primary/5 blur-[80px] pointer-events-none"></div>
+          <div className="w-full relative z-10">
+            <header className="mb-10 text-center">
+              <h2 className="text-primary text-[8px] font-black tracking-[0.4em] uppercase mb-2">Capacidades</h2>
+              <h3 className="font-poppins text-2xl font-bold text-white">Ecosistema IA</h3>
+            </header>
+            <div className="flex flex-col gap-6">
+              {SERVICES_OVERVIEW.map((service, index) => (
+                <AnimatedSection key={index} delay={0.2}>
+                  <div className="glass p-6 rounded-[2rem] border border-primary/10">
+                    <div className="overflow-hidden rounded-xl mb-4 aspect-video border border-primary/10">
+                      <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                        <source src={service.image} type="video/mp4" />
+                      </video>
+                    </div>
+                    <h3 className="text-lg font-bold text-primary mb-2">{service.title}</h3>
+                    <p className="text-gray-400 text-[11px] leading-relaxed mb-4">{service.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {service.features.map((f, i) => (
+                        <span key={i} className="text-[6px] text-gray-500 border border-white/5 px-2 py-1 rounded-full uppercase font-black">{f}</span>
+                      ))}
+                    </div>
+                  </div>
+                </AnimatedSection>
+              ))}
+            </div>
+            <CommunityCTA variant="primary" className="mt-10" />
+          </div>
+        </div>
+
+        {/* SECCIÓN 2: IMPACTO REAL CLONE */}
+        <div id="section-2-mobile" className="min-h-screen bg-black py-20 px-6 relative">
+          <div className="absolute inset-0 bg-pink-500/5 blur-[100px] pointer-events-none"></div>
+          <header className="mb-10 text-center">
+              <h2 className="text-pink-400 text-[8px] font-black tracking-[0.4em] uppercase mb-2">Resultados</h2>
+              <h3 className="font-poppins text-2xl font-bold text-white">Impacto Real</h3>
+          </header>
+          <div className="space-y-8">
+            {CASE_STUDIES.map((study, idx) => (
+              <AnimatedSection key={idx} delay={0.2}>
+                <div className="glass p-6 rounded-[2.5rem] border border-pink-500/10">
+                  <div className="aspect-video rounded-xl overflow-hidden mb-5 border border-white/5">
+                    <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                      <source src={study.image} type="video/mp4" />
+                    </video>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">{study.title}</h3>
+                  <p className="text-gray-400 text-[11px] mb-4">{study.description}</p>
+                  <div className="flex flex-col gap-2">
+                    {study.kpis.map((kpi, kIdx) => (
+                      <div key={kIdx} className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-pink-500/20 rounded-full flex items-center justify-center text-pink-400 text-[6px]">✓</div>
+                        <span className="text-xs font-bold text-white/80">{kpi}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+          <CommunityCTA variant="pink" className="mt-10" />
+        </div>
+
+        {/* SECCIÓN 3: EXPERIENCIAS CLONE */}
+        <div id="section-3-mobile" className="min-h-screen bg-black py-20 px-6 relative">
+          <header className="mb-10 text-center">
+              <h2 className="text-blue-400 text-[8px] font-black tracking-[0.4em] uppercase mb-2">Comunidad</h2>
+              <h3 className="font-poppins text-2xl font-bold text-white">Experiencias</h3>
+          </header>
+          <div className="flex flex-col gap-6">
+            {TESTIMONIALS.map((t, i) => (
+              <AnimatedSection key={i} delay={0.2}>
+                <div className="glass p-6 rounded-[2rem] border border-blue-500/10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <img src={t.image} alt={t.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                    <div>
+                      <p className="font-bold text-white text-sm">{t.name}</p>
+                      <p className="text-[7px] text-gray-500 uppercase font-black">{t.title}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-xs italic leading-relaxed">"{t.quote}"</p>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+          <CommunityCTA variant="blue" className="mt-10" />
+        </div>
+
+        {/* SECCIÓN 4: AGENDA CLONE */}
+        <div id="section-4-mobile" className="min-h-screen bg-black py-20 px-6 relative">
+          <div className="text-center mb-10">
+            <h2 className="font-poppins text-2xl font-medium text-white mb-4">{CALENDLY_SECTION.headline}</h2>
+            <p className="text-gray-300 text-xs mb-8">{CALENDLY_SECTION.copy}</p>
+          </div>
+          <div className="w-full h-[500px] mb-8">
+             <GoogleCalendarEmbed />
+          </div>
+          <CommunityCTA variant="green" hideOfferLabel inactive />
+        </div>
+
+        {/* SECCIÓN 5: FOOTER CLONE */}
+        <div id="section-5-mobile" className="py-10 px-6 bg-black">
+          <Footer onNavigate={onNavigate} onScrollToSection={onScrollToSection} />
+        </div>
+
+        {/* SECCIÓN 6: NEXUS CLONE */}
+        <div id="section-6-mobile" className="h-[70vh] w-full bg-black flex items-center justify-center overflow-hidden">
+           <NeuralNexusSection />
+        </div>
+
       </div>
 
       {/* PROGRESS BAR */}
@@ -419,8 +536,10 @@ const App: React.FC = () => {
 
   const handleScrollToSection = (index: number) => {
     const isMobile = window.innerWidth < 768;
+    const suffix = isMobile ? 'mobile' : 'desktop';
+    
     if (isMobile) {
-      const section = document.getElementById(`section-${index}`);
+      const section = document.getElementById(`section-${index}-${suffix}`);
       if (section) {
         section.scrollIntoView({ behavior: 'smooth' });
         setActiveSection(index);
