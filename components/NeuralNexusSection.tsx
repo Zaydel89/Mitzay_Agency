@@ -1,610 +1,644 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 const NeuralNexusSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const hudRef = useRef<HTMLDivElement>(null);
-  const dataStreamRef = useRef<HTMLDivElement>(null);
-  
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [paused, setPaused] = useState(false);
+  const [activeTheme, setActiveTheme] = useState(0);
+  const [density, setDensity] = useState(100);
+
+  // Refs for Three.js objects to be accessed by UI
+  const networkRef = useRef<{
+    triggerPulse: (x: number, y: number) => void;
+    updateTheme: (index: number) => void;
+    morphFormation: () => void;
+    updateDensity: (val: number) => void;
+    resetCamera: () => void;
+  } | null>(null);
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!canvasRef.current) return;
 
-    let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, dataNodes: THREE.Points, trailSystem: THREE.Points, backgroundNodes: THREE.Points;
-    let composer: EffectComposer, controls: OrbitControls;
-    let time = 0;
-    let currentVisualization = 0;
-    let isTransforming = false;
-    let transformProgress = 0;
-    let frameCount = 0;
-    let lastTime = performance.now();
-    let fps = 60;
-    let dataFlow = true;
-    let showTrails = true;
-    let glowEffect = true;
-    const nodeCount = 28000;
-    const trailCount = 10000;
-    const transformSpeed = 0.018;
-    const visualizationNames = ["HARMONIC SPHERE", "TOROIDAL VORTEX", "NEBULA CORE"];
-    let baseColors = ['#00ffff', '#ffff00', '#ff00ff'];
-    let colorSchemes = baseColors.map(generateScheme);
-
-    function generateScheme(baseHex: string) {
-      const base = new THREE.Color(baseHex);
-      const hsl = base.getHSL({ h: 0, s: 0, l: 0 });
-      const scheme = [];
-      for (let i = 0; i < 10; i++) {
-        const h = (hsl.h + (i - 5) * 0.03) % 1;
-        const s = Math.min(1, Math.max(0, hsl.s + (i - 5) * 0.02));
-        const l = Math.min(1, Math.max(0, hsl.l + (i - 5) * 0.03));
-        const c = new THREE.Color().setHSL(h, s, l);
-        scheme.push(c);
-      }
-      return scheme;
-    }
-
-    function updateCSSColors(baseHex: string) {
-      const base = new THREE.Color(baseHex);
-      const hsl = base.getHSL({ h: 0, s: 0, l: 0 });
-      const accentHsl = { h: hsl.h, s: hsl.s, l: Math.min(1, hsl.l + 0.4) };
-      const accent = new THREE.Color().setHSL(accentHsl.h, accentHsl.s, accentHsl.l).getHexString();
-      const secondaryHsl = { h: (hsl.h + 0.08) % 1, s: hsl.s * 0.8, l: hsl.l };
-      const secondary = new THREE.Color().setHSL(secondaryHsl.h, secondaryHsl.s, secondaryHsl.l).getHexString();
-      const startColor = new THREE.Color().setHSL(hsl.h - 0.05, hsl.s, hsl.l);
-      const startHex = startColor.getHexString();
-      const endColor = new THREE.Color().setHSL(hsl.h + 0.1, hsl.s * 0.8, hsl.l);
-      const endHex = endColor.getHexString();
-      const root = containerRef.current?.parentElement;
-      if (root) {
-        root.style.setProperty('--primary-color', baseHex);
-        root.style.setProperty('--accent-color', `#${accent}`);
-        root.style.setProperty('--secondary-color', `#${secondary}`);
-        root.style.setProperty('--gradient-start', `#${startHex}`);
-        root.style.setProperty('--gradient-middle', baseHex);
-        root.style.setProperty('--gradient-end', `#${endHex}`);
-        const primaryRgb = `${Math.round(base.r * 255)}, ${Math.round(base.g * 255)}, ${Math.round(base.b * 255)}`;
-        root.style.setProperty('--primary-rgb', primaryRgb);
-        const accentC = new THREE.Color(`#${accent}`);
-        const accentRgb = `${Math.round(accentC.r * 255)}, ${Math.round(accentC.g * 255)}, ${Math.round(accentC.b * 255)}`;
-        root.style.setProperty('--accent-rgb', accentRgb);
-        const secondaryC = new THREE.Color(`#${secondary}`);
-        const secondaryRgb = `${Math.round(secondaryC.r * 255)}, ${Math.round(secondaryC.g * 255)}, ${Math.round(secondaryC.b * 255)}`;
-        root.style.setProperty('--secondary-rgb', secondaryRgb);
-      }
-    }
-
-    function generateHarmonicSphere(i: number, count: number) {
-      const t = i / count;
-      const phi = Math.acos(1 - 2 * t);
-      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-      const radius = 80;
-      const perturbation = 0.2 * (Math.sin(5 * phi) * Math.cos(3 * theta) + Math.cos(4 * phi) * Math.sin(2 * theta));
-      const r = radius * (1 + perturbation);
-      return new THREE.Vector3(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
-    }
-
-    function generateToroidalVortex(i: number, count: number) {
-      const t = i / count;
-      const theta = t * Math.PI * 2;
-      const phi = theta * 10 + Math.PI * (1 + Math.sqrt(5)) * t * 10;
-      const major = 70;
-      const minor = 25 + Math.sin(theta * 3) * 5;
-      return new THREE.Vector3((major + minor * Math.cos(phi)) * Math.cos(theta), (major + minor * Math.cos(phi)) * Math.sin(theta), minor * Math.sin(phi) + Math.cos(theta * 4) * 10);
-    }
-
-    function generateNebulaCore(i: number, count: number) {
-      const coreRatio = 0.25;
-      const coreCount = Math.floor(count * coreRatio);
-      if (i < coreCount) {
-        const t = i / coreCount;
-        const phi = Math.acos(1 - 2 * t);
-        const theta = Math.PI * (1 + Math.sqrt(5)) * i + Math.sin(t * 10) * 0.5;
-        const radius = 25 * Math.pow(Math.random(), 1.5);
-        return new THREE.Vector3(radius * Math.sin(phi) * Math.cos(theta), radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi) + Math.sin(theta * 2) * 2);
-      } else {
-        const ringParticles = count - coreCount;
-        const ringIndex = i - coreCount;
-        const numRings = 8;
-        const ringNum = Math.floor(ringIndex / (ringParticles / numRings));
-        const nodeInRing = ringIndex % Math.floor(ringParticles / numRings);
-        const nodeInRingT = nodeInRing / Math.floor(ringParticles / numRings);
-        const angle = nodeInRingT * Math.PI * 2 + Math.sin(ringNum * 2) * 0.3;
-        const baseRadius = 35 + ringNum * 10;
-        const ringRadius = baseRadius + Math.sin(angle * 4) * 5;
-        const tiltAngle = (ringNum % 2 === 0 ? 1 : -1) * (Math.PI / 6 + ringNum * Math.PI / 15);
-        const axisAngle = ringNum * Math.PI / 4;
-        const axis = new THREE.Vector3(Math.sin(axisAngle), Math.cos(axisAngle), Math.sin(axisAngle * 2)).normalize();
-        const rotationMatrix = new THREE.Matrix4().makeRotationAxis(axis, tiltAngle);
-        const pos = new THREE.Vector3(Math.cos(angle) * ringRadius, 0, Math.sin(angle) * ringRadius);
-        pos.applyMatrix4(rotationMatrix);
-        return pos;
-      }
-    }
-
-    const visualizations = [generateHarmonicSphere, generateToroidalVortex, generateNebulaCore];
-
-    function createTrailTexture() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 64; canvas.height = 64;
-      const context = canvas.getContext('2d')!;
-      const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
-      gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-      gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.5)');
-      gradient.addColorStop(0.8, 'rgba(255, 255, 255, 0.2)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, 64, 64);
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.needsUpdate = true;
-      return texture;
-    }
-
-    function createEnhancedParticleTexture() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 256; canvas.height = 256;
-      const context = canvas.getContext('2d')!;
-      const centerX = 128, centerY = 128;
-      const outerGradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, 128);
-      outerGradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-      outerGradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.7)');
-      outerGradient.addColorStop(0.6, 'rgba(200, 255, 255, 0.4)');
-      outerGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      context.fillStyle = outerGradient;
-      context.fillRect(0, 0, 256, 256);
-      const coreGradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, 20);
-      coreGradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-      coreGradient.addColorStop(1, 'rgba(200, 255, 255, 0.3)');
-      context.fillStyle = coreGradient;
-      context.beginPath(); context.arc(centerX, centerY, 20, 0, Math.PI * 2); context.fill();
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.needsUpdate = true;
-      return texture;
-    }
-
-    function assignParticleProperties(i: number, colors: Float32Array, sizes: Float32Array | null, vizIndex: number) {
-      const colorScheme = colorSchemes[vizIndex];
-      let color; let brightness = 1.0;
-      if (sizes) {
-        if (vizIndex === 0) {
-          color = colorScheme[Math.floor((i / nodeCount) * 12) % colorScheme.length];
-          brightness = 0.8 + Math.random() * 0.7;
-          sizes[i] = 1.0 + Math.random() * 2.5;
-        } else if (vizIndex === 1) {
-          color = colorScheme[Math.floor(i / (nodeCount / 10)) % colorScheme.length];
-          brightness = 0.9 + Math.random() * 0.6;
-          sizes[i] = 1.0 + Math.random() * 2.5;
-        } else {
-          const coreCount = Math.floor(nodeCount * 0.25);
-          if (i < coreCount) { color = colorScheme[i % 4]; brightness = 1.2 + Math.random() * 0.6; sizes[i] = 2.0 + Math.random() * 2.5; }
-          else { color = colorScheme[4 + (i % (colorScheme.length - 4))]; brightness = 0.8 + Math.random() * 0.6; sizes[i] = 1.0 + Math.random() * 2.0; }
-        }
-      } else {
-        color = colorScheme[Math.floor((i / nodeCount) * 12) % colorScheme.length];
-      }
-      colors[i * 3] = color.r * brightness; colors[i * 3 + 1] = color.g * brightness; colors[i * 3 + 2] = color.b * brightness;
-    }
-
-    function init() {
-      scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0x000814, 0.0005);
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2500);
-      camera.position.set(0, 0, 155);
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.2;
-      containerRef.current!.appendChild(renderer.domElement);
-
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true; controls.dampingFactor = 0.1; controls.rotateSpeed = 0.6; controls.zoomSpeed = 0.9;
-      controls.minDistance = 30; controls.maxDistance = 350; controls.enablePan = false;
-
-      composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.5, 0.6, 0.8));
-      const distortionShader = {
-        uniforms: { tDiffuse: { value: null }, time: { value: 0.0 }, intensity: { value: 0.02 } },
-        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-        fragmentShader: `uniform sampler2D tDiffuse; uniform float time; uniform float intensity; varying vec2 vUv; void main() { vec2 uv = vUv; uv.x += sin(uv.y * 10.0 + time) * intensity; uv.y += cos(uv.x * 10.0 + time) * intensity; gl_FragColor = texture2D(tDiffuse, uv); }`
-      };
-      composer.addPass(new ShaderPass(distortionShader));
-      composer.addPass(new OutputPass());
-
-      const geometry = new THREE.BufferGeometry();
-      const positions = new Float32Array(nodeCount * 3);
-      const colors = new Float32Array(nodeCount * 3);
-      const sizes = new Float32Array(nodeCount);
-      for (let i = 0; i < nodeCount; i++) {
-        const pos = visualizations[currentVisualization](i, nodeCount);
-        positions[i * 3] = pos.x; positions[i * 3 + 1] = pos.y; positions[i * 3 + 2] = pos.z;
-        assignParticleProperties(i, colors, sizes, currentVisualization);
-      }
-      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-      geometry.userData.currentColors = new Float32Array(colors);
-      const material = new THREE.ShaderMaterial({
-        uniforms: { time: { value: 0 }, textureMap: { value: createEnhancedParticleTexture() }, glowIntensity: { value: 1.0 } },
-        vertexShader: `attribute vec3 color; attribute float size; varying vec3 vColor; uniform float time; uniform float glowIntensity; void main() { vColor = color * (1.0 + 0.2 * sin(time * 2.0 + position.y * 0.05)) * glowIntensity; vec4 mvPosition = modelViewMatrix * vec4(position, 1.0); gl_PointSize = size * (350.0 / -mvPosition.z) * (1.0 + 0.1 * sin(time + position.x)); gl_Position = projectionMatrix * mvPosition; }`,
-        fragmentShader: `uniform sampler2D textureMap; uniform float time; varying vec3 vColor; void main() { vec2 uv = gl_PointCoord - vec2(0.5); float r = length(uv) * 2.0; vec4 tex = texture2D(textureMap, gl_PointCoord); float alpha = tex.a * (1.0 - smoothstep(0.8, 1.0, r)); gl_FragColor = vec4(vColor, alpha); }`,
-        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-      });
-      dataNodes = new THREE.Points(geometry, material);
-      scene.add(dataNodes);
-
-      const trailGeometry = new THREE.BufferGeometry();
-      const trailPositions = new Float32Array(trailCount * 3);
-      const trailColors = new Float32Array(trailCount * 3);
-      const trailSizes = new Float32Array(trailCount);
-      const trailOpacities = new Float32Array(trailCount);
-      for (let i = 0; i < trailCount; i++) {
-        trailPositions[i * 3] = (Math.random() - 0.5) * 120;
-        trailPositions[i * 3 + 1] = (Math.random() - 0.5) * 120;
-        trailPositions[i * 3 + 2] = (Math.random() - 0.5) * 120;
-        const color = colorSchemes[currentVisualization][Math.floor(Math.random() * colorSchemes[currentVisualization].length)];
-        trailColors[i * 3] = color.r; trailColors[i * 3 + 1] = color.g; trailColors[i * 3 + 2] = color.b;
-        trailSizes[i] = Math.random() * 2 + 0.8; trailOpacities[i] = Math.random() * 0.6 + 0.3;
-      }
-      trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
-      trailGeometry.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
-      trailGeometry.setAttribute('size', new THREE.BufferAttribute(trailSizes, 1));
-      trailGeometry.setAttribute('opacity', new THREE.BufferAttribute(trailOpacities, 1));
-      const trailMaterial = new THREE.ShaderMaterial({
-        uniforms: { time: { value: 0 }, textureMap: { value: createTrailTexture() } },
-        vertexShader: `attribute vec3 color; attribute float size; attribute float opacity; varying vec3 vColor; varying float vOpacity; uniform float time; void main() { vColor = color; vOpacity = opacity * (0.5 + 0.5 * sin(time + position.x * 0.1)); vec4 mvPosition = modelViewMatrix * vec4(position, 1.0); gl_PointSize = size * (300.0 / -mvPosition.z); gl_Position = projectionMatrix * mvPosition; }`,
-        fragmentShader: `uniform sampler2D textureMap; varying vec3 vColor; varying float vOpacity; void main() { vec4 tex = texture2D(textureMap, gl_PointCoord); gl_FragColor = vec4(vColor * tex.rgb, tex.a * vOpacity); }`,
-        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-      });
-      trailSystem = new THREE.Points(trailGeometry, trailMaterial);
-      scene.add(trailSystem);
-
-      const bgGeometry = new THREE.BufferGeometry();
-      const bgCount = 3000; const bgPositions = new Float32Array(bgCount * 3); const bgColors = new Float32Array(bgCount * 3); const bgSizes = new Float32Array(bgCount);
-      for (let i = 0; i < bgCount; i++) {
-        const radius = 250 + Math.random() * 350; const phi = Math.random() * Math.PI * 2; const theta = Math.random() * Math.PI;
-        bgPositions[i * 3] = radius * Math.sin(theta) * Math.cos(phi); bgPositions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi); bgPositions[i * 3 + 2] = radius * Math.cos(theta);
-        const intensity = Math.random() * 0.4 + 0.2; bgColors[i * 3] = intensity * 0.3; bgColors[i * 3 + 1] = intensity * 0.4; bgColors[i * 3 + 2] = intensity * 0.6;
-        bgSizes[i] = Math.random() * 3 + 1;
-      }
-      bgGeometry.setAttribute('position', new THREE.BufferAttribute(bgPositions, 3)); bgGeometry.setAttribute('color', new THREE.BufferAttribute(bgColors, 3)); bgGeometry.setAttribute('size', new THREE.BufferAttribute(bgSizes, 1));
-      backgroundNodes = new THREE.Points(bgGeometry, new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
-      scene.add(backgroundNodes);
-
-      updateCSSColors(baseColors[currentVisualization]);
-      animate();
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      time += 0.012;
-      frameCount++;
-      const currentTime = performance.now();
-      if (currentTime - lastTime >= 1000) {
-        fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
-        if (hudRef.current) {
-          const fpsEl = hudRef.current.querySelector('#fps-display');
-          if (fpsEl) fpsEl.textContent = fps.toString();
-        }
-        frameCount = 0; lastTime = currentTime;
-      }
-      controls.update();
-      if (backgroundNodes) { backgroundNodes.rotation.y += 0.0004; backgroundNodes.rotation.x += 0.00015; }
-
-      if (isTransforming) {
-        transformProgress += transformSpeed;
-        if (transformProgress >= 1.0) {
-          dataNodes.geometry.attributes.position.array.set(dataNodes.userData.toPositions);
-          dataNodes.geometry.attributes.color.array.set(dataNodes.userData.toColors);
-          dataNodes.geometry.attributes.size.array.set(dataNodes.userData.toSizes);
-          dataNodes.geometry.attributes.position.needsUpdate = true;
-          dataNodes.geometry.attributes.color.needsUpdate = true;
-          dataNodes.geometry.attributes.size.needsUpdate = true;
-          dataNodes.geometry.userData.currentColors = new Float32Array(dataNodes.userData.toColors);
-          currentVisualization = dataNodes.userData.targetVisualization;
-          isTransforming = false; transformProgress = 0;
-        } else {
-          const t = transformProgress; const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-          for (let i = 0; i < dataNodes.geometry.attributes.position.array.length; i++) {
-            dataNodes.geometry.attributes.position.array[i] = dataNodes.userData.fromPositions[i] * (1 - ease) + dataNodes.userData.toPositions[i] * ease;
-            dataNodes.geometry.attributes.color.array[i] = dataNodes.userData.fromColors[i] * (1 - ease) + dataNodes.userData.toColors[i] * ease;
-          }
-          for (let i = 0; i < dataNodes.geometry.attributes.size.array.length; i++) {
-            dataNodes.geometry.attributes.size.array[i] = dataNodes.userData.fromSizes[i] * (1 - ease) + dataNodes.userData.toSizes[i] * ease;
-          }
-          dataNodes.geometry.attributes.position.needsUpdate = true;
-          dataNodes.geometry.attributes.color.needsUpdate = true;
-          dataNodes.geometry.attributes.size.needsUpdate = true;
-        }
-      } else if (dataFlow) {
-        const pos = dataNodes.geometry.attributes.position.array;
-        if (currentVisualization === 0) {
-          for (let i = 0; i < nodeCount; i++) {
-            const x = pos[i * 3]; const z = pos[i * 3 + 2];
-            pos[i * 3] = x * Math.cos(0.005) - z * Math.sin(0.005); pos[i * 3 + 2] = x * Math.sin(0.005) + z * Math.cos(0.005);
-          }
-        } else if (currentVisualization === 1) {
-          for (let i = 0; i < nodeCount; i++) {
-            const x = pos[i * 3]; const y = pos[i * 3 + 1];
-            pos[i * 3] = x * Math.cos(0.004) - y * Math.sin(0.004); pos[i * 3 + 1] = x * Math.sin(0.004) + y * Math.cos(0.004);
-          }
-        } else {
-          const coreCount = Math.floor(nodeCount * 0.25);
-          for (let i = 0; i < nodeCount; i++) {
-            const ix = i * 3, iz = i * 3 + 2; const x = pos[ix], z = pos[iz];
-            const rot = i < coreCount ? 0.0015 : 0.0025 + Math.floor((i - coreCount) / (nodeCount - coreCount) * 8) * 0.002;
-            pos[ix] = x * Math.cos(rot) - z * Math.sin(rot); pos[iz] = x * Math.sin(rot) + z * Math.cos(rot);
-          }
-        }
-        dataNodes.geometry.attributes.position.needsUpdate = true;
-      }
-
-      if (trailSystem && showTrails) {
-        const trailPos = trailSystem.geometry.attributes.position.array; const trailOpac = trailSystem.geometry.attributes.opacity.array;
-        for (let i = 0; i < trailCount; i++) {
-          const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
-          if (currentVisualization === 0) { trailPos[iy] += 0.35; if (trailPos[iy] > 70) trailPos[iy] = -70; trailPos[ix] += Math.sin(time * 2.2 + i * 0.12) * 0.12; trailPos[iz] += Math.cos(time * 2.0 + i * 0.12) * 0.12; }
-          else if (currentVisualization === 1) { const d = Math.sqrt(trailPos[ix] ** 2 + trailPos[iz] ** 2); if (d > 0.1) { const exp = 1 + Math.sin(time * 3.5 + i * 0.06) * 0.006; trailPos[ix] *= exp; trailPos[iz] *= exp; } trailPos[iy] += Math.sin(time * 2.8 + i * 0.04) * 0.25; }
-          else { const s = 0.012 + (i % 6) * 0.006; const x = trailPos[ix], z = trailPos[iz]; trailPos[ix] = x * Math.cos(s) - z * Math.sin(s); trailPos[iz] = x * Math.sin(s) + z * Math.cos(s); trailPos[iy] += Math.sin(time * 1.5 + i * 0.08) * 0.15; }
-          trailOpac[i] = 0.4 + Math.sin(time * 3.5 + i * 0.12) * 0.35;
-        }
-        trailSystem.geometry.attributes.position.needsUpdate = true; trailSystem.geometry.attributes.opacity.needsUpdate = true; trailSystem.material.uniforms.time.value = time;
-      }
-      if (dataNodes) dataNodes.material.uniforms.time.value = time;
-      composer.passes[2].uniforms.time.value = time; composer.render();
-    }
-
-    const handleExecute = () => {
-      if (isTransforming) return;
-      const nextViz = (currentVisualization + 1) % visualizations.length;
-      document.getElementById('mode-display')!.textContent = visualizationNames[nextViz];
-      isTransforming = true; transformProgress = 0;
-      const pos = dataNodes.geometry.attributes.position.array; const col = dataNodes.geometry.attributes.color.array; const siz = dataNodes.geometry.attributes.size.array;
-      const newPos = new Float32Array(pos.length); const newCol = new Float32Array(col.length); const newSiz = new Float32Array(siz.length);
-      for (let i = 0; i < nodeCount; i++) {
-        const p = visualizations[nextViz](i, nodeCount); newPos[i * 3] = p.x; newPos[i * 3 + 1] = p.y; newPos[i * 3 + 2] = p.z;
-        assignParticleProperties(i, newCol, newSiz, nextViz);
-      }
-      dataNodes.userData = { ...dataNodes.userData, fromPositions: new Float32Array(pos), toPositions: newPos, fromColors: new Float32Array(dataNodes.geometry.userData.currentColors), toColors: newCol, fromSizes: new Float32Array(siz), toSizes: newSiz, targetVisualization: nextViz };
-      const trailCol = trailSystem.geometry.attributes.color.array; const scheme = colorSchemes[nextViz];
-      for (let i = 0; i < trailCount; i++) { const c = scheme[Math.floor(Math.random() * scheme.length)]; trailCol[i * 3] = c.r; trailCol[i * 3 + 1] = c.g; trailCol[i * 3 + 2] = c.b; }
-      trailSystem.geometry.attributes.color.needsUpdate = true;
-      updateCSSColors(baseColors[nextViz]);
+    const config = {
+      paused: false,
+      activePaletteIndex: 0,
+      currentFormation: 0,
+      numFormations: 3,
+      densityFactor: 1
     };
 
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight);
-    };
+    const colorPalettes = [
+      [
+        new THREE.Color(0x667eea),
+        new THREE.Color(0x764ba2),
+        new THREE.Color(0xf093fb),
+        new THREE.Color(0x9d50bb),
+        new THREE.Color(0x6e48aa)
+      ],
+      [
+        new THREE.Color(0xf857a6),
+        new THREE.Color(0xff5858),
+        new THREE.Color(0xfeca57),
+        new THREE.Color(0xff6348),
+        new THREE.Color(0xff9068)
+      ],
+      [
+        new THREE.Color(0x4facfe),
+        new THREE.Color(0x00f2fe),
+        new THREE.Color(0x43e97b),
+        new THREE.Color(0x38f9d7),
+        new THREE.Color(0x4484ce)
+      ]
+    ];
 
-    window.addEventListener('resize', handleResize);
-    init();
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.002);
 
-    const executeBtn = document.getElementById('execute-btn');
-    executeBtn?.addEventListener('click', handleExecute);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 8, 28);
 
-    const flowSwitch = document.getElementById('flow-switch');
-    flowSwitch?.addEventListener('click', () => { dataFlow = !dataFlow; flowSwitch.classList.toggle('active', dataFlow); });
-
-    const trailsSwitch = document.getElementById('trails-switch');
-    trailsSwitch?.addEventListener('click', () => { showTrails = !showTrails; trailsSwitch.classList.toggle('active', showTrails); if (trailSystem) trailSystem.visible = showTrails; document.getElementById('trail-display')!.textContent = showTrails ? 'ACTIVE' : 'INACTIVE'; });
-
-    const glowSwitch = document.getElementById('glow-switch');
-    glowSwitch?.addEventListener('click', () => { glowEffect = !glowEffect; glowSwitch.classList.toggle('active', glowEffect); if (dataNodes) dataNodes.material.uniforms.glowIntensity.value = glowEffect ? 1.0 : 0.5; document.getElementById('glow-display')!.textContent = glowEffect ? 'ENABLED' : 'DISABLED'; });
-
-    const colorPicker = document.getElementById('color-picker') as HTMLInputElement;
-    colorPicker?.addEventListener('input', (e: any) => {
-      baseColors[currentVisualization] = e.target.value; colorSchemes[currentVisualization] = generateScheme(e.target.value);
-      const colors = dataNodes.geometry.attributes.color.array; for (let i = 0; i < nodeCount; i++) assignParticleProperties(i, colors, null, currentVisualization); dataNodes.geometry.attributes.color.needsUpdate = true;
-      const trailColors = trailSystem.geometry.attributes.color.array; const scheme = colorSchemes[currentVisualization]; for (let i = 0; i < trailCount; i++) { const c = scheme[Math.floor(Math.random() * scheme.length)]; trailColors[i * 3] = c.r; trailColors[i * 3 + 1] = c.g; trailColors[i * 3 + 2] = c.b; } trailSystem.geometry.attributes.color.needsUpdate = true;
-      updateCSSColors(e.target.value);
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      antialias: true,
+      powerPreference: "high-performance"
     });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    const toggleBtn = document.getElementById('controls-toggle');
-    toggleBtn?.addEventListener('click', () => document.getElementById('control-panel')?.classList.toggle('expanded'));
+    function createStarfield() {
+      const count = 8000;
+      const positions = [];
+      const colors = [];
+      const sizes = [];
+      for (let i = 0; i < count; i++) {
+        const r = THREE.MathUtils.randFloat(50, 150);
+        const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
+        const theta = THREE.MathUtils.randFloat(0, Math.PI * 2);
+        positions.push(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.sin(phi) * Math.sin(theta),
+          r * Math.cos(phi)
+        );
+        const colorChoice = Math.random();
+        if (colorChoice < 0.7) colors.push(1, 1, 1);
+        else if (colorChoice < 0.85) colors.push(0.7, 0.8, 1);
+        else colors.push(1, 0.9, 0.8);
+        sizes.push(THREE.MathUtils.randFloat(0.1, 0.3));
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      geo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: `
+          attribute float size;
+          attribute vec3 color;
+          varying vec3 vColor;
+          uniform float uTime;
+          void main() {
+            vColor = color;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            float twinkle = sin(uTime * 2.0 + position.x * 100.0) * 0.3 + 0.7;
+            gl_PointSize = size * twinkle * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+          }`,
+        fragmentShader: `
+          varying vec3 vColor;
+          void main() {
+            vec2 center = gl_PointCoord - 0.5;
+            float dist = length(center);
+            if (dist > 0.5) discard;
+            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+            gl_FragColor = vec4(vColor, alpha * 0.8);
+          }`,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+      });
+      return new THREE.Points(geo, mat);
+    }
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (renderer && containerRef.current && renderer.domElement.parentNode === containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
+    const starField = createStarfield();
+    scene.add(starField);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.rotateSpeed = 0.6;
+    controls.minDistance = 8;
+    controls.maxDistance = 80;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.2;
+    controls.enablePan = false;
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.8, 0.6, 0.7);
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
+
+    const pulseUniforms = {
+      uTime: { value: 0.0 },
+      uPulsePositions: { value: [new THREE.Vector3(1e3, 1e3, 1e3), new THREE.Vector3(1e3, 1e3, 1e3), new THREE.Vector3(1e3, 1e3, 1e3)] },
+      uPulseTimes: { value: [-1e3, -1e3, -1e3] },
+      uPulseColors: { value: [new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 1)] },
+      uPulseSpeed: { value: 18.0 },
+      uBaseNodeSize: { value: 0.6 }
+    };
+
+    const noiseFunctions = `
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
+    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+    float snoise(vec3 v) {
+        const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+        const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+        vec3 i = floor(v + dot(v, C.yyy));
+        vec3 x0 = v - i + dot(i, C.xxx);
+        vec3 g = step(x0.yzx, x0.xyz);
+        vec3 l = 1.0 - g;
+        vec3 i1 = min(g.xyz, l.zxy);
+        vec3 i2 = max(g.xyz, l.zxy);
+        vec3 x1 = x0 - i1 + C.xxx;
+        vec3 x2 = x0 - i2 + C.yyy;
+        vec3 x3 = x0 - D.yyy;
+        i = mod289(i);
+        vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+        float n_ = 0.142857142857;
+        vec3 ns = n_ * D.wyz - D.xzx;
+        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+        vec4 x_ = floor(j * ns.z);
+        vec4 y_ = floor(j - 7.0 * x_);
+        vec4 x = x_ * ns.x + ns.yyyy;
+        vec4 y = y_ * ns.x + ns.yyyy;
+        vec4 h = 1.0 - abs(x) - abs(y);
+        vec4 b0 = vec4(x.xy, y.xy);
+        vec4 b1 = vec4(x.zw, y.zw);
+        vec4 s0 = floor(b0) * 2.0 + 1.0;
+        vec4 s1 = floor(b1) * 2.0 + 1.0;
+        vec4 sh = -step(h, vec4(0.0));
+        vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+        vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+        vec3 p0 = vec3(a0.xy, h.x);
+        vec3 p1 = vec3(a0.zw, h.y);
+        vec3 p2 = vec3(a1.xy, h.z);
+        vec3 p3 = vec3(a1.zw, h.w);
+        vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+        vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+        m = m * m;
+        return 42.0 * dot(m * m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+    }`;
+
+    const nodeShader = {
+      vertexShader: `${noiseFunctions}
+      attribute float nodeSize;
+      attribute float nodeType;
+      attribute vec3 nodeColor;
+      attribute float distanceFromRoot;
+      uniform float uTime;
+      uniform vec3 uPulsePositions[3];
+      uniform float uPulseTimes[3];
+      uniform float uPulseSpeed;
+      uniform float uBaseNodeSize;
+      varying vec3 vColor;
+      varying float vNodeType;
+      varying vec3 vPosition;
+      varying float vPulseIntensity;
+      varying float vDistanceFromRoot;
+      varying float vGlow;
+      float getPulseIntensity(vec3 worldPos, vec3 pulsePos, float pulseTime) {
+          if (pulseTime < 0.0) return 0.0;
+          float timeSinceClick = uTime - pulseTime;
+          if (timeSinceClick < 0.0 || timeSinceClick > 4.0) return 0.0;
+          float pulseRadius = timeSinceClick * uPulseSpeed;
+          float distToClick = distance(worldPos, pulsePos);
+          float pulseThickness = 3.0;
+          float waveProximity = abs(distToClick - pulseRadius);
+          return smoothstep(pulseThickness, 0.0, waveProximity) * smoothstep(4.0, 0.0, timeSinceClick);
+      }
+      void main() {
+          vNodeType = nodeType;
+          vColor = nodeColor;
+          vDistanceFromRoot = distanceFromRoot;
+          vec3 worldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+          vPosition = worldPos;
+          float totalPulseIntensity = 0.0;
+          for (int i = 0; i < 3; i++) totalPulseIntensity += getPulseIntensity(worldPos, uPulsePositions[i], uPulseTimes[i]);
+          vPulseIntensity = min(totalPulseIntensity, 1.0);
+          float breathe = sin(uTime * 0.7 + distanceFromRoot * 0.15) * 0.15 + 0.85;
+          float pulseSize = nodeSize * breathe * (1.0 + vPulseIntensity * 2.5);
+          vGlow = 0.5 + 0.5 * sin(uTime * 0.5 + distanceFromRoot * 0.2);
+          vec3 modifiedPosition = position;
+          if (nodeType > 0.5) modifiedPosition += normal * snoise(position * 0.08 + uTime * 0.08) * 0.15;
+          vec4 mvPosition = modelViewMatrix * vec4(modifiedPosition, 1.0);
+          gl_PointSize = pulseSize * uBaseNodeSize * (1000.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+      }`,
+      fragmentShader: `
+      uniform float uTime;
+      uniform vec3 uPulseColors[3];
+      varying vec3 vColor;
+      varying float vNodeType;
+      varying vec3 vPosition;
+      varying float vPulseIntensity;
+      varying float vDistanceFromRoot;
+      varying float vGlow;
+      void main() {
+          vec2 center = 2.0 * gl_PointCoord - 1.0;
+          float dist = length(center);
+          if (dist > 1.0) discard;
+          float glowStrength = pow(1.0 - smoothstep(0.0, 0.5, dist), 1.2) + (1.0 - smoothstep(0.0, 1.0, dist)) * 0.3;
+          vec3 finalColor = vColor * (0.9 + 0.1 * sin(uTime * 0.6 + vDistanceFromRoot * 0.25));
+          if (vPulseIntensity > 0.0) {
+              finalColor = mix(finalColor, mix(vec3(1.0), uPulseColors[0], 0.4), vPulseIntensity * 0.8);
+              finalColor *= (1.0 + vPulseIntensity * 1.2);
+              glowStrength *= (1.0 + vPulseIntensity);
+          }
+          finalColor += vec3(1.0) * smoothstep(0.4, 0.0, dist) * 0.3;
+          float alpha = glowStrength * (0.95 - 0.3 * dist) * smoothstep(100.0, 15.0, length(vPosition - cameraPosition));
+          gl_FragColor = vec4(finalColor * (1.0 + vGlow * 0.1), alpha);
+      }`
+    };
+
+    const connectionShader = {
+      vertexShader: `${noiseFunctions}
+      attribute vec3 startPoint;
+      attribute vec3 endPoint;
+      attribute float connectionStrength;
+      attribute float pathIndex;
+      attribute vec3 connectionColor;
+      uniform float uTime;
+      uniform vec3 uPulsePositions[3];
+      uniform float uPulseTimes[3];
+      uniform float uPulseSpeed;
+      varying vec3 vColor;
+      varying float vConnectionStrength;
+      varying float vPulseIntensity;
+      varying float vPathPosition;
+      varying float vDistanceFromCamera;
+      float getPulseIntensity(vec3 worldPos, vec3 pulsePos, float pulseTime) {
+          if (pulseTime < 0.0) return 0.0;
+          float timeSinceClick = uTime - pulseTime;
+          if (timeSinceClick < 0.0 || timeSinceClick > 4.0) return 0.0;
+          float pulseRadius = timeSinceClick * uPulseSpeed;
+          float distToClick = distance(worldPos, pulsePos);
+          float waveProximity = abs(distToClick - pulseRadius);
+          return smoothstep(3.0, 0.0, waveProximity) * smoothstep(4.0, 0.0, timeSinceClick);
+      }
+      void main() {
+          float t = position.x; vPathPosition = t;
+          vec3 midPoint = mix(startPoint, endPoint, 0.5);
+          vec3 perp = normalize(cross(normalize(endPoint - startPoint), vec3(0.0, 1.0, 0.0)));
+          if (length(perp) < 0.1) perp = vec3(1.0, 0.0, 0.0);
+          midPoint += perp * (sin(t * 3.14159) * 0.15);
+          vec3 finalPos = mix(mix(startPoint, midPoint, t), mix(midPoint, endPoint, t), t);
+          finalPos += perp * snoise(vec3(pathIndex * 0.08, t * 0.6, uTime * 0.15)) * 0.12;
+          vPulseIntensity = 0.0;
+          for (int i = 0; i < 3; i++) vPulseIntensity += getPulseIntensity((modelMatrix * vec4(finalPos, 1.0)).xyz, uPulsePositions[i], uPulseTimes[i]);
+          vPulseIntensity = min(vPulseIntensity, 1.0);
+          vColor = connectionColor; vConnectionStrength = connectionStrength;
+          vDistanceFromCamera = length((modelMatrix * vec4(finalPos, 1.0)).xyz - cameraPosition);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
+      }`,
+      fragmentShader: `
+      uniform float uTime;
+      uniform vec3 uPulseColors[3];
+      varying vec3 vColor;
+      varying float vConnectionStrength;
+      varying float vPulseIntensity;
+      varying float vPathPosition;
+      varying float vDistanceFromCamera;
+      void main() {
+          float combinedFlow = (sin(vPathPosition * 25.0 - uTime * 4.0) * 0.5 + 0.5 + (sin(vPathPosition * 15.0 - uTime * 2.5 + 1.57) * 0.5 + 0.5) * 0.5) / 1.5;
+          vec3 finalColor = vColor * (0.8 + 0.2 * sin(uTime * 0.6 + vPathPosition * 12.0));
+          float flowIntensity = 0.4 * combinedFlow * vConnectionStrength;
+          if (vPulseIntensity > 0.0) {
+              finalColor = mix(finalColor, mix(vec3(1.0), uPulseColors[0], 0.3) * 1.2, vPulseIntensity * 0.7);
+              flowIntensity += vPulseIntensity * 0.8;
+          }
+          float alpha = (0.7 * vConnectionStrength + combinedFlow * 0.3);
+          alpha = mix(alpha, min(1.0, alpha * 2.5), vPulseIntensity);
+          gl_FragColor = vec4(finalColor * (0.7 + flowIntensity + vConnectionStrength * 0.5), alpha * smoothstep(100.0, 15.0, vDistanceFromCamera));
+      }`
+    };
+
+    class Node {
+      position: THREE.Vector3;
+      connections: { node: Node; strength: number }[] = [];
+      level: number;
+      type: number;
+      size: number;
+      distanceFromRoot: number = 0;
+      helixIndex?: number;
+      helixT?: number;
+
+      constructor(position: THREE.Vector3, level = 0, type = 0) {
+        this.position = position;
+        this.level = level;
+        this.type = type;
+        this.size = type === 0 ? THREE.MathUtils.randFloat(0.8, 1.4) : THREE.MathUtils.randFloat(0.5, 1.0);
+      }
+      addConnection(node: Node, strength = 1.0) {
+        if (!this.isConnectedTo(node)) {
+          this.connections.push({ node, strength });
+          node.connections.push({ node: this, strength });
+        }
+      }
+      isConnectedTo(node: Node) {
+        return this.connections.some(conn => conn.node === node);
+      }
+    }
+
+    function generateNeuralNetwork(formationIndex: number, densityFactor = 1.0) {
+      let nodes: Node[] = [];
+      let rootNode: Node;
+
+      if (formationIndex % 3 === 0) {
+        rootNode = new Node(new THREE.Vector3(0, 0, 0), 0, 0); rootNode.size = 2.0; nodes.push(rootNode);
+        for (let layer = 1; layer <= 5; layer++) {
+          const radius = layer * 4; const numPoints = Math.floor(layer * 12 * densityFactor);
+          for (let i = 0; i < numPoints; i++) {
+            const phi = Math.acos(1 - 2 * (i + 0.5) / numPoints); const theta = 2 * Math.PI * i / ((1 + Math.sqrt(5)) / 2);
+            const node = new Node(new THREE.Vector3(radius * Math.sin(phi) * Math.cos(theta), radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi)), layer, (layer === 5 || Math.random() < 0.3) ? 1 : 0);
+            node.distanceFromRoot = radius; nodes.push(node);
+            if (layer > 1) {
+              const prev = nodes.filter(n => n.level === layer - 1 && n !== rootNode).sort((a, b) => node.position.distanceTo(a.position) - node.position.distanceTo(b.position));
+              for (let j = 0; j < Math.min(3, prev.length); j++) node.addConnection(prev[j], Math.max(0.3, 1.0 - (node.position.distanceTo(prev[j].position) / (radius * 2))));
+            } else rootNode.addConnection(node, 0.9);
+          }
+          const layerNodes = nodes.filter(n => n.level === layer && n !== rootNode);
+          for (const node of layerNodes) {
+            const nearby = layerNodes.filter(n => n !== node).sort((a, b) => node.position.distanceTo(a.position) - node.position.distanceTo(b.position)).slice(0, 5);
+            for (const near of nearby) if (node.position.distanceTo(near.position) < radius * 0.8 && !node.isConnectedTo(near)) node.addConnection(near, 0.6);
+          }
+        }
+      } else if (formationIndex % 3 === 1) {
+        rootNode = new Node(new THREE.Vector3(0, 0, 0), 0, 0); rootNode.size = 1.8; nodes.push(rootNode);
+        const helixArrays: Node[][] = [];
+        for (let h = 0; h < 4; h++) {
+          const phase = (h / 4) * Math.PI * 2; const helixNodes: Node[] = [];
+          for (let i = 0; i < Math.floor(50 * densityFactor); i++) {
+            const t = i / (Math.floor(50 * densityFactor) - 1); const radius = 12 * (Math.sin(t * Math.PI) * 0.7 + 0.3);
+            const node = new Node(new THREE.Vector3(radius * Math.cos(phase + t * Math.PI * 6), (t - 0.5) * 30, radius * Math.sin(phase + t * Math.PI * 6)), Math.ceil(t * 5), (i > Math.floor(50 * densityFactor) - 5 || Math.random() < 0.25) ? 1 : 0);
+            node.distanceFromRoot = node.position.length(); node.helixIndex = h; node.helixT = t; nodes.push(node); helixNodes.push(node);
+          }
+          helixArrays.push(helixNodes); rootNode.addConnection(helixNodes[0], 1.0);
+          for (let i = 0; i < helixNodes.length - 1; i++) helixNodes[i].addConnection(helixNodes[i + 1], 0.85);
+        }
+        for (let h = 0; h < 4; h++) {
+          const cur = helixArrays[h]; const nxt = helixArrays[(h + 1) % 4];
+          for (let i = 0; i < cur.length; i += 5) {
+            const targetIdx = Math.round(cur[i].helixT! * (nxt.length - 1));
+            if (targetIdx < nxt.length) cur[i].addConnection(nxt[targetIdx], 0.7);
+          }
+        }
+      } else {
+        rootNode = new Node(new THREE.Vector3(0, 0, 0), 0, 0); rootNode.size = 1.6; nodes.push(rootNode);
+        const createBranch = (startNode: Node, direction: THREE.Vector3, depth: number, strength: number, scale: number) => {
+          if (depth > 4) return;
+          const endPos = startNode.position.clone().add(direction.clone().multiplyScalar(5 * scale));
+          const newNode = new Node(endPos, depth, (depth === 4 || Math.random() < 0.3) ? 1 : 0);
+          newNode.distanceFromRoot = endPos.length(); nodes.push(newNode); startNode.addConnection(newNode, strength);
+          if (depth < 4) {
+            for (let i = 0; i < 3; i++) {
+              const angle = (i / 3) * Math.PI * 2; const p1 = new THREE.Vector3(-direction.y, direction.x, 0).normalize();
+              const p2 = direction.clone().cross(p1).normalize();
+              createBranch(newNode, direction.clone().add(p1.multiplyScalar(Math.cos(angle) * 0.7)).add(p2.multiplyScalar(Math.sin(angle) * 0.7)).normalize(), depth + 1, strength * 0.7, scale * 0.75);
+            }
+          }
+        };
+        for (let i = 0; i < 6; i++) {
+          const phi = Math.acos(1 - 2 * (i + 0.5) / 6); const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+          createBranch(rootNode, new THREE.Vector3(Math.sin(phi) * Math.cos(theta), Math.sin(phi) * Math.sin(theta), Math.cos(phi)).normalize(), 1, 0.9, 1.0);
+        }
+      }
+      return { nodes, rootNode };
+    }
+
+    let nodesMesh: THREE.Points | null = null;
+    let connectionsMesh: THREE.LineSegments | null = null;
+    let currentNetwork: { nodes: Node[]; rootNode: Node } | null = null;
+
+    const createNetworkVisualization = (formationIndex: number, densityFactor = 1.0) => {
+      if (nodesMesh) { scene.remove(nodesMesh); nodesMesh.geometry.dispose(); (nodesMesh.material as THREE.ShaderMaterial).dispose(); }
+      if (connectionsMesh) { scene.remove(connectionsMesh); connectionsMesh.geometry.dispose(); (connectionsMesh.material as THREE.ShaderMaterial).dispose(); }
+      
+      currentNetwork = generateNeuralNetwork(formationIndex, densityFactor);
+      const palette = colorPalettes[config.activePaletteIndex];
+      
+      const nodesGeo = new THREE.BufferGeometry();
+      const nodePos: number[] = [], nodeT: number[] = [], nodeS: number[] = [], nodeC: number[] = [], nodeD: number[] = [];
+      currentNetwork.nodes.forEach(node => {
+        nodePos.push(node.position.x, node.position.y, node.position.z); nodeT.push(node.type); nodeS.push(node.size); nodeD.push(node.distanceFromRoot);
+        const color = palette[Math.min(node.level, palette.length - 1) % palette.length].clone();
+        color.offsetHSL(THREE.MathUtils.randFloatSpread(0.03), THREE.MathUtils.randFloatSpread(0.08), THREE.MathUtils.randFloatSpread(0.08));
+        nodeC.push(color.r, color.g, color.b);
+      });
+      nodesGeo.setAttribute('position', new THREE.Float32BufferAttribute(nodePos, 3));
+      nodesGeo.setAttribute('nodeType', new THREE.Float32BufferAttribute(nodeT, 1));
+      nodesGeo.setAttribute('nodeSize', new THREE.Float32BufferAttribute(nodeS, 1));
+      nodesGeo.setAttribute('nodeColor', new THREE.Float32BufferAttribute(nodeC, 3));
+      nodesGeo.setAttribute('distanceFromRoot', new THREE.Float32BufferAttribute(nodeD, 1));
+      nodesMesh = new THREE.Points(nodesGeo, new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.clone(pulseUniforms), vertexShader: nodeShader.vertexShader, fragmentShader: nodeShader.fragmentShader, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      scene.add(nodesMesh);
+
+      const connGeo = new THREE.BufferGeometry();
+      const connC: number[] = [], connS: number[] = [], connP: number[] = [], startP: number[] = [], endP: number[] = [], pathI: number[] = [];
+      const processed = new Set<string>(); let pathIdx = 0;
+      currentNetwork.nodes.forEach((node, ni) => {
+        node.connections.forEach(conn => {
+          const ci = currentNetwork!.nodes.indexOf(conn.node); if (ci === -1) return;
+          const key = [Math.min(ni, ci), Math.max(ni, ci)].join('-');
+          if (!processed.has(key)) {
+            processed.add(key);
+            for (let i = 0; i < 20; i++) {
+              connP.push(i / 19, 0, 0); startP.push(node.position.x, node.position.y, node.position.z); endP.push(conn.node.position.x, conn.node.position.y, conn.node.position.z);
+              pathI.push(pathIdx); connS.push(conn.strength);
+              const color = palette[Math.min(Math.floor((node.level + conn.node.level) / 2), palette.length - 1) % palette.length].clone();
+              color.offsetHSL(THREE.MathUtils.randFloatSpread(0.03), THREE.MathUtils.randFloatSpread(0.08), THREE.MathUtils.randFloatSpread(0.08));
+              connC.push(color.r, color.g, color.b);
+            }
+            pathIdx++;
+          }
+        });
+      });
+      connGeo.setAttribute('position', new THREE.Float32BufferAttribute(connP, 3));
+      connGeo.setAttribute('startPoint', new THREE.Float32BufferAttribute(startP, 3));
+      connGeo.setAttribute('endPoint', new THREE.Float32BufferAttribute(endP, 3));
+      connGeo.setAttribute('connectionStrength', new THREE.Float32BufferAttribute(connS, 1));
+      connGeo.setAttribute('connectionColor', new THREE.Float32BufferAttribute(connC, 3));
+      connGeo.setAttribute('pathIndex', new THREE.Float32BufferAttribute(pathI, 1));
+      connectionsMesh = new THREE.LineSegments(connGeo, new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.clone(pulseUniforms), vertexShader: connectionShader.vertexShader, fragmentShader: connectionShader.fragmentShader, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      scene.add(connectionsMesh);
+
+      palette.forEach((color, i) => { if (i < 3) { (nodesMesh!.material as THREE.ShaderMaterial).uniforms.uPulseColors.value[i].copy(color); (connectionsMesh!.material as THREE.ShaderMaterial).uniforms.uPulseColors.value[i].copy(color); } });
+    };
+
+    const clock = new THREE.Clock();
+    const animate = () => {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      if (!config.paused) {
+        if (nodesMesh) { (nodesMesh.material as THREE.ShaderMaterial).uniforms.uTime.value = t; nodesMesh.rotation.y = Math.sin(t * 0.04) * 0.05; }
+        if (connectionsMesh) { (connectionsMesh.material as THREE.ShaderMaterial).uniforms.uTime.value = t; connectionsMesh.rotation.y = Math.sin(t * 0.04) * 0.05; }
+      }
+      starField.rotation.y += 0.0002;
+      (starField.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+      controls.update();
+      composer.render();
+    };
+
+    const triggerPulse = (clientX: number, clientY: number) => {
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2((clientX / window.innerWidth) * 2 - 1, -(clientY / window.innerHeight) * 2 + 1);
+      const plane = new THREE.Plane(camera.position.clone().normalize(), -camera.position.clone().normalize().dot(camera.position) + camera.position.length() * 0.5);
+      const point = new THREE.Vector3();
+      raycaster.setFromCamera(pointer, camera);
+      if (raycaster.ray.intersectPlane(plane, point)) {
+        const time = clock.getElapsedTime();
+        if (nodesMesh && connectionsMesh) {
+          const idx = (Math.floor(time * 10)) % 3;
+          (nodesMesh.material as THREE.ShaderMaterial).uniforms.uPulsePositions.value[idx].copy(point);
+          (nodesMesh.material as THREE.ShaderMaterial).uniforms.uPulseTimes.value[idx] = time;
+          (connectionsMesh.material as THREE.ShaderMaterial).uniforms.uPulsePositions.value[idx].copy(point);
+          (connectionsMesh.material as THREE.ShaderMaterial).uniforms.uPulseTimes.value[idx] = time;
+          const color = colorPalettes[config.activePaletteIndex][Math.floor(Math.random() * 3)];
+          (nodesMesh.material as THREE.ShaderMaterial).uniforms.uPulseColors.value[idx].copy(color);
+          (connectionsMesh.material as THREE.ShaderMaterial).uniforms.uPulseColors.value[idx].copy(color);
+        }
       }
     };
+
+    networkRef.current = {
+      triggerPulse,
+      updateTheme: (index) => { config.activePaletteIndex = index; createNetworkVisualization(config.currentFormation, config.densityFactor); },
+      morphFormation: () => { config.currentFormation = (config.currentFormation + 1) % 3; createNetworkVisualization(config.currentFormation, config.densityFactor); controls.autoRotate = false; setTimeout(() => controls.autoRotate = true, 2500); },
+      updateDensity: (val) => { config.densityFactor = val / 100; createNetworkVisualization(config.currentFormation, config.densityFactor); },
+      resetCamera: () => { controls.reset(); controls.autoRotate = false; setTimeout(() => controls.autoRotate = true, 2000); }
+    };
+
+    const handleResize = () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight); };
+    window.addEventListener('resize', handleResize);
+
+    createNetworkVisualization(0);
+    animate();
+
+    return () => { window.removeEventListener('resize', handleResize); renderer.dispose(); };
   }, []);
 
   return (
-    <div className="horizontal-section bg-black flex items-center justify-center relative overflow-hidden font-orbitron text-primary snap-start h-screen w-screen">
+    <div ref={containerRef} className="horizontal-section bg-black flex items-center justify-center relative overflow-hidden h-screen w-screen selection:bg-none">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&display=swap');
         :root {
-            --primary-color: #00ffff;
-            --accent-color: #88ffff;
-            --secondary-color: #0088ff;
-            --primary-rgb: 0, 255, 255;
-            --accent-rgb: 136, 255, 255;
-            --secondary-rgb: 0, 136, 255;
-            --gradient-start: #00ff88;
-            --gradient-middle: #00ffff;
-            --gradient-end: #0088ff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.2);
+            --text-main: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.6);
         }
-        .font-orbitron { font-family: 'Orbitron', monospace; }
-        .grid-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.05;
-            background-image: linear-gradient(rgba(var(--primary-rgb), 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--primary-rgb), 0.1) 1px, transparent 1px);
-            background-size: 60px 60px; animation: gridShift 15s linear infinite;
+        .glass-panel {
+            backdrop-filter: blur(24px) saturate(120%);
+            -webkit-backdrop-filter: blur(24px) saturate(120%);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            border-left: 1px solid var(--glass-highlight);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            border-radius: 24px; color: var(--text-main); transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: absolute; z-index: 10; overflow: hidden;
         }
-        @keyframes gridShift { 0% { transform: translate(0, 0); } 100% { transform: translate(60px, 60px); } }
-        .scan-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 8px; pointer-events: none;
-            background: linear-gradient(90deg, transparent 0%, var(--primary-color) 40%, var(--accent-color) 50%, var(--primary-color) 60%, transparent 100%);
-            box-shadow: 0 0 40px var(--primary-color), 0 0 80px rgba(var(--primary-rgb), 0.6), 0 0 120px rgba(var(--primary-rgb), 0.3);
-            animation: scanMove 2.5s ease-in-out infinite; z-index: 50;
+        .glass-panel:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.15); }
+        .theme-button {
+            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; position: relative;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        @keyframes scanMove { 0%, 100% { top: 0%; opacity: 0; } 10%, 90% { opacity: 1; } 50% { top: 100%; } }
-        .tech-pattern {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.03;
-            background-image: radial-gradient(circle at 20% 20%, rgba(var(--primary-rgb), 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(var(--secondary-rgb), 0.15) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb), 0.08) 0%, transparent 70%);
-            animation: techPulse 6s ease-in-out infinite;
+        .theme-button::after {
+            content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.8); opacity: 0; transform: scale(1.1); transition: all 0.3s ease;
         }
-        @keyframes techPulse { 0%, 100% { opacity: 0.03; transform: scale(1); } 50% { opacity: 0.08; transform: scale(1.15); } }
-        .circuit-lines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.1;
-            background-image: linear-gradient(45deg, transparent 40%, rgba(var(--primary-rgb), 0.15) 41%, rgba(var(--primary-rgb), 0.15) 42%, transparent 43%), linear-gradient(-45deg, transparent 40%, rgba(var(--secondary-rgb), 0.15) 41%, rgba(var(--secondary-rgb), 0.15) 42%, transparent 43%);
-            background-size: 180px 180px; animation: circuitFlow 12s linear infinite;
+        .theme-button.active::after { opacity: 1; transform: scale(1); }
+        .density-slider { -webkit-appearance: none; width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; outline: none; }
+        .density-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,255,255,0.8); transition: all 0.2s ease; margin-top: -6px;
         }
-        @keyframes circuitFlow { 0% { background-position: 0px 0px, 0px 0px; } 100% { background-position: 180px 180px, -180px 180px; } }
-        
-        #hud {
-            position: absolute; top: 20px; left: 20px; font-size: 12px; color: var(--primary-color); text-transform: uppercase; letter-spacing: 1px; z-index: 100;
-            background: rgba(0, 0, 0, 0.6); padding: 10px 15px; border: 1px solid rgba(var(--primary-rgb), 0.2); border-radius: 15px; backdrop-filter: blur(20px);
-            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2); transition: all 0.3s ease;
+        .control-button {
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-main); padding: 12px 24px; border-radius: 50px;
+            cursor: pointer; font-size: 13px; font-weight: 500; text-transform: uppercase; transition: all 0.3s ease;
         }
-        .hud-line { margin: 2px 0; display: flex; justify-content: space-between; align-items: center; position: relative; }
-        .hud-value { color: var(--accent-color); font-weight: 500; margin-left: 8px; text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.4); }
-        #status-indicator { width: 6px; height: 6px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 0 8px var(--primary-color); animation: statusPulse 1.8s ease-in-out infinite; }
-        @keyframes statusPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
-        
-        #control-panel { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; z-index: 100; }
-        .control-section { display: flex; align-items: center; gap: 15px; background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border: 1px solid rgba(var(--primary-rgb), 0.2); border-radius: 15px; backdrop-filter: blur(20px); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 0 15px rgba(var(--primary-rgb), 0.1); }
-        .cyber-switch { position: relative; width: 40px; height: 20px; background: #001133; border: 1px solid var(--primary-color); cursor: pointer; border-radius: 10px; transition: all 0.3s; }
-        .cyber-switch::before { content: ''; position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; background: var(--primary-color); border-radius: 50%; transition: 0.3s; }
-        .cyber-switch.active::before { transform: translateX(20px); background: var(--accent-color); }
-        .switch-label { color: var(--primary-color); user-select: none; cursor: pointer; font-size: 9px; }
-        #execute-btn, #controls-toggle { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(var(--primary-rgb), 0.2); color: var(--primary-color); font-family: 'Orbitron', sans-serif; font-size: 11px; padding: 8px 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; border-radius: 20px; transition: 0.3s; backdrop-filter: blur(20px); }
-        #execute-btn:hover { background: rgba(var(--primary-rgb), 0.1); transform: scale(1.05); }
-        .cyber-icon { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; margin-right: 5px; vertical-align: middle; }
-        .performance-bars { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 5px; z-index: 100; }
-        .perf-bar { width: 80px; height: 3px; background: rgba(0,0,0,0.6); border: 1px solid var(--primary-color); overflow: hidden; }
-        .perf-bar::before { content: ''; display: block; height: 100%; background: var(--primary-color); width: 70%; animation: perfPulse 1.8s infinite; }
-        @keyframes perfPulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
-        .perf-label { font-size: 8px; color: var(--primary-color); }
-
-        /* Impact Text Effects */
+        .control-button:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-4px); }
         .impact-text {
-          font-family: 'Orbitron', sans-serif;
-          color: var(--primary-color);
-          text-transform: uppercase;
-          font-weight: 900;
-          text-align: center;
-          position: absolute;
-          top: 30%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-          z-index: 20;
-          letter-spacing: 0.25em;
-          font-size: clamp(1rem, 4vw, 2.2rem);
-          text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 40px rgba(var(--primary-rgb), 0.5);
-          animation: impactFlicker 4s infinite, impactGlitch 10s infinite;
-          width: 90%;
-          line-height: 1.2;
+            background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .impact-logo {
-          position: absolute;
-          top: 55%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-          z-index: 20;
-          width: clamp(45px, 10vw, 88px);
-          filter: drop-shadow(0 0 5px var(--primary-color)) drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.4));
-          animation: impactFlicker 4s infinite alternate;
-        }
-
-        @keyframes impactFlicker {
-          0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; filter: drop-shadow(0 0 15px var(--primary-color)); }
-          20%, 24%, 55% { opacity: 0.4; filter: none; }
-        }
-
-        @keyframes impactGlitch {
-          0%, 89%, 100% { transform: translate(-50%, -50%) skew(0deg); }
-          90% { transform: translate(-51%, -49%) skew(2deg); color: #ff00ff; text-shadow: 2px 0 red, -2px 0 blue; }
-          91% { transform: translate(-49%, -51%) skew(-2deg); color: #00ffff; text-shadow: -2px 0 red, 2px 0 blue; }
-          92% { transform: translate(-50%, -50%) skew(0deg); }
-        }
-
-        @media (max-width: 768px) { #hud, .performance-bars, .control-section { display: none; } #controls-toggle { display: block; } }
       `}</style>
 
-      <div ref={containerRef} className="absolute inset-0 z-0"></div>
-      <div className="grid-overlay"></div>
-      <div className="tech-pattern"></div>
-      <div className="circuit-lines"></div>
-      <div className="scan-line"></div>
+      {/* Instructions */}
+      <div className="glass-panel top-8 left-8 w-[280px] p-6 hidden md:block">
+        <div className="impact-text font-poppins font-bold text-lg mb-2">Quantum Neural Network</div>
+        <div className="text-sm text-white/60 font-light">
+          Haz clic para enviar pulsos de energía.<br />Arrastra para explorar la estructura.
+        </div>
+      </div>
 
-      {/* Impact Text */}
-      <h2 className="impact-text">
-        Habla con nuestra Inteligencia Artificial
-      </h2>
+      {/* Theme & Density */}
+      <div className="glass-panel top-8 right-8 w-[240px] p-6 flex flex-col gap-6 hidden md:flex">
+        <div>
+          <div className="text-[10px] uppercase tracking-[2px] text-white/60 mb-3 font-bold">Tema de Cristal</div>
+          <div className="grid grid-cols-3 gap-3 justify-items-center">
+            {[0, 1, 2].map(idx => (
+              <button
+                key={idx}
+                className={`theme-button ${activeTheme === idx ? 'active' : ''}`}
+                style={{ background: idx === 0 ? 'radial-gradient(circle at 30% 30%, #a78bfa, #4c1d95)' : idx === 1 ? 'radial-gradient(circle at 30% 30%, #fb7185, #9f1239)' : 'radial-gradient(circle at 30% 30%, #38bdf8, #0c4a6e)' }}
+                onClick={() => { setActiveTheme(idx); networkRef.current?.updateTheme(idx); }}
+              />
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="flex justify-between text-xs text-white/60 mb-2">
+            <span>Densidad</span>
+            <span className="text-white font-bold">{density}%</span>
+          </div>
+          <input
+            type="range"
+            min="30"
+            max="100"
+            value={density}
+            className="density-slider"
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              setDensity(val);
+              networkRef.current?.updateDensity(val);
+            }}
+          />
+        </div>
+      </div>
 
-      {/* Impact Logo */}
-      <img 
-        src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" 
-        alt="MitZay Impact Logo" 
-        className="impact-logo"
+      {/* Control Buttons */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+        <button className="control-button" onClick={() => networkRef.current?.morphFormation()}>Morph</button>
+        <button className="control-button" onClick={() => setPaused(!paused)}>{paused ? 'Play' : 'Freeze'}</button>
+        <button className="control-button" onClick={() => networkRef.current?.resetCamera()}>Reset</button>
+      </div>
+
+      <canvas
+        ref={canvasRef}
+        className="block w-full h-full cursor-crosshair absolute inset-0 z-[1]"
+        onClick={(e) => !paused && networkRef.current?.triggerPulse(e.clientX, e.clientY)}
       />
-
-      <div ref={hudRef} id="hud">
-        <div className="hud-line">
-          <span>SYSTEM:</span>
-          <span className="hud-value">ONLINE</span>
-          <div id="status-indicator"></div>
-        </div>
-        <div className="hud-line">
-          <span>FPS:</span>
-          <span className="hud-value" id="fps-display">60</span>
-        </div>
-        <div className="hud-line">
-          <span>NODES:</span>
-          <span className="hud-value" id="node-display">28,000</span>
-        </div>
-        <div className="hud-line">
-          <span>MODE:</span>
-          <span className="hud-value" id="mode-display">HARMONIC SPHERE</span>
-        </div>
-        <div className="hud-line">
-            <span>TRAILS:</span>
-            <span className="hud-value" id="trail-display">ACTIVE</span>
-        </div>
-        <div className="hud-line">
-            <span>GLOW:</span>
-            <span className="hud-value" id="glow-display">ENABLED</span>
-        </div>
-      </div>
-
-      <div className="performance-bars">
-        <div className="perf-label">CPU LOAD</div>
-        <div className="perf-bar"></div>
-        <div className="perf-label">MEMORY</div>
-        <div className="perf-bar" style={{width: '60%'}}></div>
-      </div>
-
-      <div id="data-stream" ref={dataStreamRef} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl font-bold tracking-[6px] opacity-0 pointer-events-none transition-opacity duration-1000">
-        NEURAL NEXUS
-      </div>
-
-      <div id="control-panel">
-        <button id="controls-toggle" className="hidden">CONTROLS</button>
-        <div className="control-section">
-          <div className="cyber-switch active" id="flow-switch"></div>
-          <span className="switch-label">DATA_FLOW</span>
-          <div className="cyber-switch active" id="trails-switch"></div>
-          <span className="switch-label">TRAILS</span>
-          <div className="cyber-switch active" id="glow-switch"></div>
-          <span className="switch-label">GLOW</span>
-          <input type="color" id="color-picker" defaultValue="#00ffff" className="w-6 h-6 bg-transparent border-none cursor-pointer" />
-        </div>
-        <button id="execute-btn">
-          <svg className="cyber-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          EXECUTE_NEXT
-        </button>
-      </div>
     </div>
   );
 };
