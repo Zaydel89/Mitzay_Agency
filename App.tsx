@@ -84,7 +84,7 @@ const GoogleCalendarEmbed: React.FC<{ onHover?: (isHovering: boolean) => void }>
         <div 
           onMouseEnter={() => onHover?.(true)}
           onMouseLeave={() => onHover?.(false)}
-          className="w-full h-full min-h-[560px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_80px_-20px_rgba(0,220,1,0.4)] transition-all duration-500 relative group"
+          className="w-full h-full min-h-[644px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_80px_-20px_rgba(0,220,1,0.4)] transition-all duration-500 relative group"
         >
             <iframe 
                 src={CALENDLY_URL} 
@@ -319,7 +319,7 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
-        {/* Sección 4: Agenda (TAMAÑO REDUCIDO UN 25% RESPECTO AL ANTERIOR) */}
+        {/* Sección 4: Agenda (VENTANA DE CALENDAR MANTENIDA CON EL AUMENTO DEL 15%) */}
         <div id="agenda" className="horizontal-section bg-black flex items-center px-12 md:px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
@@ -335,17 +335,13 @@ const HomePage: React.FC<HomePageProps> = ({
                     <h2 className="font-poppins text-4xl lg:text-5xl font-medium leading-[1.1] tracking-tight mb-6 text-white">{CALENDLY_SECTION.headline}</h2>
                   </AnimatedSection>
                   <AnimatedSection delay={1.1} triggerOnSectionActive isActive={activeSection === 4}>
-                    <p className="text-gray-300 text-lg leading-relaxed max-w-md mb-4">{CALENDLY_SECTION.copy}</p>
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl mb-6">
-                       <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Nota importante:</p>
-                       <p className="text-xs text-gray-400 italic leading-relaxed">Tras elegir tu horario, se te pedirá explicar brevemente cómo podemos ayudarte para personalizar tu hoja de ruta.</p>
-                    </div>
+                    <p className="text-gray-300 text-lg leading-relaxed max-w-md mb-8">{CALENDLY_SECTION.copy}</p>
                     <CommunityCTA variant="green" hideOfferLabel inactive className="items-start scale-95 origin-left" />
                   </AnimatedSection>
               </div>
             </div>
             
-            <AnimatedSection delay={1.6} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/5 h-[600px]">
+            <AnimatedSection delay={1.6} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/5 h-[690px]">
               <div className="w-full h-full relative">
                 <GoogleCalendarEmbed onHover={setIsHoveringCalendar} />
               </div>
