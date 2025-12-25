@@ -82,7 +82,9 @@ const CommunityCTA: React.FC<{
 const GoogleCalendarEmbed = () => {
     return (
         <div className="w-full h-full min-h-[500px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_80px_-20px_rgba(0,220,1,0.4)] transition-all duration-500 relative group">
-            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+            {/* Overlay para suavizar el blanco del calendario si es necesario */}
+            <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+            
             <iframe 
                 src={CALENDLY_URL} 
                 style={{ 
@@ -91,10 +93,17 @@ const GoogleCalendarEmbed = () => {
                 }} 
                 className="w-full h-full opacity-90 grayscale-[0.2] hover:grayscale-0 transition-all duration-500"
                 frameBorder="0" 
-                scrolling="no"
+                scrolling="yes"
                 title="Agenda MitZay"
             ></iframe>
+            
+            {/* Decorative ring */}
             <div className="absolute inset-0 pointer-events-none ring-1 ring-white/10 rounded-[3rem] inset-shadow-sm"></div>
+            
+            {/* Ayuda visual de interacción */}
+            <div className="absolute bottom-4 right-8 text-[8px] font-black text-primary uppercase tracking-widest opacity-40">
+              Interface Sincronizada 24/7
+            </div>
         </div>
     );
 };
