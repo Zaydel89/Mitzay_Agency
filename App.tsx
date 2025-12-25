@@ -84,7 +84,7 @@ const GoogleCalendarEmbed: React.FC<{ onHover?: (isHovering: boolean) => void }>
         <div 
           onMouseEnter={() => onHover?.(true)}
           onMouseLeave={() => onHover?.(false)}
-          className="w-full h-full min-h-[750px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_100px_-20px_rgba(0,220,1,0.5)] transition-all duration-500 relative group"
+          className="w-full h-full min-h-[560px] rounded-[3rem] overflow-hidden border-2 border-primary/30 bg-black shadow-[0_0_80px_-20px_rgba(0,220,1,0.4)] transition-all duration-500 relative group"
         >
             <iframe 
                 src={CALENDLY_URL} 
@@ -98,15 +98,15 @@ const GoogleCalendarEmbed: React.FC<{ onHover?: (isHovering: boolean) => void }>
                 title="Agenda MitZay"
             ></iframe>
             
-            <div className="absolute top-8 right-8 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-6 right-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
                <a 
                  href={CALENDLY_URL} 
                  target="_blank" 
                  rel="noopener noreferrer"
-                 className="flex items-center gap-3 px-6 py-3 bg-primary text-black font-black text-[10px] uppercase tracking-widest rounded-full shadow-2xl hover:scale-105 transition-transform"
+                 className="flex items-center gap-2 px-4 py-2 bg-primary text-black font-black text-[9px] uppercase tracking-widest rounded-full shadow-xl hover:scale-105 transition-transform"
                >
                  Abrir pantalla completa
-                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                </a>
             </div>
             
@@ -319,33 +319,33 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
 
-        {/* Sección 4: Agenda (TAMAÑO AUMENTADO +25%) */}
+        {/* Sección 4: Agenda (TAMAÑO REDUCIDO UN 25% RESPECTO AL ANTERIOR) */}
         <div id="agenda" className="horizontal-section bg-black flex items-center px-12 md:px-24 overflow-hidden relative">
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
             <source src="https://res.cloudinary.com/dsiuc68hp/video/upload/v1766435418/3129671-hd_1920_1080_30fps_wx862f.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-green-950/60 via-black/80 to-black z-[1]"></div>
-          <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center relative z-10">
-            <div className="w-full lg:w-1/4 space-y-12 text-left">
+          <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 items-center relative z-10">
+            <div className="w-full lg:w-2/5 space-y-8 text-left">
               <div>
                   <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 4}>
-                    <div className="inline-block bg-primary/10 text-primary px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-10 border border-primary/30 shadow-[0_0_20px_rgba(0,220,1,0.3)]">Acceso Directo</div>
+                    <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] mb-6 border border-primary/30 shadow-[0_0_15px_rgba(0,220,1,0.2)]">Acceso Directo</div>
                   </AnimatedSection>
                   <AnimatedSection delay={0.6} triggerOnSectionActive isActive={activeSection === 4}>
-                    <h2 className="font-poppins text-5xl lg:text-7xl font-medium leading-[1.0] tracking-tighter mb-10 text-white">{CALENDLY_SECTION.headline}</h2>
+                    <h2 className="font-poppins text-4xl lg:text-5xl font-medium leading-[1.1] tracking-tight mb-6 text-white">{CALENDLY_SECTION.headline}</h2>
                   </AnimatedSection>
                   <AnimatedSection delay={1.1} triggerOnSectionActive isActive={activeSection === 4}>
-                    <p className="text-gray-300 text-xl leading-relaxed max-w-md mb-4">{CALENDLY_SECTION.copy}</p>
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl mb-10">
-                       <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Nota importante:</p>
+                    <p className="text-gray-300 text-lg leading-relaxed max-w-md mb-4">{CALENDLY_SECTION.copy}</p>
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl mb-6">
+                       <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Nota importante:</p>
                        <p className="text-xs text-gray-400 italic leading-relaxed">Tras elegir tu horario, se te pedirá explicar brevemente cómo podemos ayudarte para personalizar tu hoja de ruta.</p>
                     </div>
-                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-start scale-110 origin-left" />
+                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-start scale-95 origin-left" />
                   </AnimatedSection>
               </div>
             </div>
             
-            <AnimatedSection delay={1.6} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/4 h-[800px]">
+            <AnimatedSection delay={1.6} triggerOnSectionActive isActive={activeSection === 4} className="w-full lg:w-3/5 h-[600px]">
               <div className="w-full h-full relative">
                 <GoogleCalendarEmbed onHover={setIsHoveringCalendar} />
               </div>
