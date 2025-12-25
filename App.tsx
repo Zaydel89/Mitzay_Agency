@@ -406,7 +406,14 @@ const HomePage: React.FC<HomePageProps> = ({
                 <AnimatedSection key={index} delay={0.2}>
                   <div className="glass p-6 rounded-[2rem] border border-primary/10">
                     <div className="overflow-hidden rounded-xl mb-4 aspect-video border border-primary/10">
-                      <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                      <video 
+                        loop 
+                        muted 
+                        playsInline 
+                        className="w-full h-full object-cover cursor-pointer"
+                        onMouseEnter={(e) => e.currentTarget.play()}
+                        onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                      >
                         <source src={service.image} type="video/mp4" />
                       </video>
                     </div>
@@ -437,7 +444,14 @@ const HomePage: React.FC<HomePageProps> = ({
               <AnimatedSection key={idx} delay={0.2}>
                 <div className="glass p-6 rounded-[2.5rem] border border-pink-500/10">
                   <div className="aspect-video rounded-xl overflow-hidden mb-5 border border-white/5">
-                    <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                    <video 
+                      loop 
+                      muted 
+                      playsInline 
+                      className="w-full h-full object-cover cursor-pointer"
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                      onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                    >
                       <source src={study.image} type="video/mp4" />
                     </video>
                   </div>
