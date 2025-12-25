@@ -1,4 +1,3 @@
-
 import type { Page, NavLink, Service, Testimonial, CaseStudy, DetailedService } from './types';
 
 export const NAV_LINKS: NavLink[] = [
@@ -119,7 +118,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     {
         title: "Automatizaciones mediante agentes de IA",
-        description: "Implementación de agentes autónomos para la gestión de leads y agendamiento automático en tiempo real, integrados con CRMs avanzados.",
+        description: "Implementación de agentes autónomos para la gestión de leads and agendamiento automático en tiempo real, integrados con CRMs avanzados.",
         kpis: ["75% Tareas Automatizadas", "Disponibilidad 24/7", "-80% Costes de Soporte"],
         image: "https://res.cloudinary.com/dsiuc68hp/video/upload/v1766465264/InShot_20251222_224623578_x5xopg.mp4",
         alt: "Visualización técnica de flujos de trabajo con agentes de IA autónomos operando en tiempo real."
@@ -165,10 +164,10 @@ export const FOOTER_CONTENT = {
     privacy: "Política de Privacidad",
     cookies: "Aviso de Cookies",
     socials: [
-        { name: 'Instagram', url: '#' },
-        { name: 'LinkedIn', url: '#' },
-        { name: 'YouTube', url: '#' },
-        { name: 'TikTok', url: '#' },
+        { name: 'Instagram', url: 'https://www.instagram.com/mitzay_ia/' },
+        { name: 'LinkedIn', url: 'http://www.linkedin.com/in/mitzayia' },
+        { name: 'YouTube', url: 'https://www.youtube.com/@mitzay_ia' },
+        { name: 'TikTok', url: 'https://www.tiktok.com/@mitzay_ia' },
         { name: 'Canal WhatsApp', url: 'https://whatsapp.com/channel/0029VbCUmLUATRSpbRIhgj0W' },
         { name: 'Canal Telegram', url: 'https://t.me/+nsaDVpRHU5k4ZGYx' },
         { name: 'Kick', url: 'https://kick.com/zaydel89' },
