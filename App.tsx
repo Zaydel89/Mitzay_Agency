@@ -379,7 +379,7 @@ const HomePage: React.FC<HomePageProps> = ({
         
         {/* SECCIÓN 5: FOOTER */}
         <div id="section-5" className="horizontal-section flex items-center justify-center px-6 md:px-24 bg-black min-h-screen md:min-h-0 py-20 md:py-0">
-          <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 5} className="w-full max-w-5xl">
+          <AnimatedSection delay={0.1} triggerOnSectionActive isActive={activeSection === 5} className="w-full max-w-4xl">
               <Footer onNavigate={onNavigate} onScrollToSection={onScrollToSection} />
           </AnimatedSection>
         </div>
