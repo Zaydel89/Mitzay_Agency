@@ -2,13 +2,30 @@
 import React from 'react';
 
 const WhatsAppButton: React.FC = () => {
-  const whatsappNumber = "34600000000"; // Sustituir por el número real de MitZay Agency
-  const message = "Hola MitZay Agency, me gustaría recibir información sobre vuestros servicios de IA y Marketing.";
+  const whatsappNumber = "5215536317581"; 
+  const message = "Hola MitZay Agency, me gustaría recibir información sobre sus servicios de IA y Marketing.";
   const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
 
   return (
     <>
       <style>{`
+        @keyframes cyber-jump {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-15px) scale(1.05); }
+          75% { transform: translateY(0) scale(0.95); }
+        }
+
+        .whatsapp-float-container {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          z-index: 1000;
+        }
+
+        .jump-animation {
+          animation: cyber-jump 2s cubic-bezier(0.36, 0, 0.66, -0.56) infinite;
+        }
+
         /* Lógica de Toggle para el botón */
         .chat-menu:checked ~ .sticky-button .chat-icon {
           display: none;
@@ -24,16 +41,33 @@ const WhatsAppButton: React.FC = () => {
           width: 100%;
           height: 100%;
           cursor: pointer;
+          position: relative;
         }
 
         .sticky-chat {
-          background: rgba(10, 10, 10, 0.8);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(0, 220, 1, 0.2);
+          display: none;
+          position: absolute;
+          bottom: 90px;
+          right: 0;
+          width: 320px;
+          background: rgba(10, 10, 10, 0.9);
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
+          border: 1px solid rgba(0, 220, 1, 0.3);
           border-radius: 2rem;
           padding: 1.5rem;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 25px 50px -12px rgba(0, 220, 1, 0.25);
+          transform-origin: bottom right;
+          animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(0.5) translateY(20px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .chat-menu:checked ~ .sticky-chat {
+          display: block;
         }
 
         .chat-header {
@@ -92,52 +126,71 @@ const WhatsAppButton: React.FC = () => {
           width: 1.2rem;
           height: 1.2rem;
         }
+
+        .sticky-button {
+            width: 70px;
+            height: 70px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Permitir que el icono desborde visualmente si es necesario para verse "al doble" */
+        .chat-icon, .close-icon {
+          position: absolute;
+          max-width: none;
+          flex-shrink: 0;
+        }
       `}</style>
 
-      <input type="checkbox" id="whatsapp-toggle" className="chat-menu hidden" />
-      
-      <div className="sticky-button bg-primary text-black rounded-full shadow-[0_15px_40px_rgba(0,220,1,0.4)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center animate-bounce group">
-        <label htmlFor="whatsapp-toggle" className="relative">
-          {/* Tooltip */}
-          <div className="absolute -top-14 right-0 bg-white text-black text-[9px] font-black px-5 py-2.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl tracking-tighter">
-             HABLAR CON NOSOTROS
-          </div>
-
-          {/* WhatsApp Icon */}
-          <svg className="chat-icon w-7 h-7 fill-black" viewBox="0 0 24 24">
-            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793 0-.852.448-1.271.607-1.445.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.101-.177.211-.077.383.1.173.444.73.954 1.185.657.587 1.21.768 1.383.853.173.085.274.072.376-.045.101-.116.434-.506.549-.68.116-.173.231-.144.39-.087.158.058 1.012.477 1.185.564.173.085.289.129.332.202.043.073.043.419-.101.824z" />
-          </svg>
-          
-          {/* Close Icon */}
-          <svg className="close-icon w-6 h-6 stroke-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </label>
-      </div>
-
-      <div className="sticky-chat">
-        <div className="chat-content">
-          <div className="chat-header">
-            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-               <svg viewBox="0 0 24 24" className="w-6 h-6 fill-primary">
-                 <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793 0-.852.448-1.271.607-1.445.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.101-.177.211-.077.383.1.173.444.73.954 1.185.657.587 1.21.768 1.383.853.173.085.274.072.376-.045.101-.116.434-.506.549-.68.116-.173.231-.144.39-.087.158.058 1.012.477 1.185.564.173.085.289.129.332.202.043.073.043.419-.101.824z" />
-               </svg>
+      <div className="whatsapp-float-container">
+        <input type="checkbox" id="whatsapp-toggle" className="chat-menu hidden" />
+        
+        <div className="sticky-button jump-animation bg-primary text-black rounded-full shadow-[0_15px_40px_rgba(0,220,1,0.5)] transition-all active:scale-95 group">
+          <label htmlFor="whatsapp-toggle">
+            {/* Tooltip */}
+            <div className="absolute -top-16 right-0 bg-white text-black text-[10px] font-black px-6 py-2.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl tracking-tighter z-20">
+               ¡HABLEMOS POR WHATSAPP!
             </div>
-            <div className="title">
-              MitZay Agency
-              <span>Atención Inmediata</span>
-            </div>
-          </div>
-          <div className="chat-text">
-            ¡Hola! 👋 Soy Zaydel. ¿Tienes alguna duda sobre cómo la IA puede automatizar tus ventas hoy mismo?
-          </div>
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="chat-button">
-            Enviar mensaje
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" strokeLinecap="round" strokeLinejoin="round"></path>
+
+            {/* WhatsApp Icon - Tamaño aumentado para efecto visual potente */}
+            <svg className="chat-icon w-20 h-20 fill-black" viewBox="0 0 24 24">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793 0-.852.448-1.271.607-1.445.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.101-.177.211-.077.383.1.173.444.73.954 1.185.657.587 1.21.768 1.383.853.173.085.274.072.376-.045.101-.116.434-.506.549-.68.116-.173.231-.144.39-.087.158.058 1.012.477 1.185.564.173.085.289.129.332.202.043.073.043.419-.101.824z" />
             </svg>
-          </a>
+            
+            {/* Close Icon */}
+            <svg className="close-icon w-14 h-14 stroke-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </label>
+        </div>
+
+        <div className="sticky-chat">
+          <div className="chat-content">
+            <div className="chat-header">
+              <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                 <svg viewBox="0 0 24 24" className="w-6 h-6 fill-primary">
+                   <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793 0-.852.448-1.271.607-1.445.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.101-.177.211-.077.383.1.173.444.73.954 1.185.657.587 1.21.768 1.383.853.173.085.274.072.376-.045.101-.116.434-.506.549-.68.116-.173.231-.144.39-.087.158.058 1.012.477 1.185.564.173.085.289.129.332.202.043.073.043.419-.101.824z" />
+                 </svg>
+              </div>
+              <div className="title">
+                MitZay Agency
+                <span>Atención Estratégica</span>
+              </div>
+            </div>
+            <div className="chat-text">
+              ¡Hola! 👋 Soy Zaydel. ¿Cómo puedo ayudarte a escalar tu negocio con IA hoy mismo?
+            </div>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="chat-button">
+              Chatear ahora
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" strokeLinecap="round" strokeLinejoin="round"></path>
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </>

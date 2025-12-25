@@ -1,8 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { HERO_CONTENT, CTA_VARIATIONS, CALENDLY_URL } from '../constants';
+import { HERO_CONTENT, CTA_VARIATIONS } from '../constants';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onScrollToAgenda?: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onScrollToAgenda }) => {
   const [ctaIndex, setCtaIndex] = useState(0);
 
   useEffect(() => {
@@ -49,19 +53,17 @@ const Hero: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={onScrollToAgenda}
             className="w-full sm:w-auto inline-block px-14 py-5 bg-primary text-black font-black rounded-2xl text-sm shadow-[0_15px_30px_rgba(0,220,1,0.25)] hover:shadow-primary/40 transition-all hover:scale-[1.03] active:scale-95 uppercase tracking-[0.2em]"
           >
             {CTA_VARIATIONS[ctaIndex]}
-          </a>
+          </button>
         </div>
       </div>
       
       {/* Scroll indicator */}
-      <div className="absolute bottom-12 right-12 flex flex-col items-center gap-4 opacity-70">
+      <div className="absolute bottom-12 right-12 flex flex-col items-center gap-4 opacity-70 cursor-pointer" onClick={onScrollToAgenda}>
          <span className="text-[8px] font-black uppercase tracking-[0.6em] -rotate-90 origin-right translate-x-full text-primary">Explorar</span>
          <div className="w-10 h-10 border border-primary/30 rounded-full flex items-center justify-center animate-bounce shadow-[0_0_15px_rgba(0,220,1,0.2)]">
             <svg className="w-4 h-4 rotate-[-90deg] text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>

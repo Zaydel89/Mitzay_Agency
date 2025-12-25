@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
 import AnimatedSection from './components/AnimatedSection';
 import NeuralNexusSection from './components/NeuralNexusSection';
+import WhatsAppButton from './components/WhatsAppButton';
 import { Page } from './types';
 import { 
   SEO_DATA, 
@@ -19,7 +20,12 @@ import {
   CALENDLY_URL 
 } from './constants';
 
-const CommunityCTA: React.FC<{ className?: string, variant?: 'primary' | 'pink' | 'blue' | 'orange' | 'green' }> = ({ className = "", variant = 'primary' }) => {
+const CommunityCTA: React.FC<{ 
+  className?: string, 
+  variant?: 'primary' | 'pink' | 'blue' | 'orange' | 'green',
+  hideOfferLabel?: boolean,
+  inactive?: boolean
+}> = ({ className = "", variant = 'primary', hideOfferLabel = false, inactive = false }) => {
   const colors = {
     primary: 'bg-primary text-black shadow-primary/30 hover:shadow-primary/60',
     pink: 'bg-pink-500 text-white shadow-pink-500/30 hover:shadow-pink-500/60',
@@ -36,28 +42,39 @@ const CommunityCTA: React.FC<{ className?: string, variant?: 'primary' | 'pink' 
     green: '¡AGENDA TU SESIÓN GRATIS!',
   };
 
+  const Component = inactive ? 'div' : 'a';
+  const extraProps = inactive ? {} : {
+    href: "https://chat.whatsapp.com/TU_LINK_DE_COMUNIDAD",
+    target: "_blank",
+    rel: "noopener noreferrer"
+  };
+
   return (
     <div className={`mt-12 flex flex-col items-center ${className}`}>
-      <p className={`text-[10px] font-black mb-4 uppercase tracking-[0.4em] animate-pulse ${variant === 'primary' || variant === 'green' ? 'text-primary' : (variant === 'pink' ? 'text-pink-400' : (variant === 'blue' ? 'text-blue-400' : 'text-orange-400'))}`}>
-        OFERTA POR TIEMPO LIMITADO: 14 CUPOS DISPONIBLES
-      </p>
-      <a 
-        href="https://chat.whatsapp.com/TU_LINK_DE_COMUNIDAD"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`group relative px-10 py-5 font-black rounded-2xl text-[11px] uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.05] transition-all active:scale-95 overflow-hidden ${colors[variant === 'green' ? 'primary' : variant]}`}
+      {!hideOfferLabel && (
+        <p className={`text-[10px] font-black mb-4 uppercase tracking-[0.4em] animate-pulse ${variant === 'primary' || variant === 'green' ? 'text-primary' : (variant === 'pink' ? 'text-pink-400' : (variant === 'blue' ? 'text-blue-400' : 'text-orange-400'))}`}>
+          OFERTA POR TIEMPO LIMITADO: 14 CUPOS DISPONIBLES
+        </p>
+      )}
+      <Component 
+        {...extraProps}
+        className={`group relative px-10 py-5 font-black rounded-2xl text-[11px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 overflow-hidden ${colors[variant === 'green' ? 'primary' : variant]} ${inactive ? 'cursor-default' : 'hover:scale-[1.05]'}`}
       >
         <span className="relative z-10 flex items-center gap-2">
           {labels[variant]}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
+          {!inactive && (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          )}
         </span>
         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-[-20deg]"></div>
-      </a>
-      <p className="text-[9px] text-gray-400 mt-4 font-bold uppercase tracking-widest text-center max-w-xs">
-        🎁 Regalo de bienvenida: Masterclass de Diseño Web con IA + Cupones descuento para herramientas IA.
-      </p>
+      </Component>
+      {!hideOfferLabel && (
+        <p className="text-[9px] text-gray-400 mt-4 font-bold uppercase tracking-widest text-center max-w-xs">
+          🎁 Regalo de bienvenida: Masterclass de Diseño Web con IA + Cupones descuento para herramientas IA.
+        </p>
+      )}
     </div>
   );
 };
@@ -77,7 +94,6 @@ const GoogleCalendarEmbed = () => {
                 scrolling="no"
                 title="Agenda MitZay"
             ></iframe>
-            {/* Overlay de suavizado para integración dark */}
             <div className="absolute inset-0 pointer-events-none ring-1 ring-white/10 rounded-[3rem] inset-shadow-sm"></div>
         </div>
     );
@@ -142,7 +158,7 @@ const HomePage: React.FC<HomePageProps> = ({
       <div ref={scrollRef} className="flex h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar bg-black">
         <div className="horizontal-section flex items-center justify-center">
           <div className="glow-overlay bg-primary opacity-30"></div>
-          <Hero />
+          <Hero onScrollToAgenda={() => onScrollToSection(4)} />
         </div>
 
         <div className="horizontal-section bg-black flex items-center px-12 md:px-20 overflow-hidden relative">
@@ -300,7 +316,7 @@ const HomePage: React.FC<HomePageProps> = ({
                   </AnimatedSection>
                   <AnimatedSection delay={1.1} triggerOnSectionActive isActive={activeSection === 4}>
                     <p className="text-gray-300 text-xl leading-relaxed max-w-md">{CALENDLY_SECTION.copy}</p>
-                    <CommunityCTA variant="green" className="items-start mt-10 scale-95 origin-left" />
+                    <CommunityCTA variant="green" hideOfferLabel inactive className="items-start mt-10 scale-95 origin-left" />
                   </AnimatedSection>
               </div>
             </div>
@@ -334,7 +350,7 @@ const HomePage: React.FC<HomePageProps> = ({
   );
 };
 
-const ServicesPage: React.FC = () => (
+const ServicesPage: React.FC<{ onNavigate: (page: Page) => void, onScrollToSection: (index: number) => void }> = ({ onNavigate, onScrollToSection }) => (
     <div className="max-w-6xl mx-auto pb-40">
       <header className="relative w-full z-[100] flex flex-col items-center pt-16">
         <div id="fly-in">
@@ -376,7 +392,15 @@ const ServicesPage: React.FC = () => (
                 </ul>
               </div>
               <div className="mt-auto relative z-10 pt-6">
-                <button className="w-full py-5 bg-primary text-black font-black rounded-2xl text-[11px] md:text-xs uppercase tracking-[0.3em] shadow-[0_10px_30px_rgba(0,220,1,0.4)] hover:shadow-primary/60 hover:scale-[1.02] active:scale-95 transition-all">SOLICITAR INFORMACIÓN</button>
+                <button 
+                  onClick={() => {
+                    onNavigate('home');
+                    setTimeout(() => onScrollToSection(4), 100);
+                  }}
+                  className="w-full py-5 bg-primary text-black font-black rounded-2xl text-[11px] md:text-xs uppercase tracking-[0.3em] shadow-[0_10px_30px_rgba(0,220,1,0.4)] hover:shadow-primary/60 hover:scale-[1.02] active:scale-95 transition-all"
+                >
+                  SOLICITAR INFORMACIÓN
+                </button>
               </div>
             </div>
           </AnimatedSection>
@@ -493,7 +517,7 @@ const App: React.FC = () => {
         )}
         {currentPage !== 'home' && (
            <div className={`h-screen overflow-y-auto no-scrollbar py-10 px-4 md:px-16 lg:px-32 relative ${currentPage === 'services' ? 'services-gradient-bg' : (currentPage === 'courses' ? '' : 'bg-black')}`}>
-              {currentPage === 'services' && <ServicesPage />}
+              {currentPage === 'services' && <ServicesPage onNavigate={handleNavigate} onScrollToSection={handleScrollToSection} />}
               {currentPage === 'courses' && <CoursesPage />}
               <div className={`mt-32 max-w-5xl mx-auto pb-20 relative z-10 ${currentPage === 'courses' ? 'hidden' : ''}`}>
                 <Footer onNavigate={handleNavigate} onScrollToSection={handleScrollToSection} />
@@ -502,6 +526,7 @@ const App: React.FC = () => {
         )}
       </main>
       <AIAssistant isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
+      <WhatsAppButton />
     </div>
   );
 };
