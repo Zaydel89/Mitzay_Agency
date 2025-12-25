@@ -169,6 +169,9 @@ export const FOOTER_CONTENT = {
         { name: 'LinkedIn', url: '#' },
         { name: 'YouTube', url: '#' },
         { name: 'TikTok', url: '#' },
+        { name: 'Canal WhatsApp', url: 'https://whatsapp.com/channel/0029VbCUmLUATRSpbRIhgj0W' },
+        { name: 'Canal Telegram', url: 'https://t.me/+nsaDVpRHU5k4ZGYx' },
+        { name: 'Kick', url: 'https://kick.com/zaydel89' },
     ]
 };
 
