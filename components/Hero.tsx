@@ -17,7 +17,7 @@ const Hero: React.FC<HeroProps> = ({ onScrollToAgenda }) => {
   }, []);
 
   return (
-    <section className="relative w-full h-full flex items-center justify-center text-center px-6 md:px-24 overflow-hidden pt-20 md:pt-0">
+    <section className="relative w-full min-h-screen md:h-full flex items-center justify-center text-center px-6 md:px-24 overflow-hidden pt-20 md:pt-0">
       {/* Optimized Overlay Layer */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/40 to-black/90 z-10"></div>
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/10 z-10 pointer-events-none"></div>

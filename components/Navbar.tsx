@@ -84,33 +84,45 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onScrollToSect
         </div>
       </nav>
 
-      {/* MOBILE HEADER (Logo + Titulo) */}
-      <div className="fixed top-0 left-0 w-full h-14 glass border-b border-white/10 z-[150] flex md:hidden items-center justify-between px-6">
-        <button onClick={() => onNavigate('home')} className="flex items-center gap-2">
-          <img src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" alt="Logo" className="w-7 h-7" />
-          <span className="font-poppins font-black text-base">MitZay<span className="text-primary">.</span></span>
+      {/* MOBILE TAB BAR NAVIGATION (Updated with Logo and Agency Name) */}
+      <nav className="fixed bottom-0 left-0 w-full h-16 glass border-t border-white/10 z-[150] flex md:hidden items-center justify-between px-6">
+        {/* Brand in Menu */}
+        <button 
+          onClick={() => {
+            onNavigate('home');
+            onScrollToSection?.(0);
+          }} 
+          className="flex items-center gap-2"
+        >
+          <img 
+            src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" 
+            alt="Logo" 
+            className="w-6 h-6" 
+          />
+          <span className="font-poppins font-black text-[10px] tracking-tight">
+            MitZay<span className="text-primary">.</span>
+          </span>
         </button>
-      </div>
 
-      {/* MOBILE TAB BAR NAVIGATION */}
-      <nav className="fixed bottom-0 left-0 w-full h-16 glass border-t border-white/10 z-[150] flex md:hidden items-center justify-around px-2">
-        {NAV_LINKS.map((link) => (
-          <button
-            key={link.page}
-            onClick={() => onNavigate(link.page)}
-            className={`flex flex-col items-center gap-1 ${currentPage === link.page ? 'text-primary' : 'text-gray-500'}`}
-          >
-            <span className="text-[8px] font-black tracking-widest uppercase">{link.label}</span>
-          </button>
-        ))}
-        {currentPage === 'home' && (
-           <button
-             onClick={() => onScrollToSection?.(0)}
-             className="flex flex-col items-center gap-1 text-gray-500"
-           >
-             <span className="text-[8px] font-black tracking-widest uppercase">INICIO</span>
-           </button>
-        )}
+        <div className="flex items-center gap-6">
+          {NAV_LINKS.filter(link => link.page !== 'home').map((link) => (
+            <button
+              key={link.page}
+              onClick={() => onNavigate(link.page)}
+              className={`flex flex-col items-center gap-1 ${currentPage === link.page ? 'text-primary' : 'text-gray-500'}`}
+            >
+              <span className="text-[8px] font-black tracking-widest uppercase">{link.label}</span>
+            </button>
+          ))}
+          {currentPage === 'home' && (
+             <button
+               onClick={() => onScrollToSection?.(0)}
+               className="flex flex-col items-center gap-1 text-gray-500"
+             >
+               <span className="text-[8px] font-black tracking-widest uppercase">INICIO</span>
+             </button>
+          )}
+        </div>
       </nav>
     </>
   );

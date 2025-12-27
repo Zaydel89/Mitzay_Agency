@@ -56,10 +56,10 @@ const CommunityCTA: React.FC<{
       )}
       <Component 
         {...extraProps}
-        className={`group relative h-10 md:h-12 px-5 font-black rounded-xl text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 overflow-hidden flex items-center justify-center w-full max-w-[210px] md:max-w-[240px] ${colors[variant === 'green' ? 'primary' : variant]} ${inactive ? 'cursor-default' : 'hover:scale-[1.05]'}`}
+        className={`group relative h-10 md:h-12 px-5 font-black rounded-xl text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 overflow-hidden flex items-center justify-center w-full max-w-[210px] md:max-w-[240px] ${colors[labels.hasOwnProperty(variant) ? variant : 'primary']} ${inactive ? 'cursor-default' : 'hover:scale-[1.05]'}`}
       >
         <span className="relative z-10 flex items-center justify-center gap-2">
-          {labels[variant]}
+          {labels[labels.hasOwnProperty(variant) ? variant : 'primary']}
           {!inactive && (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -389,7 +389,7 @@ const HomePage: React.FC<HomePageProps> = ({
       <div className="flex md:hidden flex-col w-full bg-black">
         
         {/* SECCIÓN 0: HERO CLONE */}
-        <div id="section-0-mobile" className="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden">
+        <div id="section-0-mobile" className="min-h-screen relative overflow-hidden">
            <Hero onScrollToAgenda={() => onScrollToSection(4)} />
         </div>
 
@@ -408,7 +408,6 @@ const HomePage: React.FC<HomePageProps> = ({
                     <div className="overflow-hidden rounded-xl mb-4 aspect-video border border-primary/10">
                       <video 
                         loop 
-                        muted 
                         playsInline 
                         className="w-full h-full object-cover cursor-pointer"
                         onMouseEnter={(e) => e.currentTarget.play()}
@@ -445,12 +444,11 @@ const HomePage: React.FC<HomePageProps> = ({
                 <div className="glass p-6 rounded-[2.5rem] border border-pink-500/10">
                   <div className="aspect-video rounded-xl overflow-hidden mb-5 border border-white/5">
                     <video 
+                      autoPlay
                       loop 
                       muted 
                       playsInline 
-                      className="w-full h-full object-cover cursor-pointer"
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                      onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                      className="w-full h-full object-cover"
                     >
                       <source src={study.image} type="video/mp4" />
                     </video>

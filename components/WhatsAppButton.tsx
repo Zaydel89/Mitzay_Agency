@@ -22,6 +22,23 @@ const WhatsAppButton: React.FC = () => {
           z-index: 1000;
         }
 
+        @media (max-width: 767px) {
+          .whatsapp-float-container {
+            top: 15px;
+            right: 15px;
+            bottom: auto;
+          }
+          .sticky-chat {
+            bottom: auto !important;
+            top: 80px !important;
+            transform-origin: top right !important;
+          }
+          .mobile-tooltip-fix {
+            top: 80px !important;
+            bottom: auto !important;
+          }
+        }
+
         .jump-animation {
           animation: cyber-jump 2s cubic-bezier(0.36, 0, 0.66, -0.56) infinite;
         }
@@ -151,7 +168,7 @@ const WhatsAppButton: React.FC = () => {
         <div className="sticky-button jump-animation bg-primary text-black rounded-full shadow-[0_15px_40px_rgba(0,220,1,0.5)] transition-all active:scale-95 group">
           <label htmlFor="whatsapp-toggle">
             {/* Tooltip */}
-            <div className="absolute -top-16 right-0 bg-white text-black text-[10px] font-black px-6 py-2.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl tracking-tighter z-20">
+            <div className="absolute -top-16 right-0 bg-white text-black text-[10px] font-black px-6 py-2.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl tracking-tighter z-20 mobile-tooltip-fix">
                ¡HABLEMOS POR WHATSAPP!
             </div>
 
