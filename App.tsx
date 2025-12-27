@@ -18,6 +18,48 @@ import {
   CALENDLY_URL 
 } from './constants';
 
+const ServiceVideo: React.FC<{ src: string }> = ({ src }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      videoRef.current.muted = false; // Habilitar sonido al dar click
+      setIsPlaying(true);
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full cursor-pointer group/vid" onClick={togglePlay}>
+      <video 
+        ref={videoRef}
+        loop 
+        playsInline 
+        className={`w-full h-full object-cover transition-opacity duration-500 ${isPlaying ? 'opacity-100' : 'opacity-70 group-hover/vid:opacity-90'}`}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+      
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover/vid:bg-black/30 transition-all">
+          <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center bg-primary rounded-full shadow-[0_0_25px_rgba(0,220,1,0.6)] transform transition-transform group-hover/vid:scale-110">
+            <svg className="w-6 h-6 md:w-7 md:h-7 text-black fill-current translate-x-0.5" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CommunityCTA: React.FC<{ 
   className?: string, 
   variant?: 'primary' | 'pink' | 'blue' | 'orange' | 'green',
@@ -226,9 +268,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 <AnimatedSection key={index} delay={0.4 + (index * 0.15)} triggerOnSectionActive isActive={activeSection === 1}>
                   <div className="glass p-7 rounded-[2.5rem] border border-primary/10 hover:border-primary/60 transition-all flex flex-col group min-h-[360px]">
                     <div className="overflow-hidden rounded-xl mb-6 aspect-[16/9] relative border border-primary/10 bg-black/40">
-                      <video loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                        <source src={service.image} type="video/mp4" />
-                      </video>
+                      <ServiceVideo src={service.image} />
                     </div>
                     <h3 className="font-poppins text-lg font-bold text-primary mb-3">{service.title}</h3>
                     <p className="text-gray-400 text-sm leading-relaxed mb-4 flex-grow line-clamp-4">{service.description}</p>
@@ -406,15 +446,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 <AnimatedSection key={index} delay={0.2}>
                   <div className="glass p-6 rounded-[2rem] border border-primary/10">
                     <div className="overflow-hidden rounded-xl mb-4 aspect-video border border-primary/10">
-                      <video 
-                        loop 
-                        playsInline 
-                        className="w-full h-full object-cover cursor-pointer"
-                        onMouseEnter={(e) => e.currentTarget.play()}
-                        onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
-                      >
-                        <source src={service.image} type="video/mp4" />
-                      </video>
+                      <ServiceVideo src={service.image} />
                     </div>
                     <h3 className="text-lg font-bold text-primary mb-2">{service.title}</h3>
                     <p className="text-gray-400 text-[11px] leading-relaxed mb-4">{service.description}</p>
