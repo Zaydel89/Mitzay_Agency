@@ -62,7 +62,6 @@ const RegistrationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     setError(null);
 
     try {
-      // Usamos toISOString para que Airtable reconozca la fecha sin problemas de formato regional
       const payload = {
         fullName: formData.fullName,
         whatsapp: formData.whatsapp,
@@ -442,13 +441,14 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* SECTION 4: AGENDA */}
-              <div className="horizontal-section flex items-center px-6 sm:px-10 md:px-20 relative">
+              {/* SECTION 4: AGENDA - Optimized for smaller screens and reduced headline */}
+              <div className="horizontal-section flex items-start sm:items-center px-6 sm:px-10 md:px-20 relative overflow-y-auto no-scrollbar">
                 <BackgroundVideo />
-                <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-20 items-center relative z-20 overflow-y-auto sm:overflow-visible no-scrollbar pt-20 sm:pt-0">
+                <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-20 items-center relative z-20 pt-20 pb-20 sm:pt-0 sm:pb-0">
                   <AnimatedSection isActive={activeSection === 4} triggerOnSectionActive className="text-center sm:text-left">
                     <h2 className="text-primary text-[8px] sm:text-[10px] font-black tracking-[0.5em] uppercase mb-4">Let's talk</h2>
-                    <h3 className="text-3xl sm:text-5xl md:text-6xl font-poppins font-bold leading-tight mb-6 sm:mb-8">{CALENDLY_SECTION.headline}</h3>
+                    {/* Size reduced by ~25%: text-2xl -> 3xl -> 4xl -> 5xl instead of 3xl -> 5xl -> 6xl */}
+                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-poppins font-bold leading-tight mb-6 sm:mb-8">{CALENDLY_SECTION.headline}</h3>
                     <p className="text-gray-400 text-sm sm:text-lg mb-8 max-w-md mx-auto sm:mx-0">{CALENDLY_SECTION.copy}</p>
                     <div className="flex flex-col gap-6 items-center sm:items-start">
                       <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer"
@@ -458,7 +458,7 @@ const App: React.FC = () => {
                       <DiscountCTA onClick={() => setIsDiscountOpen(true)} className="mt-2" />
                     </div>
                   </AnimatedSection>
-                  <AnimatedSection delay={0.2} isActive={activeSection === 4} triggerOnSectionActive className="h-[450px] sm:h-[600px] pb-20 sm:pb-0">
+                  <AnimatedSection delay={0.2} isActive={activeSection === 4} triggerOnSectionActive className="h-[500px] sm:h-[600px]">
                     <div className="w-full h-full glass rounded-[2.5rem] border border-white/5 overflow-hidden relative shadow-2xl">
                        <iframe src={CALENDLY_URL} className="w-full h-full relative z-10 border-0 invert-[0.92] hue-rotate-[145deg] brightness-90 saturate-50" scrolling="no"></iframe>
                     </div>
