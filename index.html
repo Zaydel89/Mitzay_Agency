@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
   <head>
@@ -96,10 +97,12 @@
 
       .horizontal-section {
         width: 100vw;
-        min-height: 100vh;
+        height: 100vh;
         position: relative;
         flex-shrink: 0;
         scroll-snap-align: start;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
 
       @media (min-width: 768px) {

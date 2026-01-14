@@ -314,7 +314,7 @@ const App: React.FC = () => {
       <main className="md:pl-20 h-full">
         {currentPage === 'home' && (
           <div className="relative h-screen w-full overflow-hidden bg-black">
-            <div ref={scrollRef} className="flex flex-row h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory no-scrollbar">
+            <div ref={scrollRef} className="flex flex-row h-screen overflow-x-auto snap-x snap-mandatory no-scrollbar">
               <div className="horizontal-section flex flex-col items-center justify-center relative px-6">
                 <BackgroundVideo />
                 <Hero onScrollToAgenda={() => scrollToSection(4)} />
