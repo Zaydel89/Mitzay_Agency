@@ -12,6 +12,13 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onScrollToSection }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleLogoClick = () => {
+    onNavigate('home');
+    if (onScrollToSection) {
+      onScrollToSection(0);
+    }
+  };
+
   return (
     <>
       <nav 
@@ -20,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onScrollToSect
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex-1 flex flex-col">
-          <button onClick={() => onNavigate('home')} className="flex items-center gap-4 mb-12 px-2 group">
+          <button onClick={handleLogoClick} className="flex items-center gap-4 mb-12 px-2 group">
             <img src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(0,220,1,0.5)]" />
             <span className="font-poppins font-black text-2xl tracking-tighter opacity-0 group-hover/sidebar:opacity-100 transition-opacity whitespace-nowrap">MitZay<span className="text-primary">.</span></span>
           </button>

@@ -8,7 +8,6 @@ import LoadingScreen from './components/LoadingScreen';
 import AnimatedSection from './components/AnimatedSection';
 import NeuralNexusSection from './components/NeuralNexusSection';
 import WhatsAppButton from './components/WhatsAppButton';
-import ChatBot from './components/ChatBot';
 import { 
   SERVICES_PAGE_CONTENT, 
   SERVICES_OVERVIEW, 
@@ -557,7 +556,6 @@ const App: React.FC = () => {
       <VideoModal url={modalVideo.url} isOpen={modalVideo.isOpen} onClose={closeVideoModal} />
       <RegistrationModal isOpen={isDiscountOpen} onClose={() => setIsDiscountOpen(false)} />
       <WhatsAppButton />
-      <ChatBot />
     </div>
   );
 };
