@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const LoadingScreen: React.FC = () => {
@@ -12,7 +11,7 @@ const LoadingScreen: React.FC = () => {
       
       <div className="relative flex flex-col items-center">
         <img 
-          src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" 
+          src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1768423930/favicon_verde_fovlm5.png" 
           className="w-10 h-10 object-contain mb-4 opacity-50 grayscale brightness-200"
           alt="MitZay Logo"
         />

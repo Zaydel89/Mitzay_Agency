@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Page } from '../types';
 import { NAV_LINKS, HOME_SECTIONS } from '../constants';
@@ -28,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onScrollToSect
       >
         <div className="flex-1 flex flex-col">
           <button onClick={handleLogoClick} className="flex items-center gap-4 mb-12 px-2 group">
-            <img src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(0,220,1,0.5)]" />
+            <img src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1768423930/favicon_verde_fovlm5.png" className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(0,220,1,0.5)]" />
             <span className="font-poppins font-black text-2xl tracking-tighter opacity-0 group-hover/sidebar:opacity-100 transition-opacity whitespace-nowrap">MitZay<span className="text-primary">.</span></span>
           </button>
 

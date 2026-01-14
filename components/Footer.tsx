@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FOOTER_CONTENT } from '../constants';
 import { Page } from '../types';
@@ -12,7 +11,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onScrollToSection }) => {
   return (
     <footer className="w-full glass p-8 sm:p-12 rounded-[2.5rem] sm:rounded-[3rem] border border-primary/20 text-center relative overflow-hidden">
       <div className="relative z-10">
-        <img src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1766544939/LOGO_BN-removebg-preview_eamv9k.png" className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
+        <img src="https://res.cloudinary.com/dsiuc68hp/image/upload/v1768423930/favicon_verde_fovlm5.png" className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
         <h4 className="font-poppins font-bold text-2xl sm:text-3xl mb-3 sm:mb-4">MitZay<span className="text-primary">.</span></h4>
         <p className="text-gray-400 text-[10px] sm:text-xs max-w-xs mx-auto mb-8 sm:mb-10">{FOOTER_CONTENT.microcopy}</p>
 
