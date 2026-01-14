@@ -18,6 +18,8 @@ import {
   DISCOUNT_CONFIG
 } from './constants';
 
+// TIP: Si estás probando tu flujo en n8n con el botón "Execute Workflow", 
+// cambia "/webhook/" por "/webhook-test/" temporalmente.
 const N8N_WEBHOOK_URL = "https://n8n-n8n.4mdxie.easypanel.host/webhook/5adc2915-cca2-4864-8e4b-5620275cb293";
 
 const BackgroundVideo: React.FC<{ fixed?: boolean }> = ({ fixed = false }) => (
@@ -68,17 +70,33 @@ const RegistrationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         date: new Date().toISOString()
       };
 
+      console.log("Enviando datos a n8n:", payload);
+
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error();
+      console.log("Status de respuesta n8n:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error detallado de n8n:", errorText);
+        throw new Error(`Error del servidor: ${response.status}`);
+      }
+      
+      const responseData = await response.json();
+      console.log("Respuesta exitosa de n8n:", responseData);
       
       setStep(2);
     } catch (err) {
-      setError("Error de conexión con el núcleo. Reintenta en unos segundos.");
+      console.error("Fallo crítico en la conexión:", err);
+      setError("Error de conexión con el núcleo. Asegúrate de que el flujo n8n esté activo y acepte peticiones POST.");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +131,7 @@ const RegistrationModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 <input required type="email" placeholder="Correo electrónico" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-primary transition-all text-sm" />
               </div>
 
-              {error && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest animate-pulse">{error}</p>}
+              {error && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest animate-pulse leading-tight px-4">{error}</p>}
 
               <button type="submit" disabled={isSubmitting} className="group relative w-full py-5 bg-primary text-black font-black uppercase tracking-[0.3em] text-xs rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50">
                 <span className="relative z-10">{isSubmitting ? 'VERIFICANDO NÚCLEO...' : 'RECLAMAR MI BENEFICIO'}</span>
