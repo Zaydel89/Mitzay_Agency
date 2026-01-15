@@ -8,6 +8,7 @@ import LoadingScreen from './components/LoadingScreen';
 import AnimatedSection from './components/AnimatedSection';
 import NeuralNexusSection from './components/NeuralNexusSection';
 import WhatsAppButton from './components/WhatsAppButton';
+import ChatBot from './components/ChatBot';
 import { 
   SERVICES_PAGE_CONTENT, 
   SERVICES_OVERVIEW, 
@@ -491,7 +492,7 @@ const App: React.FC = () => {
         )}
 
         {currentPage === 'portfolio-catalog' && (
-          <div className="min-h-screen bg-black relative overflow-y-auto no-scrollbar">
+          <div className="h-full bg-black relative overflow-y-auto no-scrollbar scroll-smooth">
             <BackgroundVideo fixed />
             <div className="relative z-20 max-w-7xl mx-auto px-6 py-32 sm:py-48">
               <button 
@@ -562,6 +563,7 @@ const App: React.FC = () => {
         onClose={() => setIsDiscountOpen(false)} 
       />
       <WhatsAppButton />
+      <ChatBot />
     </div>
   );
 };
