@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'services' | 'courses';
+export type Page = 'home' | 'services' | 'courses' | 'portfolio-catalog';
 
 export interface NavLink {
   label: string;
@@ -30,13 +30,27 @@ export interface PortfolioItem {
   alt: string;
 }
 
+export interface DetailedPortfolioProject {
+  title: string;
+  url: string;
+  tagline: string;
+  description: string;
+  techFocus: {
+    layout: string;
+    effects: string;
+    performance: string;
+  };
+  image: string;
+  video?: string;
+}
+
 export interface Testimonial {
   name: string;
   title: string;
   quote: string;
   highlight: string;
   image: string;
-  rating: number; // New property: 4.5 or 5
+  rating: number;
   date?: string;
 }
 

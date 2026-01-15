@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Page, Service, PortfolioItem, Testimonial } from './types';
+import { Page, Service, PortfolioItem, Testimonial, DetailedPortfolioProject } from './types';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
@@ -15,7 +15,8 @@ import {
   TESTIMONIALS, 
   CALENDLY_SECTION, 
   CALENDLY_URL,
-  DISCOUNT_CONFIG
+  DISCOUNT_CONFIG,
+  PORTFOLIO_CATALOG
 } from './constants';
 
 // CONFIGURACIÓN DE WEBHOOK
@@ -253,6 +254,76 @@ const PortfolioCard: React.FC<{ item: PortfolioItem; index: number; activeSectio
   </AnimatedSection>
 );
 
+const BrowserPreview: React.FC<{ url: string; title: string }> = ({ url, title }) => (
+  <div className="w-full h-full flex flex-col glass rounded-t-[1.5rem] overflow-hidden shadow-2xl">
+    {/* Browser Bar */}
+    <div className="bg-white/10 px-4 py-3 flex items-center gap-4 border-b border-white/5">
+      <div className="flex gap-1.5">
+        <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+        <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+      </div>
+      <div className="flex-1 bg-black/40 rounded-lg px-4 py-1 flex items-center justify-between">
+        <span className="text-[9px] text-gray-400 font-mono tracking-tighter truncate">{url}</span>
+        <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </div>
+    </div>
+    {/* Iframe View (Simulated) */}
+    <div className="flex-1 relative bg-black/20 group/preview overflow-hidden">
+      <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover/preview:opacity-100 transition-opacity duration-1000 bg-neutral-900" 
+           style={{ backgroundImage: `url(https://image.thum.io/get/width/1200/crop/800/noanimate/${url})` }}>
+      </div>
+      {/* Interaction Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-100 group-hover/preview:opacity-0 transition-opacity duration-500 pointer-events-none">
+        <div className="text-center">
+          <div className="w-16 h-16 glass border border-primary/40 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <p className="text-[10px] font-black tracking-widest text-primary uppercase">Live Architecture</p>
+        </div>
+      </div>
+      <a href={url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10"></a>
+    </div>
+  </div>
+);
+
+const ProjectCatalogCard: React.FC<{ project: DetailedPortfolioProject }> = ({ project }) => (
+  <div className="glass rounded-[3rem] border border-white/5 overflow-hidden group hover:border-primary/30 transition-all">
+    <div className="grid grid-cols-1 lg:grid-cols-2">
+      <div className="relative aspect-[4/3] lg:aspect-auto overflow-hidden bg-[#050505] p-4 lg:p-12">
+        <BrowserPreview url={project.url} title={project.title} />
+      </div>
+      <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-center bg-gradient-to-br from-black/80 to-black/20">
+        <span className="text-primary font-black text-[10px] uppercase tracking-[0.5em] mb-4">{project.tagline}</span>
+        <h3 className="text-4xl sm:text-5xl font-poppins font-light mb-8 group-hover:text-primary transition-colors tracking-tight">{project.title}</h3>
+        <p className="text-gray-300 text-lg mb-10 leading-relaxed italic border-l-2 border-primary/30 pl-6 font-light">"{project.description}"</p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div>
+            <h5 className="text-[10px] font-black uppercase text-white tracking-widest mb-3 opacity-60">Ingeniería & Layout</h5>
+            <p className="text-gray-400 text-xs leading-relaxed font-light">{project.techFocus.layout}</p>
+          </div>
+          <div>
+            <h5 className="text-[10px] font-black uppercase text-white tracking-widest mb-3 opacity-60">Interacción & UI</h5>
+            <p className="text-gray-400 text-xs leading-relaxed font-light">{project.techFocus.effects}</p>
+          </div>
+          <div className="sm:col-span-2">
+            <h5 className="text-[10px] font-black uppercase text-white tracking-widest mb-3 opacity-60">Rendimiento & Conversión</h5>
+            <p className="text-gray-400 text-xs leading-relaxed font-light">{project.techFocus.performance}</p>
+          </div>
+        </div>
+        
+        <div className="mt-14 flex items-center gap-6">
+          <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-5 text-primary font-bold uppercase text-[10px] tracking-[0.3em] group/link hover:gap-7 transition-all px-8 py-5 glass border border-primary/20 rounded-2xl hover:bg-primary/10">
+            VISITAR ECOSISTEMA
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [isLoading, setIsLoading] = useState(true);
@@ -309,7 +380,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-black overflow-x-hidden">
       {isLoading && <LoadingScreen />}
-      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} onScrollToSection={scrollToSection} />
+      <Navbar currentPage={currentPage === 'portfolio-catalog' ? 'home' : currentPage} onNavigate={setCurrentPage} onScrollToSection={scrollToSection} />
 
       <main className="md:pl-20 h-full">
         {currentPage === 'home' && (
@@ -340,9 +411,17 @@ const App: React.FC = () => {
               <div className="horizontal-section flex items-center px-6 sm:px-10 md:px-20 relative">
                 <BackgroundVideo />
                 <div className="w-full max-w-[90rem] mx-auto relative z-20">
-                  <div className="mb-12">
-                    <h2 className="text-primary text-[10px] font-black tracking-[0.5em] uppercase mb-4">Muestra</h2>
-                    <h3 className="text-3xl sm:text-5xl font-poppins font-bold">Portafolio</h3>
+                  <div className="flex flex-col sm:flex-row justify-between items-center mb-12 gap-6">
+                    <div>
+                      <h2 className="text-primary text-[10px] font-black tracking-[0.5em] uppercase mb-4 text-center sm:text-left">Muestra</h2>
+                      <h3 className="text-3xl sm:text-5xl font-poppins font-bold text-center sm:text-left">Portafolio</h3>
+                    </div>
+                    <button 
+                      onClick={() => setCurrentPage('portfolio-catalog')}
+                      className="px-8 py-4 glass border border-primary/40 text-primary font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-primary hover:text-black transition-all group"
+                    >
+                      Explorar Catálogo Élite
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {PORTFOLIO_ITEMS.map((item, i) => (
@@ -407,6 +486,38 @@ const App: React.FC = () => {
             </div>
             <div className="fixed bottom-0 left-0 sm:left-20 w-full sm:w-[calc(100%-5rem)] h-1 bg-white/5 z-[100]">
               <div className="h-full bg-primary shadow-[0_0_15px_#00DC01] transition-all duration-300" style={{ width: `${scrollProgress}%` }}></div>
+            </div>
+          </div>
+        )}
+
+        {currentPage === 'portfolio-catalog' && (
+          <div className="min-h-screen bg-black relative overflow-y-auto no-scrollbar">
+            <BackgroundVideo fixed />
+            <div className="relative z-20 max-w-7xl mx-auto px-6 py-32 sm:py-48">
+              <button 
+                onClick={() => setCurrentPage('home')}
+                className="fixed top-8 left-8 sm:left-28 z-[150] flex items-center gap-4 text-primary font-black uppercase text-[10px] tracking-widest glass px-6 py-3 rounded-full border border-primary/30 hover:bg-primary hover:text-black transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                VOLVER AL INICIO
+              </button>
+              
+              <div className="text-center mb-40">
+                <h2 className="text-primary text-[11px] font-black tracking-[0.8em] uppercase mb-10 opacity-60">Selection of Works</h2>
+                <h1 className="text-7xl sm:text-9xl font-inter font-extralight tracking-tightest leading-[0.9] mb-14 uppercase">
+                  MI<br/><span className="text-primary font-light tracking-tighter">PORTAFOLIO</span>
+                </h1>
+                <div className="w-24 h-[1px] bg-primary/30 mx-auto mb-14"></div>
+                <p className="text-gray-400 text-xl max-w-3xl mx-auto leading-relaxed font-light">
+                  Una curaduría de infraestructuras digitales que fusionan la visión arquitectónica, el lujo editorial y la ingeniería de alta conversión.
+                </p>
+              </div>
+
+              <div className="space-y-48 pb-60">
+                {PORTFOLIO_CATALOG.map((project, i) => (
+                  <ProjectCatalogCard key={i} project={project} />
+                ))}
+              </div>
             </div>
           </div>
         )}
