@@ -54,6 +54,7 @@ export interface Testimonial {
   date?: string;
 }
 
+// Added ChatMessage interface to support ChatBot component
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
